@@ -40,8 +40,9 @@
     "simplebar-react": "^2.4.3",
     "styled-components": "^5.3.6",
     "styled-system": "^5.1.5",
-    "terser-webpack-plugin": "^5.3.10",
-    "yup": "^0.32.11"
+    "external-remotes-plugin": "^1.0.0",
+    "yup": "^0.32.11",
+    "stream-browserify": "^3.0.0"
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.9.0",
