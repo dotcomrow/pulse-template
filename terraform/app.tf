@@ -44,8 +44,8 @@ resource "cloudflare_pages_project" "app" {
   }
 
   build_config {
-    build_command       = "npm install && npm run build"
-    destination_dir     = "build"
+    build_command       = "npm install && npx @cloudflare/next-on-pages@1"
+    destination_dir     = ".vercel/output/static"
     build_caching       = true
   }
 
