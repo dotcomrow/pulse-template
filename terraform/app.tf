@@ -51,6 +51,7 @@ resource "cloudflare_pages_project" "app" {
 
   deployment_configs {
     production {
+        compatibility_flags = ["nodejs_compat"]
         environment_variables = {
           GCP_LOGGING_PROJECT_ID = var.GCP_LOGGING_PROJECT_ID
           LOG_NAME = "${var.project_name}_app_log"
@@ -66,6 +67,7 @@ resource "cloudflare_pages_project" "app" {
     }
 
     preview {
+      compatibility_flags = ["nodejs_compat"]
       environment_variables = {
           GCP_LOGGING_PROJECT_ID = var.GCP_LOGGING_PROJECT_ID
           LOG_NAME = "${var.project_name}_app_log"
