@@ -4,7 +4,7 @@ variable org_name {
   nullable = false
 }
 variable "domain" {
-  description = "the domain hosted in cloudflare"
+  description = "domain hosted in cloudflare"
   type        = string
   nullable    = false
 }
