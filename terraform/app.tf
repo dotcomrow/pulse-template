@@ -44,7 +44,7 @@ resource "cloudflare_pages_project" "app" {
   }
 
   build_config {
-    build_command       = "export NODE_OPTIONS=--max_old_space_size=4096 && npm install && npx @cloudflare/next-on-pages@1"
+    build_command       = "export NODE_OPTIONS=--max_old_space_size=4096 && npm install && npx @cloudflare/next-on-pages@latest --experimental-minify"
     destination_dir     = ".vercel/output/static"
     build_caching       = true
   }
