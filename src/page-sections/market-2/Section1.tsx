@@ -12,7 +12,6 @@ import { theme } from "@utils/theme";
 import { deviceSize } from "@utils/constants";
 import { MainCarouselItem } from "@models/market-2.model";
 import { CarouselCard3 } from "@component/carousel-cards";
-import Button from "dtk/Button";
 
 // styled components
 const CarouselBox = styled(Box)({
@@ -92,10 +91,6 @@ const Section1: FC<Props> = ({ carouselData }) => {
                 <br />
                 SALE 20% OFF
               </H4>
-              <Button>
-                  test
-              </Button>
-                `
 
               <NavLink href="#" color="dark.main">
                 Shop Now
