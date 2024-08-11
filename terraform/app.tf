@@ -9,7 +9,7 @@ resource "cloudflare_pages_domain" "app" {
 resource "cloudflare_record" "app" {
   zone_id         = var.cloudflare_zone_id
   name            = var.project_name
-  value           = cloudflare_pages_project.app.domains[0]
+  content           = cloudflare_pages_project.app.domains[0]
   type            = "CNAME"
   ttl             = 3600
   allow_overwrite = true
