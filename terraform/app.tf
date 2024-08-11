@@ -15,12 +15,12 @@ resource "cloudflare_record" "app" {
   allow_overwrite = true
 }
 
-resource "cloudflare_d1_database" "prod_configuration" {
+resource "cloudflare_d1_database" "prod_cache" {
   account_id = var.cloudflare_account_id
   name       = "${var.project_name}_prod_cache"
 }
 
-resource "cloudflare_d1_database" "dev_configuration" {
+resource "cloudflare_d1_database" "dev_cache" {
   account_id = var.cloudflare_account_id
   name       = "${var.project_name}_dev_cache"
 }
@@ -62,7 +62,7 @@ resource "cloudflare_pages_project" "app" {
         }
 
         d1_databases = {
-          CONFIGURATION = cloudflare_d1_database.prod_configuration.id
+          CONFIGURATION = cloudflare_d1_database.prod_cache.id
         }
     }
 
@@ -78,7 +78,7 @@ resource "cloudflare_pages_project" "app" {
         }
 
         d1_databases = {
-          CONFIGURATION = cloudflare_d1_database.dev_configuration.id
+          CONFIGURATION = cloudflare_d1_database.dev_cache.id
         }
     }
   }
