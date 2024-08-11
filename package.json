@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "compile":"clear && export NODE_OPTIONS=--max_old_space_size=16384 && npx @cloudflare/next-on-pages@latest"
+    "compile": "clear && export NODE_OPTIONS=--max_old_space_size=16384 && npx @cloudflare/next-on-pages@latest"
   },
   "dependencies": {
     "@module-federation/nextjs-mf": "^8.4.6",
