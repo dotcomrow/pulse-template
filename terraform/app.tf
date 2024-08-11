@@ -17,12 +17,12 @@ resource "cloudflare_record" "app" {
 
 resource "cloudflare_d1_database" "prod_configuration" {
   account_id = var.cloudflare_account_id
-  name       = "${var.project_name}_prod_config_database"
+  name       = "${var.project_name}_prod_cache"
 }
 
 resource "cloudflare_d1_database" "dev_configuration" {
   account_id = var.cloudflare_account_id
-  name       = "${var.project_name}_dev_config_database"
+  name       = "${var.project_name}_dev_cache"
 }
 
 resource "cloudflare_pages_project" "app" {
