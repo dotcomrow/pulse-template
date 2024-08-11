@@ -61,7 +61,9 @@ resource "cloudflare_pages_project" "app" {
           GCP_LOGGING_CREDENTIALS = var.GCP_LOGGING_CREDENTIALS
         }
 
-        r2_buckets = cloudflare_r2_bucket.prod-cache
+        r2_buckets = {
+          CACHE = "${var.project_name}-prod-cache"
+        }
     }
 
     preview {
@@ -75,7 +77,9 @@ resource "cloudflare_pages_project" "app" {
           GCP_LOGGING_CREDENTIALS = var.GCP_LOGGING_CREDENTIALS
         }
 
-        r2_buckets = cloudflare_r2_bucket.dev-cache
+        r2_buckets = {
+          CACHE = "${var.project_name}-dev-cache"
+        }
     }
   }
 }
