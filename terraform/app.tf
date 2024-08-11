@@ -54,7 +54,7 @@ resource "cloudflare_pages_project" "app" {
         compatibility_flags = ["nodejs_compat"]
         environment_variables = {
           GCP_LOGGING_PROJECT_ID = var.GCP_LOGGING_PROJECT_ID
-          LOG_NAME = "${var.project_name}_app_log"
+          LOG_NAME = "${var.project_name}_prod_app_log"
         }
 
         secrets = {
@@ -62,7 +62,7 @@ resource "cloudflare_pages_project" "app" {
         }
 
         d1_databases = {
-          CONFIGURATION = cloudflare_d1_database.prod_cache.id
+          CACHE = cloudflare_d1_database.prod_cache.id
         }
     }
 
@@ -70,7 +70,7 @@ resource "cloudflare_pages_project" "app" {
       compatibility_flags = ["nodejs_compat"]
       environment_variables = {
           GCP_LOGGING_PROJECT_ID = var.GCP_LOGGING_PROJECT_ID
-          LOG_NAME = "${var.project_name}_app_log"
+          LOG_NAME = "${var.project_name}_dev_app_log"
         }
 
         secrets = {
@@ -78,7 +78,7 @@ resource "cloudflare_pages_project" "app" {
         }
 
         d1_databases = {
-          CONFIGURATION = cloudflare_d1_database.dev_cache.id
+          CACHE = cloudflare_d1_database.dev_cache.id
         }
     }
   }
