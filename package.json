@@ -12,7 +12,7 @@
   "dependencies": {
     "@module-federation/nextjs-mf": "^8.4.6",
     "@styled-system/theme-get": "^5.1.2",
-    "axios": "^1.2.1",
+    "axios": "^1.7.4",
     "axios-mock-adapter": "^1.21.2",
     "chart.js": "^4.1.1",
     "clsx": "^1.2.1",
