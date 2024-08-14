@@ -1,6 +1,7 @@
 name: TFC Workflows
 
 on:
+  create:
   push:
     branches:
       - prod

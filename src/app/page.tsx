@@ -12,11 +12,11 @@ export default function Home() {
   return (
     <Box id="top" overflow="hidden" bg="gray.white">
       <Section1 />
-      <Section2 />
+      {/* <Section2 />
 
       <Section5 />
       <Section3 />
-      <Section4 />
+      <Section4 /> */}
       <Footer />
     </Box>
   );

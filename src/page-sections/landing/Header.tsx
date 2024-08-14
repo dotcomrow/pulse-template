@@ -81,7 +81,7 @@ const Header: FC = () => {
 
   const scrollListener = useCallback(
     debounce(() => {
-      if (window?.pageYOffset >= headerHeight) setFixed(true);
+      if (window?.scrollY >= headerHeight) setFixed(true);
       else setFixed(false);
     }, 50),
     []
@@ -102,66 +102,29 @@ const Header: FC = () => {
           alignItems="center"
           height={headerHeight}
         >
-          <Scroll to="top" duration={400} smooth={true} isDynamic>
-            <Box cursor="pointer">
-              <Image
-                width="96px"
-                height="44px"
-                src="/assets/images/logo.svg"
-                alt="logo"
-              />
-            </Box>
-          </Scroll>
+          <FlexBox alignItems="center">
+            <Image
+              width="96px"
+              height="44px"
+              src="/assets/images/logo.svg"
+              alt="logo"
+            />
+
+            <Typography className="right-links"
+              as="h1"
+              color="secondary.main"
+              p="0.25rem"
+              alignItems="start"
+            >
+              Pulse
+            </Typography>
+          </FlexBox>
 
           <FlexBox className="right-links" alignItems="center">
-            <Scroll
-              to="features"
-              duration={400}
-              offset={-headerHeight - 16}
-              smooth={true}
-            >
-              <Typography
-                className="link"
-                color="text.muted"
-                p="0.25rem 1.25rem"
-              >
-                Features
-              </Typography>
-            </Scroll>
-
-            <Scroll
-              to="demos"
-              duration={400}
-              offset={-headerHeight - 16}
-              smooth={true}
-            >
-              <Typography
-                className="link"
-                color="text.muted"
-                p="0.25rem 1.25rem"
-              >
-                Demos
-              </Typography>
-            </Scroll>
-
-            <Scroll
-              to="technologies"
-              duration={400}
-              offset={-headerHeight - 16}
-              smooth={true}
-            >
-              <Typography
-                className="link"
-                color="text.muted"
-                p="0.25rem 1.25rem"
-              >
-                Technologies
-              </Typography>
-            </Scroll>
 
             <a href="https://1.envato.market/oeNbNe">
               <Button variant="outlined" color="secondary">
-                Purchase Now
+                Log In
               </Button>
             </a>
           </FlexBox>
@@ -179,50 +142,6 @@ const Header: FC = () => {
             toggleSidenav={toggleSidenav}
           >
             <Box p="1rem">
-              <Scroll
-                to="features"
-                duration={400}
-                offset={-headerHeight - 16}
-                smooth={true}
-              >
-                <Typography
-                  className="link"
-                  py="0.5rem"
-                  onClick={toggleSidenav}
-                >
-                  Features
-                </Typography>
-              </Scroll>
-
-              <Scroll
-                to="demos"
-                duration={400}
-                offset={-headerHeight - 16}
-                smooth={true}
-              >
-                <Typography
-                  className="link"
-                  py="0.5rem"
-                  onClick={toggleSidenav}
-                >
-                  Demos
-                </Typography>
-              </Scroll>
-
-              <Scroll
-                to="technologies"
-                duration={400}
-                offset={-headerHeight - 16}
-                smooth={true}
-              >
-                <Typography
-                  className="link"
-                  py="0.5rem"
-                  onClick={toggleSidenav}
-                >
-                  Technologies
-                </Typography>
-              </Scroll>
 
               <Scroll
                 to="price"
@@ -247,7 +166,7 @@ const Header: FC = () => {
           </Sidenav>
         </FlexBox>
       </Container>
-    </HeaderWrapper>
+    </HeaderWrapper >
   );
 };
 
