@@ -17,11 +17,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check state of initial-deploy workflow
+        id: check_state
+        run: |
+          echo "initial_deploy_state=$(gh api -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28' /repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/actions/workflows/initial-deploy.yml | jq -r '.state')" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Checkout
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         uses: actions/checkout@v3
 
       - name: Get next version
         uses: reecetech/version-increment@2023.9.3
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         id: version
         with:
           scheme: calver
@@ -29,6 +38,7 @@ jobs:
 
       - name: Create release
         uses: "actions/github-script@v6"
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         env:
           VERSION: ${{ steps.version.outputs.version }}
         with:
@@ -53,6 +63,7 @@ jobs:
 
       - uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.1.1
         id: upload
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         with:
           workspace: ${{ github.event.repository.name }}
           directory: terraform
@@ -60,7 +71,7 @@ jobs:
       - name: Create Apply Run
         uses: hashicorp/tfc-workflows-github/actions/create-run@v1.1.1
         id: apply-run
-        if: success() || failure()
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         with:
           workspace: ${{ github.event.repository.name }}
           configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
