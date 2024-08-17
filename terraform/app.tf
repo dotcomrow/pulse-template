@@ -64,6 +64,16 @@ resource "cloudflare_pages_project" "app" {
         r2_buckets = {
           CACHE = "${var.project_name}-prod-cache"
         }
+
+        service_binding {
+          name = "API"
+          service = "api-gateway-prod"
+        }
+
+        service_binding {
+          name = "GRAPHQL"
+          service = "pulse-graphql-prod"
+        }
     }
 
     preview {
@@ -79,6 +89,16 @@ resource "cloudflare_pages_project" "app" {
 
         r2_buckets = {
           CACHE = "${var.project_name}-dev-cache"
+        }
+
+        service_binding {
+          name = "API"
+          service = "api-gateway-dev"
+        }
+
+        service_binding {
+          name = "GRAPHQL"
+          service = "pulse-graphql-dev"
         }
     }
   }
