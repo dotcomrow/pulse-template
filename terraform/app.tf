@@ -68,11 +68,13 @@ resource "cloudflare_pages_project" "app" {
         service_binding {
           name = "API"
           service = "api-gateway-prod"
+          environment = "production"
         }
 
         service_binding {
           name = "GRAPHQL"
           service = "pulse-graphql-prod"
+          environment = "production"
         }
     }
 
@@ -94,11 +96,13 @@ resource "cloudflare_pages_project" "app" {
         service_binding {
           name = "API"
           service = "api-gateway-dev"
+          environment = "preview"
         }
 
         service_binding {
           name = "GRAPHQL"
           service = "pulse-graphql-dev"
+          environment = "preview"
         }
     }
   }
