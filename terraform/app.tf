@@ -15,12 +15,12 @@ resource "cloudflare_record" "app" {
   allow_overwrite = true
 }
 
-resource "cloudflare_r2_bucket" "prod-cache" {
+resource "cloudflare_d1_database" "prod-cache" {
   account_id = var.cloudflare_account_id
   name       = "${var.project_name}-prod-cache"
 }
 
-resource "cloudflare_r2_bucket" "dev-cache" {
+resource "cloudflare_d1_database" "dev-cache" {
   account_id = var.cloudflare_account_id
   name       = "${var.project_name}-dev-cache"
 }
@@ -61,7 +61,7 @@ resource "cloudflare_pages_project" "app" {
           GCP_LOGGING_CREDENTIALS = var.GCP_LOGGING_CREDENTIALS
         }
 
-        r2_buckets = {
+        d1_databases = {
           CACHE = "${var.project_name}-prod-cache"
         }
 
@@ -89,7 +89,7 @@ resource "cloudflare_pages_project" "app" {
           GCP_LOGGING_CREDENTIALS = var.GCP_LOGGING_CREDENTIALS
         }
 
-        r2_buckets = {
+        d1_databases = {
           CACHE = "${var.project_name}-dev-cache"
         }
 
