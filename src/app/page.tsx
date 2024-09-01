@@ -1,23 +1,29 @@
-import Box from "@component/Box";
-import Footer from "@sections/landing/Footer";
-import Section1 from "@sections/landing/Section1";
-import Section2 from "@sections/landing/Section2";
-import Section3 from "@sections/landing/Section3";
-import Section4 from "@sections/landing/Section4";
-import Section5 from "@sections/landing/Section5";
+import { headers } from "next/headers";
 
 export const runtime = 'edge';
 
 export default function Home() {
-  return (
-    <Box id="top" overflow="hidden" bg="gray.white">
-      <Section1 />
-      {/* <Section2 />
+  const headersList = headers()
+  const auth = headersList.get('Authorization')
 
-      <Section5 />
-      <Section3 />
-      <Section4 /> */}
-      <Footer />
-    </Box>
+  
+  if (auth) {
+    return (
+      <div>
+        <h1>Hello World</h1>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <h1>Unauthorized</h1>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <h1>Hello World</h1>
+    </div>
   );
 }
