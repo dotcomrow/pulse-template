@@ -62,7 +62,7 @@ resource "cloudflare_pages_project" "app" {
         }
 
         d1_databases = {
-          CACHE = "${var.project_name}-prod-cache"
+          CACHE = cloudflare_d1_database.prod-cache.id
         }
 
         service_binding {
@@ -90,7 +90,7 @@ resource "cloudflare_pages_project" "app" {
         }
 
         d1_databases = {
-          CACHE = "${var.project_name}-dev-cache"
+          CACHE = cloudflare_d1_database.dev-cache.id
         }
 
         service_binding {
