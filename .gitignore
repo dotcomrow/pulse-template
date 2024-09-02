@@ -30,3 +30,8 @@ wrangler.toml
 
 .vercel
 .next
+
+dist
+pages
+types
+*-manifest*
