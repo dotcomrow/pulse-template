@@ -1,2 +1,2 @@
 # pulse-ui
-ui project
+pulse ui project
