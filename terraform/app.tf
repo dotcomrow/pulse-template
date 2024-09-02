@@ -55,6 +55,7 @@ resource "cloudflare_pages_project" "app" {
         environment_variables = {
           GCP_LOGGING_PROJECT_ID = var.GCP_LOGGING_PROJECT_ID
           LOG_NAME = "${var.project_name}_prod_app_log"
+          ENVIRONMENT = "prod"
         }
 
         secrets = {
@@ -83,6 +84,7 @@ resource "cloudflare_pages_project" "app" {
       environment_variables = {
           GCP_LOGGING_PROJECT_ID = var.GCP_LOGGING_PROJECT_ID
           LOG_NAME = "${var.project_name}_dev_app_log"
+          ENVIRONMENT = "dev"
         }
 
         secrets = {
