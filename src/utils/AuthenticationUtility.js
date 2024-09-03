@@ -30,8 +30,7 @@ export default {
     if (res.length > 0) {
       if (res[0].profile_expiry < Date.now()) {
         await db
-          .delete()
-          .from(account_token_cache)
+          .delete(account_token_cache)
           .where(eq(account_token_cache.token, token));
         var accountInfo = await this.fetchProfile(token);
         if (accountInfo == undefined) {
