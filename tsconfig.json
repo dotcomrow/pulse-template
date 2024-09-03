@@ -7,6 +7,9 @@
       "dom.iterable",
       "esnext"
     ],
+    "types": [
+      "@cloudflare/workers-types"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -56,6 +59,7 @@
     "strictNullChecks": true
   },
   "include": [
+    "env.d.ts",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",

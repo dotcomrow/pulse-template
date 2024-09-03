@@ -4,7 +4,6 @@ import { Montserrat } from "next/font/google";
 import "../__server__";
 
 export const runtime = 'edge';
-globalThis.location = new URL("https://www.google.com") as unknown as Location;
 
 const montserrat = Montserrat({ subsets: ["latin"], display: 'swap' });
 

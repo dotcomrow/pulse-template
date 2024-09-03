@@ -1,12 +1,13 @@
 import { init } from "@lib/db_init";
 import { sqliteTable, text, numeric } from "drizzle-orm/sqlite-core";
 import { drizzle } from "drizzle-orm/d1";
-import { eq } from "drizzle-orm";
+import { ConsoleLogWriter, eq } from "drizzle-orm";
+import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export default {
   async fetchAccountInfo(token) {
 
-    const db = drizzle(process.env.cache);
+    const db = drizzle(getRequestContext().env.CACHE);
     const account_token_cache = sqliteTable("account_token_cache", {
       token: text("token").notNull(),
       profile: text('profile', { mode: 'json' }).notNull(),
@@ -37,8 +38,7 @@ export default {
           return undefined;
         } else {
           await db
-            .insert()
-            .into(account_token_cache)
+            .insert(account_token_cache)
             .values({
               token: token,
               profile: JSON.stringify(accountInfo),
@@ -55,8 +55,7 @@ export default {
           return undefined;
         } else {
           await db
-            .insert()
-            .into(account_token_cache)
+            .insert(account_token_cache)
             .values({
               token: token,
               profile: JSON.stringify(accountInfo),

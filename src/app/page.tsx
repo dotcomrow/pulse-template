@@ -4,16 +4,17 @@ import { sqliteTable, text, numeric } from "drizzle-orm/sqlite-core";
 import { drizzle } from "drizzle-orm/d1";
 import { eq } from "drizzle-orm";
 import { default as AuthenticationUtility } from "@utils/AuthenticationUtility.js";
+import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export const runtime = 'edge';
 
 export default async function Home() {
   
   const headersList = headers()
-  const auth = headersList.get('Authorization')
+  const auth = headersList.get('Authorization')?.split(' ')[1];
 
   if (auth) {
-    const db = drizzle(process.env.CACHE);
+    const db = drizzle((getRequestContext().env as any).CACHE);
     const page_cache = sqliteTable("page_cache", {
       page_id: text("page_id").notNull(),
       object_id: text("object_id").notNull(),
@@ -36,7 +37,7 @@ export default async function Home() {
         .from(page_cache)
         .where(eq(page_cache.account_id, accountResponse["id"]));
     } catch (error) {
-      await init(process.env);
+      await init(getRequestContext().env);
       res = await db
         .select()
         .from(page_cache)
