@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 
-import "../__server__";
-
 export const runtime = 'edge';
 
 const montserrat = Montserrat({ subsets: ["latin"], display: 'swap' });

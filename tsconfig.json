@@ -42,18 +42,6 @@
       ],
       "@context/*": [
         "contexts/*"
-      ],
-      "@reducer/*": [
-        "reducers/*"
-      ],
-      "@component/*": [
-        "components/*"
-      ],
-      "@sections/*": [
-        "page-sections/*"
-      ],
-      "@models/*": [
-        "models/*"
       ]
     },
     "strictNullChecks": true
