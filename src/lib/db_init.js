@@ -2,8 +2,6 @@ import { serializeError } from "serialize-error";
 import { default as LogUtility } from "@utils/LoggingUtility.js";
 
 export async function init(env) {
-  self.location = new URL("https://www.google.com");
-  console.log("here");
   try {
     await env.CACHE
       .prepare(
@@ -13,9 +11,13 @@ export async function init(env) {
           account_id varchar(64),
           response jsonb,
           last_update_datetime numeric
-        )
-        
-        CREATE TABLE account_token_cache (
+        )`
+      )
+      .run();
+
+      await env.CACHE
+      .prepare(
+        `CREATE TABLE account_token_cache (
           token varchar(64) PRIMARY KEY,
           profile jsonb,
           profile_expiry numeric
@@ -23,7 +25,7 @@ export async function init(env) {
       )
       .run();
   } catch (e) {
-    await LogUtility.logEntry(LogUtility.buildLogContext(env), [
+    await LogUtility.logEntry(await LogUtility.buildLogContext(), [
       {
         severity: "ERROR",
         jsonPayload: {
