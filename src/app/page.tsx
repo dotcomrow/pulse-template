@@ -5,6 +5,7 @@ import { drizzle } from "drizzle-orm/d1";
 import { eq } from "drizzle-orm";
 import { default as AuthenticationUtility } from "@utils/AuthenticationUtility.js";
 import { getRequestContext } from "@cloudflare/next-on-pages";
+import Login from "@component/login/Login";
 
 export const runtime = 'edge';
 
@@ -46,6 +47,7 @@ export default async function Home() {
     return (
       <div>
         <h1>Hello World</h1>
+        <a href="/login">Login</a>
         {res.map((item) => (
           <div key={item.page_id}>
             <p>Page ID: {item.page_id}</p>
@@ -59,7 +61,7 @@ export default async function Home() {
   } else {
     return (
       <div>
-        <h1>Unauthorized</h1>
+        <Login>Login object</Login>
       </div>
     );
   }
