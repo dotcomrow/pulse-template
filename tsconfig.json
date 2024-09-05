@@ -42,7 +42,10 @@
       ],
       "@context/*": [
         "contexts/*"
-      ]
+      ],
+      "@component/*": [
+        "components/*"
+      ],
     },
     "strictNullChecks": true
   },
