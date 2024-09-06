@@ -30,8 +30,8 @@ const Refresh = () => {
 
     if (!window.location.hostname.includes("localhost")) {
       options.domain = window.location.hostname;
-      options.httpOnly = true;
-      options.sameSite = "strict";
+      // options.httpOnly = true;
+      // options.sameSite = "strict";
     }
 
     setCookie("token", params.access_token, options);
