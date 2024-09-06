@@ -38,7 +38,7 @@ const Refresh = () => {
   };
 
   useEffect(() => {
-    console.log(processResponse());
+    processResponse();
   }, []);
 
   return (
