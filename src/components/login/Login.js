@@ -1,27 +1,20 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
-import { useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "@hook/redux";
+import { selectUser } from "@lib/features/user/userSlice";
+
 
 const Login = ({ children }) => {
-  const user = useSelector((state) => state.user);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(selectUser);
 
   const STATE = "state";
   let googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth";
   let googleClientId =
     "488218567442-uj3hsd9g13so40fgc89srllfeoiuqeer.apps.googleusercontent.com";
 
-  const processResponse = () => {
-    var fragmentString = window.location.hash.substring(1);
-    var params = {};
-    var regex = /([^&=]+)=([^&]*)/g,
-      m;
-    while ((m = regex.exec(fragmentString))) {
-      params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-    }
-    window.location.hash = "";
-    return params;
-  };
+  
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -38,7 +31,7 @@ const Login = ({ children }) => {
     localStorage.setItem(STATE, now.getTime());
     var params = {
       client_id: googleClientId,
-      redirect_uri: window.location.protocol + "//" + window.location.host,
+      redirect_uri: window.location.protocol + "//" + window.location.host + "/authCallback",
       scope: "email profile openid",
       state: localStorage.getItem(STATE),
       include_granted_scopes: "true",
@@ -59,22 +52,26 @@ const Login = ({ children }) => {
     form.submit();
   };
 
-  useEffect(() => {
-    const params = processResponse();
-    if (params["access_token"]) {
-      const user = {
-        access_token: params["access_token"],
-        expires_in: params["expires_in"],
-        state: params["state"],
-        token_type: params["token_type"],
-      };
-      console.log(user);
-    }
-  }, []);
+  
+
+
+
+  // useEffect(() => {
+  //   const params = processResponse();
+  //   if (params["access_token"]) {
+  //     const user = {
+  //       access_token: params["access_token"],
+  //       expires_in: params["expires_in"],
+  //       state: params["state"],
+  //       token_type: params["token_type"],
+  //     };
+  //     console.log(user);
+  //   }
+  // }, [user]);
 
   return (
     <div>
-      {!user ? (
+      {user == undefined ? (
         <div className="container">
           <div className="row">
             <div className="col-12 text-center">
