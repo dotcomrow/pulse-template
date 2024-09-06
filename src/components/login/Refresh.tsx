@@ -25,13 +25,13 @@ const Refresh = () => {
       expires: new Date(Date.now() + parseInt(params.expires_in) * 1000),
       secure: (window.location.protocol === "https:"),
       // httpOnly: true,
-      // sameSite: "strict"
+      sameSite: "lax"
     } as CookieSetOptions;
 
     if (!window.location.hostname.includes("localhost")) {
       options.domain = window.location.hostname;
       // options.httpOnly = true;
-      // options.sameSite = "strict";
+      options.sameSite = "lax";
     }
 
     setCookie("token", params.access_token, options);
@@ -39,11 +39,12 @@ const Refresh = () => {
 
   useEffect(() => {
     processResponse();
+    window.location.href = "/";
   }, []);
 
   return (
     <div>
-      <p>Refresh</p>
+      
     </div>
   );
 };
