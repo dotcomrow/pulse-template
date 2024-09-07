@@ -20,21 +20,25 @@ const Refresh = () => {
     }
     window.location.hash = "";
 
-    var options = {
-      path: "/",
-      expires: new Date(Date.now() + parseInt(params.expires_in) * 1000),
-      secure: (window.location.protocol === "https:"),
-      // httpOnly: true,
-      sameSite: "lax"
-    } as CookieSetOptions;
+    if (params.state == localStorage.getItem("state")) {
+      var options = {
+        path: "/",
+        expires: new Date(Date.now() + parseInt(params.expires_in) * 1000),
+        secure: (window.location.protocol === "https:"),
+        // httpOnly: true,
+        sameSite: "lax"
+      } as CookieSetOptions;
 
-    if (!window.location.hostname.includes("localhost")) {
-      options.domain = window.location.hostname;
-      // options.httpOnly = true;
-      options.sameSite = "lax";
+      if (!window.location.hostname.includes("localhost")) {
+        options.domain = window.location.hostname;
+        // options.httpOnly = true;
+        options.sameSite = "lax";
+      }
+
+      setCookie("token", params.access_token, options);
+    } else {
+      localStorage.removeItem("state");
     }
-
-    setCookie("token", params.access_token, options);
   };
 
   useEffect(() => {
@@ -44,7 +48,7 @@ const Refresh = () => {
 
   return (
     <div>
-      
+
     </div>
   );
 };

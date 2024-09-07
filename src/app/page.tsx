@@ -1,9 +1,7 @@
 import { headers } from "next/headers";
-import { init } from "@lib/db_init";
-import { sqliteTable, text, numeric } from "drizzle-orm/sqlite-core";
-import { drizzle } from "drizzle-orm/d1";
+import { default as DB } from "@lib/DB";
 import { eq } from "drizzle-orm";
-import { default as AuthenticationUtility } from "@utils/AuthenticationUtility.js";
+import { default as AuthenticationUtility } from "@utils/AuthenticationUtility";
 import { getRequestContext } from "@cloudflare/next-on-pages";
 import Login from "@component/login/Login";
 import { cookies } from 'next/headers'
@@ -21,14 +19,8 @@ export default async function Home() {
   }
 
   if (auth) {
-    const db = drizzle((getRequestContext().env as any).CACHE);
-    const page_cache = sqliteTable("page_cache", {
-      page_id: text("page_id").notNull(),
-      object_id: text("object_id").notNull(),
-      account_id: text("account_id").notNull(),
-      response: text('response', { mode: 'json' }).notNull(),
-      last_update_datetime: numeric("last_update_datetime").notNull(),
-    });
+    
+    
     var accountResponse = await AuthenticationUtility.fetchAccountInfo(auth);
     if (accountResponse == undefined) {
       return (
@@ -37,18 +29,18 @@ export default async function Home() {
         </div>
       );
     }
-    var res: { page_id: string; object_id: string; account_id: string; response: unknown; last_update_datetime: string; }[] = [];
+    var res: { [x: string]: any; }[] = [];
     try {
-      res = await db
+      res = await DB.databases(getRequestContext().env).CACHE
         .select()
-        .from(page_cache)
-        .where(eq(page_cache.account_id, accountResponse["id"]));
+        .from(DB.tables.page_cache)
+        .where(eq(DB.tables.page_cache.account_id, accountResponse["id"]));
     } catch (error) {
-      await init(getRequestContext().env);
-      res = await db
+      await DB.init(getRequestContext().env);
+      res = await DB.databases(getRequestContext().env).CACHE
         .select()
-        .from(page_cache)
-        .where(eq(page_cache.account_id, accountResponse["id"]));
+        .from(DB.tables.page_cache)
+        .where(eq(DB.tables.page_cache.account_id, accountResponse["id"]));
     }
     return (
       <div>

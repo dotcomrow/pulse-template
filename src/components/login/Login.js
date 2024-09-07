@@ -52,23 +52,6 @@ const Login = ({ children }) => {
     form.submit();
   };
 
-  
-
-
-
-  // useEffect(() => {
-  //   const params = processResponse();
-  //   if (params["access_token"]) {
-  //     const user = {
-  //       access_token: params["access_token"],
-  //       expires_in: params["expires_in"],
-  //       state: params["state"],
-  //       token_type: params["token_type"],
-  //     };
-  //     console.log(user);
-  //   }
-  // }, [user]);
-
   return (
     <div>
       {user == undefined ? (
