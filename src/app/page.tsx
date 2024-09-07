@@ -6,13 +6,19 @@ import { eq } from "drizzle-orm";
 import { default as AuthenticationUtility } from "@utils/AuthenticationUtility.js";
 import { getRequestContext } from "@cloudflare/next-on-pages";
 import Login from "@component/login/Login";
+import { cookies } from 'next/headers'
 
 export const runtime = 'edge';
 
 export default async function Home() {
-  
+
   const headersList = headers()
-  const auth = headersList.get('Authorization')?.split(' ')[1];
+  var auth = headersList.get('Authorization')?.split(' ')[1];
+
+  if (!auth) {
+    const cookieStore = cookies()
+    auth = cookieStore.get('token')?.value
+  }
 
   if (auth) {
     const db = drizzle((getRequestContext().env as any).CACHE);
@@ -47,7 +53,12 @@ export default async function Home() {
     return (
       <div>
         <h1>Hello World</h1>
-        <a href="/login">Login</a>
+        <div>
+          <h2>Account Info</h2>
+          <p>Account ID: {accountResponse["id"]}</p>
+          <p>Account Name: {accountResponse["name"]}</p>
+          <p>Account Email: {accountResponse["email"]}</p>
+        </div>
         {res.map((item) => (
           <div key={item.page_id}>
             <p>Page ID: {item.page_id}</p>
