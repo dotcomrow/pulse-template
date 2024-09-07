@@ -1,47 +1,39 @@
-import { init } from "@lib/db_init";
-import { sqliteTable, text, numeric } from "drizzle-orm/sqlite-core";
-import { drizzle } from "drizzle-orm/d1";
-import { ConsoleLogWriter, eq } from "drizzle-orm";
+import { default as DB } from "@lib/DB";
+import { eq } from "drizzle-orm";
 import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export default {
   async fetchAccountInfo(token) {
-
-    const db = drizzle(getRequestContext().env.CACHE);
-    const account_token_cache = sqliteTable("account_token_cache", {
-      token: text("token").notNull(),
-      profile: text('profile', { mode: 'json' }).notNull(),
-      profile_expiry: numeric("profile_expiry").notNull(),
-    });
-    var res = undefined;
+    
+    var res: { [x: string]: any; }[] = [];
     try {
-      res = await db
+      res = await DB.databases(getRequestContext().env).CACHE
         .select()
-        .from(account_token_cache)
-        .where(eq(account_token_cache.token, token));
+        .from(DB.tables.account_token_cache)
+        .where(eq(DB.tables.account_token_cache.token, token));
     } catch (error) {
-      await init(process.env);
-      res = await db
+      await DB.init(getRequestContext().env);
+      res = await DB.databases(getRequestContext().env).CACHE
         .select()
-        .from(account_token_cache)
-        .where(eq(account_token_cache.token, token));
+        .from(DB.tables.account_token_cache)
+        .where(eq(DB.tables.account_token_cache.token, token));
     }
 
     if (res.length > 0) {
       if (res[0].profile_expiry < Date.now()) {
-        await db
-          .delete(account_token_cache)
-          .where(eq(account_token_cache.token, token));
+        await DB.databases(getRequestContext().env).CACHE
+          .delete(DB.tables.account_token_cache)
+          .where(eq(DB.tables.account_token_cache.token, token));
         var accountInfo = await this.fetchProfile(token);
         if (accountInfo == undefined) {
           return undefined;
         } else {
-          await db
-            .insert(account_token_cache)
+          await DB.databases(getRequestContext().env).CACHE
+            .insert(DB.tables.account_token_cache)
             .values({
               token: token,
               profile: JSON.stringify(accountInfo),
-              profile_expiry: Date.now() + 3600000,
+              profile_expiry: (Date.now() + 3600000).toString(),
             });
           return accountInfo;
         }
@@ -53,12 +45,12 @@ export default {
         if (accountInfo == undefined) {
           return undefined;
         } else {
-          await db
-            .insert(account_token_cache)
+          await DB.databases(getRequestContext().env).CACHE
+            .insert(DB.tables.account_token_cache)
             .values({
               token: token,
               profile: JSON.stringify(accountInfo),
-              profile_expiry: Date.now() + 3600000,
+              profile_expiry: (Date.now() + 3600000).toString(),
             });
           return accountInfo;
         }
