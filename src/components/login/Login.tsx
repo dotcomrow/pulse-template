@@ -7,7 +7,7 @@ import { selectUser } from "@lib/features/user/userSlice";
 
 const Login = ({ children }) => {
   const dispatch = useAppDispatch();
-  const user = useAppSelector(selectUser);
+  const user: any = useAppSelector(selectUser);
 
   const STATE = "state";
   let googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth";
@@ -28,7 +28,7 @@ const Login = ({ children }) => {
       localStorage.removeItem(STATE);
     }
     var now = new Date();
-    localStorage.setItem(STATE, now.getTime());
+    localStorage.setItem(STATE, now.getTime().toString());
     var params = {
       client_id: googleClientId,
       redirect_uri: window.location.protocol + "//" + window.location.host + "/authCallback",
