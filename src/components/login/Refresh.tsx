@@ -1,9 +1,6 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Link from "next/link";
-import { useAppDispatch, useAppSelector } from "@hook/redux";
-import { selectUser } from "@lib/features/user/userSlice";
 import { useCookies } from "react-cookie";
 import { CookieSetOptions } from "universal-cookie";
 
