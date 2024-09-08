@@ -10,7 +10,7 @@ export default async function Home() {
   const cookieStore = cookies()
   var auth = cookieStore.get('token')?.value
 
-  LogUtility.logEntry(LogUtility.buildLogContext(), [
+  await LogUtility.logEntry(await LogUtility.buildLogContext(), [
     {
       severity: "INFO",
       jsonPayload: {
