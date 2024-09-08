@@ -1,7 +1,6 @@
 import { serializeError } from "serialize-error";
 import { default as LogUtility } from "@utils/LoggingUtility";
 import { drizzle } from "drizzle-orm/d1";
-// import { getRequestContext } from "@cloudflare/next-on-pages";
 import { sqliteTable, text, numeric } from "drizzle-orm/sqlite-core";
 
 export default {
