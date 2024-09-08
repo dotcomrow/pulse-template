@@ -1,12 +1,24 @@
 import { default as AuthenticationUtility } from "@utils/AuthenticationUtility";
 import Login from "@component/login/Login";
 import { cookies } from 'next/headers'
+import { getRequestContext } from "@cloudflare/next-on-pages";
+import { default as LogUtility } from "@utils/LoggingUtility";
 
 export const runtime = 'edge';
 
 export default async function Home() {
   const cookieStore = cookies()
   var auth = cookieStore.get('token')?.value
+
+  LogUtility.logEntry(LogUtility.buildLogContext(), [
+    {
+      severity: "INFO",
+      jsonPayload: {
+        message: "App Request",
+        context: getRequestContext()
+      },
+    }
+  ]);
 
   if (auth) {
     var accountResponse = await AuthenticationUtility.fetchAccountInfo(auth);
