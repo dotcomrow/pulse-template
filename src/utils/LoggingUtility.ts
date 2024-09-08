@@ -15,7 +15,7 @@ export default {
     var context = {
       ENVIRONMENT: (getRequestContext().env as CloudflareEnv).ENVIRONMENT,
       GCP_LOGGING_PROJECT_ID: (getRequestContext().env as CloudflareEnv).GCP_LOGGING_PROJECT_ID,
-      LOGGING_TOKEN: await new GCPAccessToken((getRequestContext().env as CloudflareEnv).GCP_LOGGING_CREDENTIALS).getAccessToken("https://www.googleapis.com/auth/logging.write"),
+      LOGGING_TOKEN: (await new GCPAccessToken((getRequestContext().env as CloudflareEnv).GCP_LOGGING_CREDENTIALS).getAccessToken("https://www.googleapis.com/auth/logging.write")).access_token,
       LOG_NAME: (getRequestContext().env as CloudflareEnv).LOG_NAME,
       SpanId: uuidv4(),
       VERSION: (getRequestContext().env as CloudflareEnv).VERSION,
