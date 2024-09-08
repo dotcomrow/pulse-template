@@ -23,7 +23,6 @@ export default {
     return context;
   },
   async logEntry(context, entries) {
-    console.log(context);
     var finalEntries: any[] = [];
     for (var entry of entries) {
       entry.spanId = context.SpanId;

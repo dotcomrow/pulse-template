@@ -4,7 +4,6 @@ import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export default {
   async fetchAccountInfo(token) {
-    
     var res: { [x: string]: any; }[] = [];
     try {
       res = await DB.databases(getRequestContext().env).CACHE
