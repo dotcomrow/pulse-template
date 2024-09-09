@@ -1,6 +1,6 @@
 import { default as AuthenticationUtility } from "@utils/AuthenticationUtility";
 import Login from "@component/login/Login";
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { getRequestContext } from "@cloudflare/next-on-pages";
 import { default as LogUtility } from "@utils/LoggingUtility";
 
@@ -15,7 +15,8 @@ export default async function Home() {
       severity: "INFO",
       jsonPayload: {
         message: "App Request",
-        context: getRequestContext()
+        context: getRequestContext(),
+        headers: headers(),
       },
     }
   ]);
