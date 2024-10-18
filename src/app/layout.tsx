@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { StoreProvider } from "./StoreProvider";
+import 'tailwindcss/tailwind.css';
+import { Providers } from "./Providers";
 
 export const runtime = 'edge';
 
@@ -15,12 +16,14 @@ export default function RootLayout({
 }) {
 
   return (
-    <StoreProvider>
-      <html lang="en">
-        <body>
-          {children}
-        </body>
-      </html>
-    </StoreProvider>
+    <html lang="en">
+      <body>
+        <Providers>
+          <main>
+            {children}
+          </main>
+        </Providers>
+      </body>
+    </html>
   );
 }
