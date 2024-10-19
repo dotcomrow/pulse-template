@@ -45,8 +45,7 @@ const Refresh = () => {
   }, []);
 
   return (
-    <div>
-    </div>
+    <></>
   );
 };
 

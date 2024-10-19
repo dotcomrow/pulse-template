@@ -5,7 +5,7 @@ import Nav from './navigation/Nav';
 export default function Layout({ children }) {
     return (
         <>
-            <Header title="My App" children={undefined} />
+            <Header />
             <main className="mb-auto h-80">
                 <div>
                     <div>
