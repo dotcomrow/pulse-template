@@ -5,15 +5,15 @@ import { useAppSelector } from "@hook/redux";
 import { selectUser } from "@lib/features/user/userSlice";
 
 const ProfileAvatar = ({ children }) => {
-  
-  const user: any = useAppSelector(selectUser);
+
+  const state: any = useAppSelector(selectUser);
 
   const STATE = "state";
   let googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth";
   let googleClientId =
     "488218567442-uj3hsd9g13so40fgc89srllfeoiuqeer.apps.googleusercontent.com";
 
-  
+
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -53,24 +53,35 @@ const ProfileAvatar = ({ children }) => {
 
   return (
     <div>
-      {user.name == undefined ? (
+      {state.status != "complete" ? (
         <div className="container">
           <div className="row">
             <div className="col-12 text-center">
-              <p>
-                <Link onClick={(e) => handleClick(e)} href="#">
-                  Login with Google
-                </Link>
-              </p>
             </div>
           </div>
         </div>
-       ) : (
+      ) : (
         <div>
-          <h1>Welcome {user.name}</h1>
+          {state.user == undefined ? (
+            <div className="container">
+              <div className="row">
+                <div className="col-12 text-center">
+                  <p>
+                    <Link onClick={(e) => handleClick(e)} href="#">
+                      Login with Google
+                    </Link>
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <h1>Welcome {state.user.name}</h1>
+            </div>
+          )}
+          {children}
         </div>
-      ) }
-      {children}
+      )}
     </div>
   );
 };

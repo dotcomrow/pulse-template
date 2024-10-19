@@ -6,7 +6,7 @@ import fetchAccountInfo from "@utils/AuthenticationUtility";
 export interface UserSliceState {
   user: any;
   profile: any;
-  status: "idle" | "loading" | "failed";
+  status: "idle" | "loading" | "failed" | "complete";
 }
 
 
@@ -31,6 +31,7 @@ export const userSlice = createAppSlice({
     }),
     initProfile: create.reducer((state, action: PayloadAction<any>) => {
       state.profile = action.payload;
+      state.status = "complete";
     }),
     // increment: create.reducer((state) => {
     //   // Redux Toolkit allows us to write "mutating" logic in reducers. It
@@ -77,7 +78,7 @@ export const userSlice = createAppSlice({
   // state as their first argument.
   selectors: {
     selectUser: (state) => {
-      return state.user;
+      return state;
     },
   },
 });
@@ -108,4 +109,9 @@ export const initializeUser = (token: string): AppThunk => async (dispatch) => {
 export const initializeProfile = (token: string): AppThunk => async (dispatch) => {
   // var profileResponse = await AuthenticationUtility.fetchProfileInfo(token);
   dispatch(userSlice.actions.initProfile());
+}
+
+export const setNoToken = (): AppThunk => async (dispatch) => {
+  dispatch(userSlice.actions.initUser(undefined));
+  dispatch(userSlice.actions.initProfile(undefined));
 }
