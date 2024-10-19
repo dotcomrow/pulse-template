@@ -31,6 +31,7 @@ const Refresh = () => {
         // options.httpOnly = true;
         options.sameSite = "lax";
       }
+      localStorage.removeItem("state");
 
       setCookie("token", params.access_token, options);
     } else {

@@ -21,9 +21,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Providers token={token}>
-          <main>
+          <div className="flex flex-col h-screen justify-between">
             {children}
-          </main>
+          </div>
         </Providers>
       </body>
     </html>
