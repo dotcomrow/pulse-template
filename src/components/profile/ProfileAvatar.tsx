@@ -6,11 +6,12 @@ import { selectUser } from "@lib/features/user/userSlice";
 import { Avatar, AvatarGroup, AvatarIcon } from "@nextui-org/avatar";
 import { ThemeSwitcher } from "@component/theme/ThemeSwitcher";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
+import { useCookies } from 'react-cookie';
 
 const ProfileAvatar = ({ children }) => {
 
   const state: any = useAppSelector(selectUser);
-
+  const [cookie, setCookie, removeCookie] = useCookies();
   const STATE = "state";
   let googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth";
   let googleClientId =
@@ -90,7 +91,7 @@ const ProfileAvatar = ({ children }) => {
                     <p><Link href="#" onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=." + window.location.host + ";";
+                      removeCookie("token");
                       localStorage.clear();
                       window.location.reload();
                     }}>Logout</Link></p>
