@@ -81,7 +81,7 @@ const ProfileAvatar = ({ children }) => {
             <div>
               <Popover placement="left-start" showArrow={true}>
                 <PopoverTrigger>
-                  <Avatar src={state.user.picture} />
+                  <Avatar className="cursor-pointer" src={state.user.picture} />
                 </PopoverTrigger>
                 <PopoverContent>
                   <div className="px-1 py-2">
@@ -90,7 +90,7 @@ const ProfileAvatar = ({ children }) => {
                     <p><Link href="#" onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=." + window.location.host + ";";
                       localStorage.clear();
                       window.location.reload();
                     }}>Logout</Link></p>
