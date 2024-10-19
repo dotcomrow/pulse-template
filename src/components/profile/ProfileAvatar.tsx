@@ -7,6 +7,7 @@ import { Avatar, AvatarGroup, AvatarIcon } from "@nextui-org/avatar";
 import { ThemeSwitcher } from "@component/theme/ThemeSwitcher";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import { useCookies } from 'react-cookie';
+import { CookieSetOptions } from "universal-cookie";
 
 const ProfileAvatar = ({ children }) => {
 
@@ -91,7 +92,19 @@ const ProfileAvatar = ({ children }) => {
                     <p><Link href="#" onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      removeCookie("token");
+                      var options = {
+                        path: "/",
+                        expires: new Date(Date.now()),
+                        secure: (window.location.protocol === "https:"),
+                        // httpOnly: true,
+                        sameSite: "lax"
+                      } as CookieSetOptions;
+                      if (!window.location.hostname.includes("localhost")) {
+                        options.domain = window.location.hostname;
+                        // options.httpOnly = true;
+                        options.sameSite = "lax";
+                      }
+                      removeCookie("token", options);
                       localStorage.clear();
                       window.location.reload();
                     }}>Logout</Link></p>
