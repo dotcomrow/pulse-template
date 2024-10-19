@@ -18,8 +18,6 @@ const ProfileAvatar = ({ children }) => {
   let googleClientId =
     "488218567442-uj3hsd9g13so40fgc89srllfeoiuqeer.apps.googleusercontent.com";
 
-
-
   const handleClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -57,30 +55,15 @@ const ProfileAvatar = ({ children }) => {
   };
 
   return (
-    <div>
-      {state.status != "complete" ? (
-        <div className="container">
-          <div className="row">
-            <div className="col-12 text-center">
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div>
+    <>
+      {state.status == "complete" ? (
+        <>
           {state.user == undefined ? (
-            <div className="container">
-              <div className="row">
-                <div className="col-12 text-center">
-                  <p>
-                    <Link onClick={(e) => handleClick(e)} href="#">
-                      Login with Google
-                    </Link>
-                  </p>
-                </div>
-              </div>
-            </div>
+            <Link onClick={(e) => handleClick(e)} href="#">
+              Login with Google
+            </Link>
           ) : (
-            <div>
+            <>
               <Popover placement="left-start" showArrow={true}>
                 <PopoverTrigger>
                   <Avatar className="cursor-pointer" src={state.user.picture} />
@@ -111,12 +94,14 @@ const ProfileAvatar = ({ children }) => {
                   </div>
                 </PopoverContent>
               </Popover>
-            </div>
+            </>
           )}
           {children}
-        </div>
+        </>
+      ) : (
+        <></>
       )}
-    </div>
+    </>
   );
 };
 
