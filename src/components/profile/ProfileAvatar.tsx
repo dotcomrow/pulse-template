@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useEffect } from "react";
 import Link from "next/link";
-import { useAppDispatch, useAppSelector } from "@hook/redux";
+import { useAppSelector } from "@hook/redux";
 import { selectUser } from "@lib/features/user/userSlice";
 
-
-const Login = ({ children }) => {
-  const dispatch = useAppDispatch();
+const ProfileAvatar = ({ children }) => {
+  
   const user: any = useAppSelector(selectUser);
 
   const STATE = "state";
@@ -55,7 +53,7 @@ const Login = ({ children }) => {
 
   return (
     <div>
-      {user == undefined ? (
+      {user.name == undefined ? (
         <div className="container">
           <div className="row">
             <div className="col-12 text-center">
@@ -67,14 +65,14 @@ const Login = ({ children }) => {
             </div>
           </div>
         </div>
-      ) : (
+       ) : (
         <div>
           <h1>Welcome {user.name}</h1>
         </div>
-      )}
+      ) }
       {children}
     </div>
   );
 };
 
-export default Login;
+export default ProfileAvatar;

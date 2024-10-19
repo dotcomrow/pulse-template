@@ -1,7 +1,7 @@
-"use client"
 import { createAppSlice } from "@lib/createAppSlice";
 import type { AppThunk } from "@lib/store";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import fetchAccountInfo from "@utils/AuthenticationUtility";
 
 export interface UserSliceState {
   user: any;
@@ -12,11 +12,7 @@ export interface UserSliceState {
 
 
 const initialState: UserSliceState = {
-  user: {
-    name: "John Doe",
-    email: "test@test.com",
-    id: "123",
-  },
+  user: {},
   profile: {},
   status: "idle",
 };
@@ -30,6 +26,12 @@ export const userSlice = createAppSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: (create) => ({
+    initUser: create.reducer((state, action: PayloadAction<any>) => {
+      state.user = action.payload;
+    }),
+    initProfile: create.reducer((state, action: PayloadAction<any>) => {
+      state.profile = action.payload;
+    }),
     // increment: create.reducer((state) => {
     //   // Redux Toolkit allows us to write "mutating" logic in reducers. It
     //   // doesn't actually mutate the state because it uses the Immer library,
@@ -75,8 +77,7 @@ export const userSlice = createAppSlice({
   // state as their first argument.
   selectors: {
     selectUser: (state) => {
-      console.log("state", state);
-      return undefined
+      return state.user;
     },
   },
 });
@@ -87,7 +88,6 @@ export const userSlice = createAppSlice({
 
 // Selectors returned by `slice.selectors` take the root state as their first argument.
 export const { selectUser } = userSlice.selectors;
-
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
 // export const incrementIfOdd =
@@ -99,3 +99,13 @@ export const { selectUser } = userSlice.selectors;
 //       dispatch(incrementByAmount(amount));
 //     }
 //   };
+
+export const initializeUser = (token: string): AppThunk => async (dispatch) => {
+  var accountResponse = await fetchAccountInfo(token);
+  dispatch(userSlice.actions.initUser(accountResponse));
+}
+
+export const initializeProfile = (token: string): AppThunk => async (dispatch) => {
+  // var profileResponse = await AuthenticationUtility.fetchProfileInfo(token);
+  dispatch(userSlice.actions.initProfile());
+}

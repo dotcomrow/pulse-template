@@ -39,8 +39,8 @@ export default {
           )`
         )
         .run();
-  
-        await env.CACHE
+
+      await env.CACHE
         .prepare(
           `CREATE TABLE account_token_cache (
             token varchar(64) PRIMARY KEY,
@@ -49,8 +49,8 @@ export default {
           )`
         )
         .run();
-  
-        await env.CACHE
+
+      await env.CACHE
         .prepare(
           `CREATE TABLE account_groups_cache (
             token varchar(64) PRIMARY KEY,

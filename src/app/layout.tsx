@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import 'tailwindcss/tailwind.css';
 import { Providers } from "./Providers";
+import { cookies } from 'next/headers'
 
 export const runtime = 'edge';
 
@@ -14,11 +15,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-
+  const cookieStore = cookies()
+  var token = cookieStore.get('token')?.value || ''
   return (
     <html lang="en">
       <body>
-        <Providers>
+        <Providers token={token}>
           <main>
             {children}
           </main>

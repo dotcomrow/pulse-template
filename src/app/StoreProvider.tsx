@@ -5,17 +5,25 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { Provider } from "react-redux";
+import { initializeUser, initializeProfile } from "@lib/features/user/userSlice";
+
 
 interface Props {
+  readonly token?: string;
   readonly children: ReactNode;
 }
 
-export const StoreProvider = ({ children }: Props) => {
+export const StoreProvider = ({ children, token }: Props) => {
   const storeRef = useRef<AppStore | null>(null);
 
   if (!storeRef.current) {
     // Create the store instance the first time this renders
     storeRef.current = makeStore();
+    // call init store methods
+    if (token) {
+      storeRef.current.dispatch(initializeUser(token));
+      storeRef.current.dispatch(initializeProfile(token));
+    }
   }
 
   useEffect(() => {
