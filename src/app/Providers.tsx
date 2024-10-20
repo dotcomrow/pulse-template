@@ -4,14 +4,12 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 export function Providers({ children, token }: { children: React.ReactNode, token: string }) {
     return (
-        <>
-            <StoreProvider token={token}>
-                <NextUIProvider>
-                    <NextThemesProvider attribute="class" defaultTheme="light">
-                        {children}
-                    </NextThemesProvider>
-                </NextUIProvider>
-            </StoreProvider>
-        </>
+        <StoreProvider token={token}>
+            <NextUIProvider>
+                <NextThemesProvider attribute="class" defaultTheme="light">
+                    {children}
+                </NextThemesProvider>
+            </NextUIProvider>
+        </StoreProvider>
     )
 }

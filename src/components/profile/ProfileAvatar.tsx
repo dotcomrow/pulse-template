@@ -10,13 +10,13 @@ import SessionTimeout from "@component/modals/timeout/SessionTimeout";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { User } from "@nextui-org/user";
 import { Skeleton } from "@nextui-org/skeleton";
-import React, { useEffect } from "react";
+import React, { ReactElement, useEffect } from "react";
 
 const ProfileAvatar = () => {
 
   const state: any = useAppSelector(selectUser);
   const [cookies, setCookie, removeCookie] = useCookies(["token", "expires"]);
-  const [profileAvatar, setProfileAvatar] = React.useState<any | null>(null);
+  const [profileAvatar, setProfileAvatar] = React.useState<ReactElement | null>(null);
   const STATE = "state";
   let googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth";
   let googleClientId =
@@ -60,7 +60,6 @@ const ProfileAvatar = () => {
   };
 
   useEffect(() => {
-    console.log(state);
     if (state.user == undefined && state.status == "complete") {
       setProfileAvatar(<Button size="md" onClick={(e) => handleClick(e)}>Login</Button>);
     } else if (state.status == "complete") {
@@ -110,17 +109,15 @@ const ProfileAvatar = () => {
       );
     } else {
       setProfileAvatar(
-        <>
-          <div className="w-50 flex justify-end flex items-center gap-3">
-            <div>
-              <Skeleton className="flex rounded-full w-12 h-12" />
-            </div>
-            <div className="w-full flex flex-col gap-2">
-              <Skeleton className="h-3 w-3/5 rounded-lg" />
-              <Skeleton className="h-3 w-4/5 rounded-lg" />
-            </div>
+        <div className="w-50 flex justify-end flex items-center gap-3">
+          <div>
+            <Skeleton className="flex rounded-full w-12 h-12" />
           </div>
-        </>
+          <div className="w-full flex flex-col gap-2">
+            <Skeleton className="h-3 w-3/5 rounded-lg" />
+            <Skeleton className="h-3 w-4/5 rounded-lg" />
+          </div>
+        </div>
       );
     }
   }, [state]);

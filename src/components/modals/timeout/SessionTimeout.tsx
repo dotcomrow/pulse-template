@@ -91,14 +91,12 @@ export default function SessionTimeout() {
     }
 
     return (
-        <>
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange} isDismissable={false} hideCloseButton={true}>
-                <ModalContent>
-                    <ModalBody className="px-10 py-10 flex h-20 justify-center">
-                        Session Expires In: {timer}
-                    </ModalBody>
-                </ModalContent>
-            </Modal >
-        </>
+        <Modal isOpen={isOpen} onOpenChange={onOpenChange} isDismissable={false} hideCloseButton={true}>
+            <ModalContent>
+                <ModalBody className="px-10 py-10 flex h-20 justify-center">
+                    Session Expires In: {timer}
+                </ModalBody>
+            </ModalContent>
+        </Modal >
     );
 }
