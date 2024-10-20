@@ -7,7 +7,6 @@ import { useEffect, useRef } from "react";
 import { Provider } from "react-redux";
 import { initializeUser, initializeProfile, setNoToken } from "@lib/features/user/userSlice";
 
-
 interface Props {
   readonly token?: string;
   readonly children: ReactNode;

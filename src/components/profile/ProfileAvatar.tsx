@@ -8,11 +8,12 @@ import { ThemeSwitcher } from "@component/theme/ThemeSwitcher";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import { useCookies } from 'react-cookie';
 import { CookieSetOptions } from "universal-cookie";
+import SessionTimeout from "@component/modals/timeout/SessionTimeout";
 
-const ProfileAvatar = ({ children }) => {
+const ProfileAvatar = () => {
 
   const state: any = useAppSelector(selectUser);
-  const [cookie, setCookie, removeCookie] = useCookies();
+  const [cookies, setCookie, removeCookie] = useCookies(["token", "expires"]);
   const STATE = "state";
   let googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth";
   let googleClientId =
@@ -72,7 +73,7 @@ const ProfileAvatar = ({ children }) => {
                   <div className="px-1 py-2">
                     <p>Welcome {state.user.name}</p>
                     <ThemeSwitcher />
-                    <p><Link href="#" onClick={(e) => {
+                    <Link href="#" onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       var options = {
@@ -88,15 +89,16 @@ const ProfileAvatar = ({ children }) => {
                         options.sameSite = "lax";
                       }
                       removeCookie("token", options);
+                      removeCookie("expires", options);
                       localStorage.clear();
                       window.location.reload();
-                    }}>Logout</Link></p>
+                    }}>Logout</Link>
                   </div>
                 </PopoverContent>
               </Popover>
+              <SessionTimeout />
             </>
           )}
-          {children}
         </>
       ) : (
         <></>

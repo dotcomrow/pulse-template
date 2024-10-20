@@ -10,7 +10,7 @@ export default function Header() {
                     <h1 className="text-2xl font-bold">SnapSpot</h1>
                 </div>
                 <div className="flex justify-end px-5 py-5 w-1/2">
-                    <ProfileAvatar children={undefined}></ProfileAvatar>
+                    <ProfileAvatar/>
                 </div>
             </div>
         </header>
