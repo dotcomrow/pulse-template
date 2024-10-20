@@ -9,6 +9,7 @@ import { CookieSetOptions } from "universal-cookie";
 import SessionTimeout from "@component/modals/timeout/SessionTimeout";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { User } from "@nextui-org/user";
+import { Skeleton } from "@nextui-org/skeleton";
 
 const ProfileAvatar = () => {
 
@@ -109,7 +110,17 @@ const ProfileAvatar = () => {
           )}
         </>
       ) : (
-        <></>
+        <>
+          <div className="w-50 flex justify-end flex items-center gap-3">
+            <div>
+              <Skeleton className="flex rounded-full w-12 h-12" />
+            </div>
+            <div className="w-full flex flex-col gap-2">
+              <Skeleton className="h-3 w-3/5 rounded-lg" />
+              <Skeleton className="h-3 w-4/5 rounded-lg" />
+            </div>
+          </div>
+        </>
       )}
     </>
   );
