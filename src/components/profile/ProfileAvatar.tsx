@@ -77,28 +77,30 @@ const ProfileAvatar = () => {
                   />
                 </PopoverTrigger>
                 <PopoverContent>
-                  <div className="px-1 py-2">
+                  <div className="px-1 py-2 flex-col flex columns-1">
                     <ThemeSwitcher />
-                    <Button onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      var options = {
-                        path: "/",
-                        expires: new Date(Date.now()),
-                        secure: (window.location.protocol === "https:"),
-                        // httpOnly: true,
-                        sameSite: "lax"
-                      } as CookieSetOptions;
-                      if (!window.location.hostname.includes("localhost")) {
-                        options.domain = window.location.hostname;
-                        // options.httpOnly = true;
-                        options.sameSite = "lax";
-                      }
-                      removeCookie("token", options);
-                      removeCookie("expires", options);
-                      localStorage.clear();
-                      window.location.reload();
-                    }}>Logout</Button>
+                    <div className="w-full flex justify-center">
+                      <Button onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        var options = {
+                          path: "/",
+                          expires: new Date(Date.now()),
+                          secure: (window.location.protocol === "https:"),
+                          // httpOnly: true,
+                          sameSite: "lax"
+                        } as CookieSetOptions;
+                        if (!window.location.hostname.includes("localhost")) {
+                          options.domain = window.location.hostname;
+                          // options.httpOnly = true;
+                          options.sameSite = "lax";
+                        }
+                        removeCookie("token", options);
+                        removeCookie("expires", options);
+                        localStorage.clear();
+                        window.location.reload();
+                      }}>Logout</Button>
+                    </div>
                   </div>
                 </PopoverContent>
               </Popover>
