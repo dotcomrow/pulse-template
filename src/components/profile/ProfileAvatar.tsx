@@ -1,14 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { useAppSelector } from "@hook/redux";
 import { selectUser } from "@lib/features/user/userSlice";
-import { Avatar, AvatarGroup, AvatarIcon } from "@nextui-org/avatar";
 import { ThemeSwitcher } from "@component/theme/ThemeSwitcher";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import { useCookies } from 'react-cookie';
 import { CookieSetOptions } from "universal-cookie";
 import SessionTimeout from "@component/modals/timeout/SessionTimeout";
+import { Button, ButtonGroup } from "@nextui-org/button";
+import { User } from "@nextui-org/user";
 
 const ProfileAvatar = () => {
 
@@ -60,20 +60,26 @@ const ProfileAvatar = () => {
       {state.status == "complete" ? (
         <>
           {state.user == undefined ? (
-            <Link onClick={(e) => handleClick(e)} href="#">
-              Login with Google
-            </Link>
+            <Button size="md" onClick={(e) => handleClick(e)}>
+              Login
+            </Button>
           ) : (
             <>
               <Popover placement="left-start" showArrow={true}>
                 <PopoverTrigger>
-                  <Avatar className="cursor-pointer" src={state.user.picture} />
+                  <User
+                    name={state.user.name}
+                    description={state.user.email}
+                    className="cursor-pointer"
+                    avatarProps={{
+                      src: state.user.picture
+                    }}
+                  />
                 </PopoverTrigger>
                 <PopoverContent>
                   <div className="px-1 py-2">
-                    <p>Welcome {state.user.name}</p>
                     <ThemeSwitcher />
-                    <Link href="#" onClick={(e) => {
+                    <Button onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       var options = {
@@ -92,7 +98,7 @@ const ProfileAvatar = () => {
                       removeCookie("expires", options);
                       localStorage.clear();
                       window.location.reload();
-                    }}>Logout</Link>
+                    }}>Logout</Button>
                   </div>
                 </PopoverContent>
               </Popover>
