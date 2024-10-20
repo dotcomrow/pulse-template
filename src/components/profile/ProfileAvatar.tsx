@@ -10,15 +10,18 @@ import SessionTimeout from "@component/modals/timeout/SessionTimeout";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { User } from "@nextui-org/user";
 import { Skeleton } from "@nextui-org/skeleton";
+import React, { useEffect } from "react";
 
 const ProfileAvatar = () => {
 
   const state: any = useAppSelector(selectUser);
   const [cookies, setCookie, removeCookie] = useCookies(["token", "expires"]);
+  const [profileAvatar, setProfileAvatar] = React.useState<any | null>(null);
   const STATE = "state";
   let googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth";
   let googleClientId =
     "488218567442-uj3hsd9g13so40fgc89srllfeoiuqeer.apps.googleusercontent.com";
+
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -56,60 +59,57 @@ const ProfileAvatar = () => {
     form.submit();
   };
 
-  return (
-    <>
-      {state.status == "complete" ? (
+  useEffect(() => {
+    console.log(state);
+    if (state.user == undefined && state.status == "complete") {
+      setProfileAvatar(<Button size="md" onClick={(e) => handleClick(e)}>Login</Button>);
+    } else if (state.status == "complete") {
+      setProfileAvatar(
         <>
-          {state.user == undefined ? (
-            <Button size="md" onClick={(e) => handleClick(e)}>
-              Login
-            </Button>
-          ) : (
-            <>
-              <Popover placement="left-start" showArrow={true}>
-                <PopoverTrigger>
-                  <User
-                    name={state.user.name}
-                    description={state.user.email}
-                    className="cursor-pointer"
-                    avatarProps={{
-                      src: state.user.picture
-                    }}
-                  />
-                </PopoverTrigger>
-                <PopoverContent>
-                  <div className="px-1 py-2 flex-col flex columns-1">
-                    <ThemeSwitcher />
-                    <div className="w-full flex justify-center">
-                      <Button onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        var options = {
-                          path: "/",
-                          expires: new Date(Date.now()),
-                          secure: (window.location.protocol === "https:"),
-                          // httpOnly: true,
-                          sameSite: "lax"
-                        } as CookieSetOptions;
-                        if (!window.location.hostname.includes("localhost")) {
-                          options.domain = window.location.hostname;
-                          // options.httpOnly = true;
-                          options.sameSite = "lax";
-                        }
-                        removeCookie("token", options);
-                        removeCookie("expires", options);
-                        localStorage.clear();
-                        window.location.reload();
-                      }}>Logout</Button>
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
-              <SessionTimeout />
-            </>
-          )}
+          <Popover placement="left-start" showArrow={true}>
+            <PopoverTrigger>
+              <User
+                name={state.user.name}
+                description={state.user.email}
+                className="cursor-pointer"
+                avatarProps={{
+                  src: state.user.picture
+                }}
+              />
+            </PopoverTrigger>
+            <PopoverContent>
+              <div className="px-1 py-2 flex-col flex columns-1">
+                <ThemeSwitcher />
+                <div className="w-full flex justify-center">
+                  <Button onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var options = {
+                      path: "/",
+                      expires: new Date(Date.now()),
+                      secure: (window.location.protocol === "https:"),
+                      // httpOnly: true,
+                      sameSite: "lax"
+                    } as CookieSetOptions;
+                    if (!window.location.hostname.includes("localhost")) {
+                      options.domain = window.location.hostname;
+                      // options.httpOnly = true;
+                      options.sameSite = "lax";
+                    }
+                    removeCookie("token", options);
+                    removeCookie("expires", options);
+                    localStorage.clear();
+                    window.location.reload();
+                  }}>Logout</Button>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+          <SessionTimeout />
         </>
-      ) : (
+      );
+    } else {
+      setProfileAvatar(
         <>
           <div className="w-50 flex justify-end flex items-center gap-3">
             <div>
@@ -121,7 +121,13 @@ const ProfileAvatar = () => {
             </div>
           </div>
         </>
-      )}
+      );
+    }
+  }, [state]);
+
+  return (
+    <>
+      {profileAvatar}
     </>
   );
 };

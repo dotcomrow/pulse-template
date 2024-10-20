@@ -9,15 +9,16 @@ export interface UserSliceState {
   status: "idle" | "loading" | "failed" | "complete";
 }
 
-
-
 const initialState: UserSliceState = {
-  user: {},
-  profile: {},
+  user: undefined,
+  profile: undefined,
   status: "idle",
 };
 
-
+export interface UserProfileState {
+  user: any;
+  profile: any;
+}
 
 // If you are not using async thunks you can use the standalone `createSlice`.
 export const userSlice = createAppSlice({
@@ -26,12 +27,13 @@ export const userSlice = createAppSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: (create) => ({
-    initUser: create.reducer((state, action: PayloadAction<any>) => {
-      state.user = action.payload;
-    }),
-    initProfile: create.reducer((state, action: PayloadAction<any>) => {
-      state.profile = action.payload;
+    initUser: create.reducer((state, action: PayloadAction<UserProfileState>) => {
+      state.user = action.payload.user;
+      state.profile = action.payload.profile;
       state.status = "complete";
+    }),
+    setStatus: create.reducer((state, action: PayloadAction<"idle" | "loading" | "failed" | "complete">) => {
+      state.status = action.payload;
     }),
     // increment: create.reducer((state) => {
     //   // Redux Toolkit allows us to write "mutating" logic in reducers. It
@@ -102,16 +104,16 @@ export const { selectUser } = userSlice.selectors;
 //   };
 
 export const initializeUser = (token: string): AppThunk => async (dispatch) => {
-  var accountResponse = await fetchAccountInfo(token);
-  dispatch(userSlice.actions.initUser(accountResponse));
-}
-
-export const initializeProfile = (token: string): AppThunk => async (dispatch) => {
-  // var profileResponse = await AuthenticationUtility.fetchProfileInfo(token);
-  dispatch(userSlice.actions.initProfile());
+  try {
+    dispatch(userSlice.actions.initUser({
+      user: await fetchAccountInfo(token),
+      profile: {},
+    }));
+  } catch (error) {
+    dispatch(userSlice.actions.setStatus("failed"));
+  }
 }
 
 export const setNoToken = (): AppThunk => async (dispatch) => {
-  dispatch(userSlice.actions.initUser(undefined));
-  dispatch(userSlice.actions.initProfile(undefined));
+  dispatch(userSlice.actions.initUser({ user: undefined, profile: undefined }));
 }

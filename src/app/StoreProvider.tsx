@@ -5,7 +5,7 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { Provider } from "react-redux";
-import { initializeUser, initializeProfile, setNoToken } from "@lib/features/user/userSlice";
+import { initializeUser, setNoToken } from "@lib/features/user/userSlice";
 
 interface Props {
   readonly token?: string;
@@ -21,7 +21,6 @@ export const StoreProvider = ({ children, token }: Props) => {
     // call init store methods
     if (token) {
       storeRef.current.dispatch(initializeUser(token));
-      storeRef.current.dispatch(initializeProfile(token));
     } else {
       storeRef.current.dispatch(setNoToken());
     }
