@@ -33,18 +33,11 @@ export default function Header() {
                 </NavbarBrand>
                 <NavbarContent className="hidden sm:flex gap-4" justify="center">
                     {Constants.navLinks.map((item, index) => {
-                        if (pathname === item.link)
-                            return (
-                                <NavbarItem isActive>
-                                    <Link href="#" >{item.title}</Link>
-                                </NavbarItem>
-                            );
-                        else
-                            return (
-                                <NavbarItem>
-                                    <Link href={item.link} >{item.title}</Link>
-                                </NavbarItem>
-                            );
+                        return (
+                            <NavbarItem isActive={pathname === item.link}>
+                                <Link href={pathname === item.link ? "#" : item.link} >{item.title}</Link>
+                            </NavbarItem>
+                        );
                     })}
                 </NavbarContent>
                 <NavbarContent as="div" justify="end" className="w-2/5 flex">
@@ -52,7 +45,7 @@ export default function Header() {
                 </NavbarContent>
                 <NavbarMenu>
                     {Constants.navLinks.map((item, index) => (
-                        <NavbarMenuItem key={`${item}-${index}`} isActive={pathname === item.link}>
+                        <NavbarMenuItem isActive={pathname === item.link}>
                             <Link
                                 className="w-full"
                                 href={item.link}

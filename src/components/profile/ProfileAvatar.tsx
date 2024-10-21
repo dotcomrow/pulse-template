@@ -24,6 +24,7 @@ const ProfileAvatar = () => {
   const state: any = useAppSelector(selectUser);
   const [cookies, setCookie, removeCookie] = useCookies(["token", "expires"]);
   const [profileAvatar, setProfileAvatar] = React.useState<ReactElement | null>(null);
+  const [selectedKey, setSelectedKey] = React.useState<string>("");
   const STATE = "state";
   let googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth";
   let googleClientId =
@@ -75,7 +76,7 @@ const ProfileAvatar = () => {
     } else if (state.status == "complete") {
       setProfileAvatar(
         <>
-          <Dropdown placement="bottom-end">
+          <Dropdown placement="bottom-end" backdrop="blur">
             <DropdownTrigger>
               <User
                 name={state.user.name}
@@ -89,17 +90,17 @@ const ProfileAvatar = () => {
                 }}
               />
             </DropdownTrigger>
-            <DropdownMenu aria-label="Profile Actions" variant="flat">
+            <DropdownMenu aria-label="Profile Actions" variant="flat" selectedKeys={selectedKey}>
               <DropdownItem key="profile" className="h-14 gap-2" isReadOnly>
                 <p className="font-semibold">Signed in as</p>
                 <p className="font-semibold">{state.user.email}</p>
               </DropdownItem>
-              <DropdownItem key="settings"><Link href="/settings">My Settings</Link></DropdownItem>
+              <DropdownItem key="settings"><Link href="/settings" onClick={(e) => {setSelectedKey("settings")}}>My Settings</Link></DropdownItem>
               {/* <DropdownItem key="team_settings">Team Settings</DropdownItem>
               <DropdownItem key="analytics">Analytics</DropdownItem>
               <DropdownItem key="system">System</DropdownItem>
               <DropdownItem key="configurations">Configurations</DropdownItem> */}
-              <DropdownItem key="help_and_feedback"><Link href="/help-feedback">Help & Feedback</Link></DropdownItem>
+              <DropdownItem key="help_and_feedback"><Link href="/help-feedback" onClick={(e) => {setSelectedKey("help_and_feedback")}}>Help & Feedback</Link></DropdownItem>
               <DropdownItem key="logout" color="danger" onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
