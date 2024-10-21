@@ -1,3 +1,4 @@
+"use client";
 
 import ProfileAvatar from "@component/profile/ProfileAvatar";
 import {
@@ -11,8 +12,16 @@ import {
 } from "@nextui-org/navbar";
 import Link from "next/link";
 import { Button, ButtonGroup } from "@nextui-org/button";
+import { usePathname } from 'next/navigation'
 
 export default function Header() {
+
+    const pathname = usePathname();
+    const navigation = [
+        { title: "Home", link: "/" },
+        { title: "How It Works", link: "/how-it-works" },
+        { title: "My Dashboard", link: "/dashboard" }
+    ];
 
     return (
         <header className="header h-10">
@@ -21,28 +30,25 @@ export default function Header() {
                     <h1 className="text-2xl font-bold">SnapSpot</h1>
                 </NavbarBrand>
                 <NavbarContent className="hidden sm:flex gap-4" justify="center">
-                    <NavbarItem>
-                        <Link color="foreground" href="#">
-                            Features
-                        </Link>
-                    </NavbarItem>
-                    <NavbarItem isActive>
-                        <Link href="#" aria-current="page">
-                            Customers
-                        </Link>
-                    </NavbarItem>
-                    <NavbarItem>
-                        <Link color="foreground" href="#">
-                            Integrations
-                        </Link>
-                    </NavbarItem>
+                    {navigation.map((item, index) => {
+                        if (pathname === item.link)
+                            return (
+                                <NavbarItem isActive>
+                                    <Link href="#" >{item.title}</Link>
+                                </NavbarItem>
+                            );
+                        else
+                            return (
+                                <NavbarItem>
+                                    <Link href={item.link} >{item.title}</Link>
+                                </NavbarItem>
+                            );
+                    })}
                 </NavbarContent>
-                <NavbarContent justify="end">
-                    <NavbarItem className="w-2/5 justify-end flex">
-                        <ProfileAvatar />
-                    </NavbarItem>
+                <NavbarContent as="div" justify="end" className="w-2/5 flex">
+                    <ProfileAvatar />
                 </NavbarContent>
             </Navbar>
-        </header>
+        </header >
     );
 };

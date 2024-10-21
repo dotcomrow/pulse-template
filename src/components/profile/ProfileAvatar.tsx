@@ -2,8 +2,6 @@
 
 import { useAppSelector } from "@hook/redux";
 import { selectUser } from "@lib/features/user/userSlice";
-import { ThemeSwitcher } from "@component/theme/ThemeSwitcher";
-import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import { useCookies } from 'react-cookie';
 import { CookieSetOptions } from "universal-cookie";
 import SessionTimeout from "@component/modals/timeout/SessionTimeout";
@@ -11,6 +9,13 @@ import { Button, ButtonGroup } from "@nextui-org/button";
 import { User } from "@nextui-org/user";
 import { Skeleton } from "@nextui-org/skeleton";
 import React, { ReactElement, useEffect } from "react";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownSection,
+  DropdownItem
+} from "@nextui-org/dropdown";
 
 const ProfileAvatar = () => {
 
@@ -67,8 +72,8 @@ const ProfileAvatar = () => {
     } else if (state.status == "complete") {
       setProfileAvatar(
         <>
-          <Popover placement="bottom-end" showArrow={true}>
-            <PopoverTrigger>
+          <Dropdown placement="bottom-end">
+            <DropdownTrigger>
               <User
                 name={state.user.name}
                 description={state.user.email}
@@ -80,41 +85,48 @@ const ProfileAvatar = () => {
                   src: state.user.picture
                 }}
               />
-            </PopoverTrigger>
-            <PopoverContent>
-              <div className="px-1 py-2 flex-col flex columns-1">
-                <ThemeSwitcher />
-                <div className="w-full flex justify-center">
-                  <Button onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    var options = {
-                      path: "/",
-                      expires: new Date(Date.now()),
-                      secure: (window.location.protocol === "https:"),
-                      // httpOnly: true,
-                      sameSite: "lax"
-                    } as CookieSetOptions;
-                    if (!window.location.hostname.includes("localhost")) {
-                      options.domain = window.location.hostname;
-                      // options.httpOnly = true;
-                      options.sameSite = "lax";
-                    }
-                    removeCookie("token", options);
-                    removeCookie("expires", options);
-                    localStorage.clear();
-                    window.location.reload();
-                  }}>Logout</Button>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Profile Actions" variant="flat">
+              <DropdownItem key="profile" className="h-14 gap-2">
+                <p className="font-semibold">Signed in as</p>
+                <p className="font-semibold">{state.user.email}</p>
+              </DropdownItem>
+              <DropdownItem key="settings">My Settings</DropdownItem>
+              {/* <DropdownItem key="team_settings">Team Settings</DropdownItem>
+              <DropdownItem key="analytics">Analytics</DropdownItem>
+              <DropdownItem key="system">System</DropdownItem>
+              <DropdownItem key="configurations">Configurations</DropdownItem> */}
+              <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
+              <DropdownItem key="logout" color="danger" onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                var options = {
+                  path: "/",
+                  expires: new Date(Date.now()),
+                  secure: (window.location.protocol === "https:"),
+                  // httpOnly: true,
+                  sameSite: "lax"
+                } as CookieSetOptions;
+                if (!window.location.hostname.includes("localhost")) {
+                  options.domain = window.location.hostname;
+                  // options.httpOnly = true;
+                  options.sameSite = "lax";
+                }
+                removeCookie("token", options);
+                removeCookie("expires", options);
+                localStorage.clear();
+                window.location.reload();
+              }}>
+                Log Out
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
           <SessionTimeout />
         </>
       );
     } else {
       setProfileAvatar(
-        <div className="w-full flex justify-end flex items-center gap-3">
+        <div className="w-2/5 flex justify-end flex items-center gap-3">
           <div>
             <Skeleton className="flex rounded-full w-10 h-10" />
           </div>

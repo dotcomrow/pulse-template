@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import 'tailwindcss/tailwind.css';
 import { Providers } from "./Providers";
 import { cookies } from 'next/headers'
+import Header from "@component/layout/header/Header";
+import Footer from "@component/layout/footer/Footer";
 
 export const runtime = 'edge';
 
@@ -22,7 +24,11 @@ export default function RootLayout({
       <body>
         <Providers token={token}>
           <div className="flex flex-col h-screen justify-between">
-            {children}
+            <Header />
+            <main className="mb-auto h-80">
+              {children}
+            </main>
+            <Footer />
           </div>
         </Providers>
       </body>
