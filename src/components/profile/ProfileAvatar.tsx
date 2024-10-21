@@ -61,23 +61,25 @@ const ProfileAvatar = () => {
 
   useEffect(() => {
     if (state.user == undefined && state.status == "complete") {
-      setProfileAvatar(<Button size="md" onClick={(e) => handleClick(e)}>Login</Button>);
+      setProfileAvatar(<div className="w-full flex justify-end flex items-center">
+        <Button size="md" onClick={(e) => handleClick(e)}>Login</Button>
+      </div>);
     } else if (state.status == "complete") {
       setProfileAvatar(
         <>
           <Popover placement="bottom-end" showArrow={true}>
             <PopoverTrigger>
-                <User
-                  name={state.user.name}
-                  description={state.user.email}
-                  className="cursor-pointer"
-                  classNames={{
-                    wrapper: "max-sm:hidden"
-                  }}
-                  avatarProps={{
-                    src: state.user.picture
-                  }}
-                />
+              <User
+                name={state.user.name}
+                description={state.user.email}
+                className="cursor-pointer"
+                classNames={{
+                  wrapper: "max-sm:hidden"
+                }}
+                avatarProps={{
+                  src: state.user.picture
+                }}
+              />
             </PopoverTrigger>
             <PopoverContent>
               <div className="px-1 py-2 flex-col flex columns-1">
@@ -112,11 +114,11 @@ const ProfileAvatar = () => {
       );
     } else {
       setProfileAvatar(
-        <div className="w-50 flex justify-end flex items-center gap-3">
+        <div className="w-full flex justify-end flex items-center gap-3">
           <div>
-            <Skeleton className="flex rounded-full w-12 h-12" />
+            <Skeleton className="flex rounded-full w-10 h-10" />
           </div>
-          <div className="w-full flex flex-col gap-2">
+          <div className="w-full flex flex-col gap-2 max-sm:hidden">
             <Skeleton className="h-3 w-3/5 rounded-lg" />
             <Skeleton className="h-3 w-4/5 rounded-lg" />
           </div>

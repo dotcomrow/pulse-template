@@ -38,7 +38,7 @@ export default function Header() {
                     </NavbarItem>
                 </NavbarContent>
                 <NavbarContent justify="end">
-                    <NavbarItem>
+                    <NavbarItem className="w-2/5">
                         <ProfileAvatar />
                     </NavbarItem>
                 </NavbarContent>
