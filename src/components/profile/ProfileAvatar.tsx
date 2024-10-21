@@ -67,14 +67,17 @@ const ProfileAvatar = () => {
         <>
           <Popover placement="bottom-end" showArrow={true}>
             <PopoverTrigger>
-              <User
-                name={state.user.name}
-                description={state.user.email}
-                className="cursor-pointer"
-                avatarProps={{
-                  src: state.user.picture
-                }}
-              />
+                <User
+                  name={state.user.name}
+                  description={state.user.email}
+                  className="cursor-pointer"
+                  classNames={{
+                    wrapper: "max-sm:hidden"
+                  }}
+                  avatarProps={{
+                    src: state.user.picture
+                  }}
+                />
             </PopoverTrigger>
             <PopoverContent>
               <div className="px-1 py-2 flex-col flex columns-1">
