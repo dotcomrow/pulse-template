@@ -6,8 +6,7 @@ import { CookieSetOptions } from "universal-cookie";
 
 const Refresh = () => {
   const [cookies, setCookie] = useCookies(["token", "expires"]);
-  var page = "/";
-
+  
   const processResponse = () => {
     var fragmentString = window.location.hash.substring(1);
     var params: { [key: string]: string } = {};
@@ -33,7 +32,6 @@ const Refresh = () => {
         options.sameSite = "lax";
       }
       localStorage.removeItem("state");
-      page += params.page;
       setCookie("expires", Date.now() + parseInt(params.expires_in) * 1000, options);
       setCookie("token", params.access_token, options);
     } else {
