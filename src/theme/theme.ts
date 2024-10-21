@@ -1,6 +1,6 @@
-import { deviceSize } from "./constants";
-import { colors } from "./themeColors";
-import shadows from "./themeShadows";
+import { deviceSize } from "../utils/constants";
+import { colors } from "./colors";
+import shadows from "./shadows";
 
 export interface ThemeProps {
   theme: {
