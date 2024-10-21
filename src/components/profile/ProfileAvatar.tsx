@@ -16,12 +16,14 @@ import {
   DropdownSection,
   DropdownItem
 } from "@nextui-org/dropdown";
+import { usePathname } from 'next/navigation'
 
 const ProfileAvatar = () => {
 
   const state: any = useAppSelector(selectUser);
   const [cookies, setCookie, removeCookie] = useCookies(["token", "expires"]);
   const [profileAvatar, setProfileAvatar] = React.useState<ReactElement | null>(null);
+  const pathname = usePathname();
   const STATE = "state";
   let googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth";
   let googleClientId =
@@ -41,6 +43,7 @@ const ProfileAvatar = () => {
     }
     var now = new Date();
     localStorage.setItem(STATE, now.getTime().toString());
+    localStorage.setItem("page", pathname);
     var params = {
       client_id: googleClientId,
       redirect_uri: window.location.protocol + "//" + window.location.host + "/authCallback",
