@@ -1,3 +1,10 @@
+
+const navLinks = [
+  { title: "Home", link: "/" },
+  { title: "How It Works", link: "/how-it-works" },
+  { title: "My Dashboard", link: "/dashboard" }
+];
+
 export const deviceSize = {
   xs: 425,
   sm: 768,
@@ -5,10 +12,6 @@ export const deviceSize = {
   lg: 1440,
 };
 
-export const layoutConstant = {
-  headerHeight: "80px",
-  mobileNavHeight: "64px",
-  containerWidth: "1200px",
-  mobileHeaderHeight: "64px",
-  grocerySidenavWidth: "280px",
+export default {
+  navLinks
 };

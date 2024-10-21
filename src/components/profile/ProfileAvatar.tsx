@@ -16,14 +16,14 @@ import {
   DropdownSection,
   DropdownItem
 } from "@nextui-org/dropdown";
-import { usePathname } from 'next/navigation'
+import Link from "next/link";
+import { default as Constants } from "@utils/constants";
 
 const ProfileAvatar = () => {
 
   const state: any = useAppSelector(selectUser);
   const [cookies, setCookie, removeCookie] = useCookies(["token", "expires"]);
   const [profileAvatar, setProfileAvatar] = React.useState<ReactElement | null>(null);
-  const pathname = usePathname();
   const STATE = "state";
   let googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth";
   let googleClientId =
@@ -43,7 +43,7 @@ const ProfileAvatar = () => {
     }
     var now = new Date();
     localStorage.setItem(STATE, now.getTime().toString());
-    localStorage.setItem("page", pathname);
+    localStorage.setItem("page", window.location.pathname);
     var params = {
       client_id: googleClientId,
       redirect_uri: window.location.protocol + "//" + window.location.host + "/authCallback",
@@ -90,16 +90,16 @@ const ProfileAvatar = () => {
               />
             </DropdownTrigger>
             <DropdownMenu aria-label="Profile Actions" variant="flat">
-              <DropdownItem key="profile" className="h-14 gap-2">
+              <DropdownItem key="profile" className="h-14 gap-2" isReadOnly>
                 <p className="font-semibold">Signed in as</p>
                 <p className="font-semibold">{state.user.email}</p>
               </DropdownItem>
-              <DropdownItem key="settings">My Settings</DropdownItem>
+              <DropdownItem key="settings"><Link href="/settings">My Settings</Link></DropdownItem>
               {/* <DropdownItem key="team_settings">Team Settings</DropdownItem>
               <DropdownItem key="analytics">Analytics</DropdownItem>
               <DropdownItem key="system">System</DropdownItem>
               <DropdownItem key="configurations">Configurations</DropdownItem> */}
-              <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
+              <DropdownItem key="help_and_feedback"><Link href="/help-feedback">Help & Feedback</Link></DropdownItem>
               <DropdownItem key="logout" color="danger" onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -118,7 +118,11 @@ const ProfileAvatar = () => {
                 removeCookie("token", options);
                 removeCookie("expires", options);
                 localStorage.clear();
-                window.location.reload();
+                if (Constants.navLinks.find((item) => item.link === window.location.pathname)) {
+                  window.location.reload();
+                } else {
+                  window.location.href = "/";
+                }
               }}>
                 Log Out
               </DropdownItem>

@@ -12,18 +12,12 @@ import {
 } from "@nextui-org/navbar";
 import Link from "next/link";
 import { Button, ButtonGroup } from "@nextui-org/button";
-import { usePathname } from 'next/navigation'
 import React, { useEffect } from "react";
+import { default as Constants } from "@utils/constants";
 
 export default function Header() {
 
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-    const pathname = usePathname();
-    const navLinks = [
-        { title: "Home", link: "/" },
-        { title: "How It Works", link: "/how-it-works" },
-        { title: "My Dashboard", link: "/dashboard" }
-    ];
 
     return (
         <header className="header h-10">
@@ -36,8 +30,8 @@ export default function Header() {
                     <h1 className="text-2xl font-bold">SnapSpot</h1>
                 </NavbarBrand>
                 <NavbarContent className="hidden sm:flex gap-4" justify="center">
-                    {navLinks.map((item, index) => {
-                        if (pathname === item.link)
+                    {Constants.navLinks.map((item, index) => {
+                        if (window.location.pathname === item.link)
                             return (
                                 <NavbarItem isActive>
                                     <Link href="#" >{item.title}</Link>
@@ -55,13 +49,13 @@ export default function Header() {
                     <ProfileAvatar />
                 </NavbarContent>
                 <NavbarMenu>
-                    {navLinks.map((item, index) => (
+                    {Constants.navLinks.map((item, index) => (
                         <NavbarMenuItem key={`${item}-${index}`}>
                             <Link
                                 className="w-full"
                                 href={item.link}
                                 color={
-                                    pathname === item.link ? "blue" : "text"
+                                    window.location.pathname === item.link ? "blue" : "text"
                                 }
                                 onClick={(e) => {
                                     setIsMenuOpen(false);
