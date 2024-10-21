@@ -65,7 +65,7 @@ const ProfileAvatar = () => {
     } else if (state.status == "complete") {
       setProfileAvatar(
         <>
-          <Popover placement="left-start" showArrow={true}>
+          <Popover placement="bottom-end" showArrow={true}>
             <PopoverTrigger>
               <User
                 name={state.user.name}
