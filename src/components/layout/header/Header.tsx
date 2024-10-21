@@ -12,12 +12,14 @@ import {
 } from "@nextui-org/navbar";
 import Link from "next/link";
 import { Button, ButtonGroup } from "@nextui-org/button";
+import { usePathname } from 'next/navigation'
 import React, { useEffect } from "react";
 import { default as Constants } from "@utils/constants";
 
 export default function Header() {
 
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const pathname = usePathname();
 
     return (
         <header className="header h-10">
@@ -31,7 +33,7 @@ export default function Header() {
                 </NavbarBrand>
                 <NavbarContent className="hidden sm:flex gap-4" justify="center">
                     {Constants.navLinks.map((item, index) => {
-                        if (window.location.pathname === item.link)
+                        if (pathname === item.link)
                             return (
                                 <NavbarItem isActive>
                                     <Link href="#" >{item.title}</Link>
@@ -50,13 +52,13 @@ export default function Header() {
                 </NavbarContent>
                 <NavbarMenu>
                     {Constants.navLinks.map((item, index) => (
-                        <NavbarMenuItem key={`${item}-${index}`}>
+                        <NavbarMenuItem key={`${item}-${index}`} isActive={pathname === item.link}>
                             <Link
                                 className="w-full"
                                 href={item.link}
-                                color={
-                                    window.location.pathname === item.link ? "blue" : "text"
-                                }
+                                // color={
+                                //     pathname === item.link ? "blue" : "text"
+                                // }
                                 onClick={(e) => {
                                     setIsMenuOpen(false);
                                 }}
