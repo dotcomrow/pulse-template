@@ -1,6 +1,7 @@
 
 const navLinks = [
   { title: "Home", link: "/home", secure: false },
+  { title: "How It Works", link: "/how-it-works", secure: false },
   { title: "API Docs", link: "/api-docs", secure: false },
 ];
 
