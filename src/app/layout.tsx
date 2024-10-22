@@ -4,6 +4,7 @@ import { Providers } from "./Providers";
 import { cookies } from 'next/headers'
 import Header from "@component/layout/header/Header";
 import Footer from "@component/layout/footer/Footer";
+import "ol/ol.css";
 
 export const runtime = 'edge';
 

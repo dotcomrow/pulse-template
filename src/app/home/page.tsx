@@ -4,6 +4,7 @@ import { getRequestContext } from "@cloudflare/next-on-pages";
 import { default as LogUtility } from "@utils/LoggingUtility";
 import Link from "next/link";
 
+
 export const runtime = 'edge';
 
 export default async function Home() {

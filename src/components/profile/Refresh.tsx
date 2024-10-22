@@ -41,8 +41,7 @@ const Refresh = () => {
 
   useEffect(() => {
     processResponse();
-    window.location.href = localStorage.getItem("page") || "/";
-    localStorage.removeItem("page");
+    window.location.href = "/dashboard";
   }, []);
 
   return (

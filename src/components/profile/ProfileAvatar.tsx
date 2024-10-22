@@ -44,7 +44,6 @@ const ProfileAvatar = () => {
     }
     var now = new Date();
     localStorage.setItem(STATE, now.getTime().toString());
-    localStorage.setItem("page", window.location.pathname);
     var params = {
       client_id: googleClientId,
       redirect_uri: window.location.protocol + "//" + window.location.host + "/authCallback",
