@@ -35,7 +35,10 @@ export default function Header() {
                     {Constants.navLinks.map((item, index) => {
                         return (
                             <NavbarItem isActive={pathname === item.link}>
-                                <Link href={pathname === item.link ? "#" : item.link} >{item.title}</Link>
+                                <Link 
+                                    href={pathname === item.link ? "#" : item.link}
+                                    color={pathname === item.link ? "blue" : "text"}
+                                >{item.title}</Link>
                             </NavbarItem>
                         );
                     })}

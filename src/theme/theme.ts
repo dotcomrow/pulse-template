@@ -1,4 +1,3 @@
-import { deviceSize } from "../utils/constants";
 import { colors } from "./colors";
 import shadows from "./shadows";
 
@@ -16,6 +15,13 @@ export interface ThemeProps {
   };
 }
 
+export const deviceSize = {
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280
+};
+
 const breakpoints: any = Object.keys(deviceSize).map((key) => deviceSize[key] + "px");
 
 breakpoints.sm = breakpoints[0];
@@ -23,4 +29,4 @@ breakpoints.md = breakpoints[1];
 breakpoints.lg = breakpoints[2];
 breakpoints.xl = breakpoints[3];
 
-export const theme = { colors, shadows, breakpoints };
+export const theme = { colors, shadows, screen };

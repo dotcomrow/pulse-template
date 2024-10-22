@@ -73,7 +73,7 @@ const paste = { 50: "#F5F5F5", 100: "#DDFBF1", main: "#4BB4B4" };
 
 const marron = { 50: "#f3f5f9", 100: "#F6F2ED", main: "#BE7374" };
 
-export const blue = {
+const blue = {
   100: "#DBF0FE",
   200: "#B8DEFE",
   300: "#94C9FE",
