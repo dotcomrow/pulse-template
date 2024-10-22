@@ -2,7 +2,7 @@
 export default function HelpFeedback() {
     return (
         <div>
-            test
+            test 2
         </div>
     );
 }
