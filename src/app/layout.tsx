@@ -25,7 +25,7 @@ export default function RootLayout({
         <Providers token={token}>
           <div className="flex flex-col h-screen justify-between">
             <Header />
-            <main className="mb-auto h-80 pt-10">
+            <main className="mb-auto h-80 pt-5 text-foreground bg-background">
               {children}
             </main>
             <Footer />

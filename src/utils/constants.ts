@@ -5,6 +5,12 @@ const navLinks = [
   { title: "My Dashboard", link: "/dashboard" }
 ];
 
+const profileNavLinks = [
+  { title: "My Settings", link: "/settings" },
+  { title: "Help & Feedback", link: "/help-feedback" },
+];
+
 export default {
-  navLinks
+  navLinks,
+  profileNavLinks
 };

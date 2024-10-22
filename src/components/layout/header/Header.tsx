@@ -22,49 +22,48 @@ export default function Header() {
     const pathname = usePathname();
 
     return (
-        <header className="header h-10">
-            <Navbar isBordered maxWidth="full" isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen}>
-                <NavbarMenuToggle
-                    aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-                    className="sm:hidden"
-                />
-                <NavbarBrand>
-                    <h1 className="text-2xl font-bold">SnapSpot</h1>
-                </NavbarBrand>
-                <NavbarContent className="hidden sm:flex gap-4" justify="center">
-                    {Constants.navLinks.map((item, index) => {
-                        return (
-                            <NavbarItem isActive={pathname === item.link}>
-                                <Link 
-                                    href={pathname === item.link ? "#" : item.link}
-                                    color={pathname === item.link ? "blue" : "text"}
-                                >{item.title}</Link>
-                            </NavbarItem>
-                        );
-                    })}
-                </NavbarContent>
-                <NavbarContent as="div" justify="end" className="w-2/5 flex">
-                    <ProfileAvatar />
-                </NavbarContent>
-                <NavbarMenu>
-                    {Constants.navLinks.map((item, index) => (
-                        <NavbarMenuItem isActive={pathname === item.link}>
+        <Navbar isBordered maxWidth="full" isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen}>
+            <NavbarMenuToggle
+                aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+                className="sm:hidden"
+            />
+            <NavbarBrand>
+                <h1 className="text-2xl font-bold">SnapSpot</h1>
+            </NavbarBrand>
+            <NavbarContent className="hidden sm:flex gap-4" justify="center">
+                {Constants.navLinks.map((item, index) => {
+                    return (
+                        <NavbarItem isActive={pathname === item.link}>
                             <Link
-                                className="w-full"
-                                href={item.link}
-                                color={
-                                    pathname === item.link ? "blue" : "text"
-                                }
-                                onClick={(e) => {
-                                    setIsMenuOpen(false);
-                                }}
+                                href={pathname === item.link ? "#" : item.link}
+                                className={pathname === item.link ? "text-primary" : "text"}
                             >
                                 {item.title}
                             </Link>
-                        </NavbarMenuItem>
-                    ))}
-                </NavbarMenu>
-            </Navbar>
-        </header >
+                        </NavbarItem>
+                    );
+                })}
+            </NavbarContent>
+            <NavbarContent as="div" justify="end" className="w-2/5 flex">
+                <ProfileAvatar />
+            </NavbarContent>
+            <NavbarMenu>
+                {Constants.navLinks.map((item, index) => (
+                    <NavbarMenuItem isActive={pathname === item.link}>
+                        <Link
+                            href={item.link}
+                            className={
+                                (pathname === item.link ? "text-primary" : "text") + " w-full"
+                            }
+                            onClick={(e) => {
+                                setIsMenuOpen(false);
+                            }}
+                        >
+                            {item.title}
+                        </Link>
+                    </NavbarMenuItem>
+                ))}
+            </NavbarMenu>
+        </Navbar>
     );
 };
