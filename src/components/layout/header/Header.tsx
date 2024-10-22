@@ -52,9 +52,9 @@ export default function Header() {
                             <Link
                                 className="w-full"
                                 href={item.link}
-                                // color={
-                                //     pathname === item.link ? "blue" : "text"
-                                // }
+                                color={
+                                    pathname === item.link ? "blue" : "text"
+                                }
                                 onClick={(e) => {
                                     setIsMenuOpen(false);
                                 }}
