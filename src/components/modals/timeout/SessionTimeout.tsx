@@ -7,6 +7,7 @@ import { useAppSelector } from "@hook/redux";
 import { selectUser } from "@lib/features/user/userSlice";
 import { useCookies } from 'react-cookie';
 import { CookieSetOptions } from "universal-cookie";
+import { default as Constants } from "@utils/constants";
 
 export default function SessionTimeout() {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -57,7 +58,11 @@ export default function SessionTimeout() {
                     removeCookie("token", options);
                     removeCookie("expires", options);
                     localStorage.clear();
-                    window.location.reload();
+                    if (Constants.navLinks.find((item) => item.link === window.location.pathname)) {
+                        window.location.reload();
+                    } else {
+                        window.location.href = "/";
+                    }
                 }
                 await new Promise(r => setTimeout(r, 1000));
             }
@@ -91,12 +96,15 @@ export default function SessionTimeout() {
     }
 
     return (
-        <Modal isOpen={isOpen} onOpenChange={onOpenChange} isDismissable={false} hideCloseButton={true}>
-            <ModalContent>
-                <ModalBody className="px-10 py-10 flex h-20 justify-center">
-                    Session Expires In: {timer}
-                </ModalBody>
-            </ModalContent>
-        </Modal >
+        <>
+            {/* <Button onClick={onOpen} >Open</Button> */}
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} isDismissable={false} hideCloseButton={true}>
+                <ModalContent>
+                    <ModalBody className="px-10 py-10 flex h-20 justify-center">
+                        <h1 className="text-danger">Session Expires In: </h1>{timer}
+                    </ModalBody>
+                </ModalContent>
+            </Modal >
+        </>
     );
 }
