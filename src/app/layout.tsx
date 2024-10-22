@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 import Header from "@component/layout/header/Header";
 import Footer from "@component/layout/footer/Footer";
 import "ol/ol.css";
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 export const runtime = 'edge';
 
@@ -33,6 +34,7 @@ export default function RootLayout({
           </div>
         </Providers>
       </body>
+      <GoogleAnalytics gaId="G-8MHBD6Z0FG" />
     </html>
   );
 }
