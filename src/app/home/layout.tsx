@@ -7,7 +7,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="px-3 py-3 w-full">
+    <div className="px-3 pt-3 pb-10 w-full h-screen">
       {children}
     </div>
   );

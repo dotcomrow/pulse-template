@@ -18,7 +18,7 @@ export default async function Home() {
   // ]);
 
   return (
-    <div className="columns-2 flex gap-2">
+    <div className="columns-2 flex gap-2 h-full">
       <div className="w-2/3 flex">
         <MapCard />
       </div>

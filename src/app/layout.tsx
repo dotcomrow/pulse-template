@@ -23,15 +23,13 @@ export default function RootLayout({
   var token = cookieStore.get('token')?.value || ''
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen">
+      <body>
         <Providers token={token}>
-          <div className="justify-between">
             <Header />
-            <main className="pt-5 text-foreground bg-background flex-grow">
+            <main className="text-foreground bg-background">
               {children}
             </main>
             <Footer />
-          </div>
         </Providers>
       </body>
       <GoogleAnalytics gaId="G-8MHBD6Z0FG" />
