@@ -142,10 +142,7 @@ export default function MapCard() {
         }, []);
 
         return (
-            <div className="bg-white p-dynamic h-full">
-                <div className="map-container h-full"></div>
-                <div className="popup-container"></div>
-            </div>
+            <></>
         );
     };
 
@@ -155,6 +152,10 @@ export default function MapCard() {
                 <p className="text-tiny uppercase font-bold">Search Address</p>
             </CardHeader>
             <CardBody className="overflow-visible py-2">
+                <div className="bg-white p-dynamic h-full">
+                    <div className="map-container h-full"></div>
+                    <div id="popup-container"></div>
+                </div>
                 <MyMap />
             </CardBody>
         </Card>

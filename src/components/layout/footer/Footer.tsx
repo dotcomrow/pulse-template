@@ -24,7 +24,7 @@ export default function Footer() {
 
     return (
         <footer className="flex fixed bottom-0 left-0 z-20 w-full p-1 bg-white border-t border-gray-200 shadow items-center justify-between dark:bg-gray-800 dark:border-gray-600">
-            <span className="flex text-sm text-gray-500 sm:text-center dark:text-gray-400">&copy; {new Date().getFullYear()}{" "} Suncoast Systems. All Rights Reserved.</span>
+            <span className="flex text-sm text-gray-500 sm:text-center dark:text-gray-400">&copy; {new Date().getFullYear()}{" "} Suncoast Systems.</span>
             <div className="md:flex hidden">
                 {linksContent}
             </div>
