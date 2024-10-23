@@ -11,32 +11,31 @@ import Map from "ol/Map";
 import TileLayer from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
-import { createRoot } from 'react-dom/client';
-import React, { ReactElement, useEffect } from "react";
+// import { createRoot } from 'react-dom/client';
+import React, { ReactElement, Suspense, use, useEffect } from "react";
 import { useGeographic } from "ol/proj.js";
 
-export default function MapCard() {
+export default function MapCard({ initialPosition }: { initialPosition: { coords: { latitude: number, longitude: number } } }) {
 
+    // const buildPopup = () => {
+    //     const container = document.getElementById('popup-container');
+    //     if (container) {
+    //         const root = createRoot(container);
+    //         root.render(`<div class="popup">
+    //             <h3 className="header"></h3>
+    //             <p className="description"></p>
+    //             <p><a href="#" className="moreInfo">More info</a></p>
+    //           </div>`);
+    //         return container;
+    //     } else {
+    //         console.error('Popup container not found');
+    //     }
+    // };
 
-    const buildPopup = () => {
-        const container = document.getElementById('popup-container');
-        if (container) {
-            const root = createRoot(container);
-            root.render(`<div class="popup">
-                <h3 className="header"></h3>
-                <p className="description"></p>
-                <p><a href="#" className="moreInfo">More info</a></p>
-              </div>`);
-            return container;
-        } else {
-            console.error('Popup container not found');
-        }
-    };
-
-    const constructMap = (pos) => {
+    const constructMap = async (pos: any) => {
         const map = new Map({
             // the map will be created using the 'map-root' ref
-            target: document.querySelector(".map-container") as HTMLElement,
+            target: "map-container",
             layers: [
                 // adding a background tiled layer
                 new TileLayer({
@@ -52,12 +51,12 @@ export default function MapCard() {
                 center: [pos.coords.longitude, pos.coords.latitude],
                 constrainResolution: true,
             }),
-            overlays: [
-                new Overlay({
-                    element: buildPopup(),
-                    autoPan: true,
-                }),
-            ],
+            // overlays: [
+            //     new Overlay({
+            //         element: buildPopup(),
+            //         autoPan: true,
+            //     }),
+            // ],
         });
     };
 
@@ -114,35 +113,43 @@ export default function MapCard() {
     //     }
     // };
 
-    const MyMap = () => {
+    useEffect(() => {
+        useGeographic();
+        constructMap(initialPosition);
+    }, []);
 
-        useEffect(() => {
-            useGeographic();
+    const MapComponent = async ({ initialPosition }: { initialPosition: { coords: { latitude: number, longitude: number } } }) => {
+        
+        // useEffect(() => {
+        //     useGeographic();
 
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    var map = constructMap(pos);
-                },
-                (err) => {
-                    console.warn(`ERROR(${err.code}): ${err.message}`);
-                    var map = constructMap({
-                        coords: {
-                            latitude: 51.505,
-                            longitude: -0.09,
-                        },
-                    });
-                },
-                {
-                    enableHighAccuracy: false,
-                    timeout: 5000,
-                    maximumAge: 0,
-                }
-            );
+        //     navigator.geolocation.getCurrentPosition(
+        //         (pos) => {
+        //             var map = constructMap(pos);
+        //         },
+        //         (err) => {
+        //             console.warn(`ERROR(${err.code}): ${err.message}`);
+        //             var map = constructMap({
+        //                 coords: {
+        //                     latitude: 51.505,
+        //                     longitude: -0.09,
+        //                 },
+        //             });
+        //         },
+        //         {
+        //             enableHighAccuracy: false,
+        //             timeout: 5000,
+        //             maximumAge: 0,
+        //         }
+        //     );
 
-        }, []);
+        // }, []);
 
         return (
-            <></>
+            <>
+                <div id="map-container" className="h-full"></div>
+                <div id="popup-container"></div>
+            </>
         );
     };
 
@@ -153,10 +160,8 @@ export default function MapCard() {
             </CardHeader>
             <CardBody className="overflow-visible py-2">
                 <div className="bg-white p-dynamic h-full">
-                    <div className="map-container h-full"></div>
-                    <div id="popup-container"></div>
+                    <MapComponent initialPosition={initialPosition} />
                 </div>
-                <MyMap />
             </CardBody>
         </Card>
     )

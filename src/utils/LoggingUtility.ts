@@ -4,11 +4,11 @@ import { GCPAccessToken } from "npm-gcp-token";
 import { getRequestContext } from "@cloudflare/next-on-pages";
 
 interface CloudflareEnv {
-  ENVIRONMENT,
-  GCP_LOGGING_PROJECT_ID,
-  GCP_LOGGING_CREDENTIALS,
-  LOG_NAME,
-  VERSION,
+  ENVIRONMENT: string,
+  GCP_LOGGING_PROJECT_ID: string,
+  GCP_LOGGING_CREDENTIALS: string,
+  LOG_NAME: string,
+  VERSION: string,
 }
 export default {
   async buildLogContext() {
@@ -22,7 +22,7 @@ export default {
     }
     return context;
   },
-  async logEntry(context, entries) {
+  async logEntry(context: any, entries: any) {
     var finalEntries: any[] = [];
     for (var entry of entries) {
       entry.spanId = context.SpanId;

@@ -15,7 +15,10 @@ module.exports = {
   //   // Available on both server and client
   //   theme: "DEFAULT",
   // },
-  webpack: (config, options) => {
+  // experimental: {
+  //   ppr: 'incremental',
+  // },
+  webpack: (config: any) => {
 
     config.mode = "production";
     // config.optimization = {
@@ -24,15 +27,15 @@ module.exports = {
     config.performance = {
       hints: false,
     };
-    config.output = {
-      library: {
-        type: "module",
-      }
-    };
-    config.module.rules.push({
-        test: /\.([cm]?ts|tsx)$/,
-        loader: "ts-loader",
-      });
+    // config.output = {
+    //   library: {
+    //     type: "module",
+    //   }
+    // };
+    // config.module.rules.push({
+    //     test: /\.([cm]?ts|tsx)$/,
+    //     loader: "ts-loader",
+    //   });
 
     config.plugins.push(
       new webpack.ProvidePlugin({
@@ -40,14 +43,14 @@ module.exports = {
       }),
     );
     config.experiments = {
-      outputModule: true,
-      layers: true,
+        // outputModule: true,
+        layers: true,
+      // ppr: true
     };
 
     config.resolve.fallback = {
       stream: require.resolve("stream-browserify"),
       path: false,
-      stream: false,
       crypto: require.resolve("crypto-browserify"),
       // os: require.resolve("os-browserify/browser"),
       // zlib: require.resolve("browserify-zlib"),

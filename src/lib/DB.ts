@@ -4,7 +4,7 @@ import { drizzle } from "drizzle-orm/d1";
 import { sqliteTable, text, numeric } from "drizzle-orm/sqlite-core";
 
 export default {
-  databases: (env) => {
+  databases: (env: any) => {
     return {
       CACHE: drizzle(env.CACHE),
     };
@@ -26,7 +26,7 @@ export default {
     })
   },
 
-  init: async (env) => {
+  init: async (env: any) => {
     try {
       await env.CACHE
         .prepare(

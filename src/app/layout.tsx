@@ -14,12 +14,12 @@ export const metadata: Metadata = {
   description: "Generated with create app",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   var token = cookieStore.get('token')?.value || ''
   return (
     <html lang="en">

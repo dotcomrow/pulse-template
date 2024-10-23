@@ -31,7 +31,7 @@ const ProfileAvatar = () => {
     "488218567442-uj3hsd9g13so40fgc89srllfeoiuqeer.apps.googleusercontent.com";
 
 
-  const handleClick = (e) => {
+  const handleClick = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -44,7 +44,7 @@ const ProfileAvatar = () => {
     }
     var now = new Date();
     localStorage.setItem(STATE, now.getTime().toString());
-    var params = {
+    var params: { [key: string]: string | null } = {
       client_id: googleClientId,
       redirect_uri: window.location.protocol + "//" + window.location.host + "/authCallback",
       scope: "email profile openid",
@@ -58,7 +58,7 @@ const ProfileAvatar = () => {
       var input = document.createElement("input");
       input.setAttribute("type", "hidden");
       input.setAttribute("name", p);
-      input.setAttribute("value", params[p]);
+      input.setAttribute("value", params[p] || "");
       form.appendChild(input);
     }
 

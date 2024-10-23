@@ -4,7 +4,7 @@ import { default as DB } from "@lib/DB";
 import { eq } from "drizzle-orm";
 import { getRequestContext } from "@cloudflare/next-on-pages";
 
-const fetchProfile = async (token) => {
+const fetchProfile = async (token: string) => {
   const googleProfileUrl =
     "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=" +
     token;
@@ -24,7 +24,7 @@ const fetchProfile = async (token) => {
   return accountResponse;
 }
 
-export default async function fetchAccountInfo(token): Promise<any> {
+export default async function fetchAccountInfo(token: string): Promise<any> {
   var res: { [x: string]: any; }[] = [];
   try {
     res = await DB.databases(getRequestContext().env).CACHE
