@@ -4,7 +4,6 @@ import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { headers } from 'next/headers'
 
 export const runtime = 'edge';
-// export const experimental_ppr = true
 
 export default async function Home() {
 

@@ -12,10 +12,79 @@ import TileLayer from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 // import { createRoot } from 'react-dom/client';
-import React, { ReactElement, Suspense, use, useEffect } from "react";
+import React, { ReactElement, Suspense, useEffect, useMemo } from "react";
 import { useGeographic } from "ol/proj.js";
+import { Image } from "@nextui-org/image";
+import { Autocomplete, AutocompleteSection, AutocompleteItem } from "@nextui-org/autocomplete";
+import { findAddress } from "./findAddress";
 
 export default function MapCard({ initialPosition }: { initialPosition: { coords: { latitude: number, longitude: number } } }) {
+
+    const [mounted, setMounted] = React.useState(false);
+    const [items, setItems] = React.useState<any[]>([]);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [query, setQuery] = React.useState("");
+    const map = useMemo(() => {
+        if (mounted) {
+            var mp = new Map({
+                // the map will be created using the 'map-root' ref
+                target: "map-container",
+                layers: [
+                    // adding a background tiled layer
+                    new TileLayer({
+                        source: new OSM(), // tiles are served by OpenStreetMap
+                    }),
+                    // buildVectorLayer()
+                ],
+                // the map view will initially show the whole world
+                view: new View({
+                    zoom: 17,
+                    maxZoom: 18,
+                    minZoom: 16,
+                    constrainResolution: true,
+                }),
+                // overlays: [
+                //     new Overlay({
+                //         element: buildPopup(),
+                //         autoPan: true,
+                //     }),
+                // ],
+            });
+            return mp;
+        }
+    }, [mounted]);
+
+    const SearchIcon = ({
+        size = 24,
+        strokeWidth = 1.5,
+        ...props
+    }) => (
+        <svg
+            aria-hidden="true"
+            fill="none"
+            focusable="false"
+            height={size}
+            role="presentation"
+            viewBox="0 0 24 24"
+            width={size}
+            {...props}
+        >
+            <path
+                d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={strokeWidth}
+            />
+            <path
+                d="M22 22L20 20"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={strokeWidth}
+            />
+        </svg>
+    );
 
     // const buildPopup = () => {
     //     const container = document.getElementById('popup-container');
@@ -32,33 +101,6 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
     //     }
     // };
 
-    const constructMap = async (pos: any) => {
-        const map = new Map({
-            // the map will be created using the 'map-root' ref
-            target: "map-container",
-            layers: [
-                // adding a background tiled layer
-                new TileLayer({
-                    source: new OSM(), // tiles are served by OpenStreetMap
-                }),
-                // buildVectorLayer()
-            ],
-            // the map view will initially show the whole world
-            view: new View({
-                zoom: 10,
-                maxZoom: 14,
-                minZoom: 8,
-                center: [pos.coords.longitude, pos.coords.latitude],
-                constrainResolution: true,
-            }),
-            // overlays: [
-            //     new Overlay({
-            //         element: buildPopup(),
-            //         autoPan: true,
-            //     }),
-            // ],
-        });
-    };
 
     // const buildVectorLayer = () => {
     //     var params = JSON.parse(localStorage.getItem('user-token'));
@@ -114,53 +156,104 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
     // };
 
     useEffect(() => {
+        if (map) {
+            const mapSize = map?.getSize();
+            if (mapSize) {
+                map?.getView().centerOn([initialPosition.coords.longitude, initialPosition.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+            }
+        }
+    }, [mounted]);
+
+    useEffect(() => {
         useGeographic();
-        constructMap(initialPosition);
+        setMounted(true);
     }, []);
-
-    const MapComponent = async ({ initialPosition }: { initialPosition: { coords: { latitude: number, longitude: number } } }) => {
-        
-        // useEffect(() => {
-        //     useGeographic();
-
-        //     navigator.geolocation.getCurrentPosition(
-        //         (pos) => {
-        //             var map = constructMap(pos);
-        //         },
-        //         (err) => {
-        //             console.warn(`ERROR(${err.code}): ${err.message}`);
-        //             var map = constructMap({
-        //                 coords: {
-        //                     latitude: 51.505,
-        //                     longitude: -0.09,
-        //                 },
-        //             });
-        //         },
-        //         {
-        //             enableHighAccuracy: false,
-        //             timeout: 5000,
-        //             maximumAge: 0,
-        //         }
-        //     );
-
-        // }, []);
-
-        return (
-            <>
-                <div id="map-container" className="h-full"></div>
-                <div id="popup-container"></div>
-            </>
-        );
-    };
 
     return (
         <Card className="py-4 mb-auto h-full w-full">
             <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                <p className="text-tiny uppercase font-bold">Search Address</p>
+                <Image src="/assets/images/location.svg" width={40} height={40} />
+                <Autocomplete
+                    classNames={{
+                        base: "w-full",
+                        listboxWrapper: "max-h-[320px]",
+                        selectorButton: "text-default-500"
+                    }}
+                    inputProps={{
+                        classNames: {
+                            input: "ml-1",
+                            inputWrapper: "h-[48px]",
+                        },
+                    }}
+                    listboxProps={{
+                        hideSelectedIcon: true,
+                        itemClasses: {
+                            base: [
+                                "rounded-medium",
+                                "text-default-500",
+                                "transition-opacity",
+                                "data-[hover=true]:text-foreground",
+                                "dark:data-[hover=true]:bg-default-50",
+                                "data-[pressed=true]:opacity-70",
+                                "data-[hover=true]:bg-default-200",
+                                "data-[selectable=true]:focus:bg-default-100",
+                                "data-[focus-visible=true]:ring-default-500",
+                            ],
+                        },
+                    }}
+                    aria-label="Enter a location"
+                    placeholder="Enter a location"
+                    popoverProps={{
+                        offset: 10,
+                        classNames: {
+                            base: "rounded-large",
+                            content: "p-1 border-small border-default-100 bg-background",
+                        },
+                    }}
+                    startContent={<SearchIcon className="text-default-400" strokeWidth={2.5} size={20} />}
+                    radius="full"
+                    variant="bordered"
+                    isLoading={isLoading}
+                    items={items}
+                    onSelectionChange={(place_id) => {
+                        const selectedItem = items.find(item => item.place_id == place_id);
+                        if (selectedItem) {
+                            const mapSize = map?.getSize();
+                            if (mapSize) {
+                                map?.getView().centerOn([parseFloat(selectedItem.lon), parseFloat(selectedItem.lat)], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+                            }
+                        }
+                        setItems([]);
+                    }}
+                    onInputChange={(value) => {
+                        setQuery(value);
+                    }}
+                    onKeyDown={async (e) => {
+                        if (e.key === "Enter") {
+                            setIsLoading(true);
+                            const results = await findAddress(query);
+                            setItems(Array.isArray(results) ? results : []);
+                            setIsLoading(false);
+                        }
+                    }}
+                    menuTrigger="manual"
+                    onOpenChange={(isOpen) => {
+                        if (!isOpen) {
+                            setItems([]);
+                        }
+                    }}
+                >
+                    {(item) => (
+                        <AutocompleteItem key={item.place_id} className="capitalize" textValue={item.display_name}>
+                            {item.display_name}
+                        </AutocompleteItem>
+                    )}
+                </Autocomplete>
             </CardHeader>
             <CardBody className="overflow-visible py-2">
                 <div className="bg-white p-dynamic h-full">
-                    <MapComponent initialPosition={initialPosition} />
+                    <div id="map-container" className="h-full"></div>
+                    <div id="popup-container"></div>
                 </div>
             </CardBody>
         </Card>
