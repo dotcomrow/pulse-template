@@ -17,6 +17,10 @@ import { useGeographic } from "ol/proj.js";
 import { Image } from "@nextui-org/image";
 import { Autocomplete, AutocompleteSection, AutocompleteItem } from "@nextui-org/autocomplete";
 import { findAddress } from "./findAddress";
+import { Input } from "@nextui-org/input";
+import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
+import { Button, ButtonGroup } from "@nextui-org/button";
+import Link from "next/link";
 
 export default function MapCard({ initialPosition }: { initialPosition: { coords: { latitude: number, longitude: number } } }) {
 
@@ -172,49 +176,46 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
     return (
         <Card className="py-4 mb-auto h-full w-full">
             <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                <Image src="/assets/images/location.svg" width={40} height={40} />
-                <Autocomplete
-                    classNames={{
-                        base: "w-full",
-                        listboxWrapper: "max-h-[320px]",
-                        selectorButton: "text-default-500"
-                    }}
-                    inputProps={{
-                        classNames: {
-                            input: "ml-1",
-                            inputWrapper: "h-[48px]",
-                        },
-                    }}
-                    listboxProps={{
-                        hideSelectedIcon: true,
-                        itemClasses: {
-                            base: [
-                                "rounded-medium",
-                                "text-default-500",
-                                "transition-opacity",
-                                "data-[hover=true]:text-foreground",
-                                "dark:data-[hover=true]:bg-default-50",
-                                "data-[pressed=true]:opacity-70",
-                                "data-[hover=true]:bg-default-200",
-                                "data-[selectable=true]:focus:bg-default-100",
-                                "data-[focus-visible=true]:ring-default-500",
-                            ],
-                        },
-                    }}
-                    aria-label="Enter a location"
+                <Image src="/assets/images/icons/location.svg" width={40} height={40} />
+
+
+                <Input
+                    type="text"
                     placeholder="Enter a location"
-                    popoverProps={{
-                        offset: 10,
-                        classNames: {
-                            base: "rounded-large",
-                            content: "p-1 border-small border-default-100 bg-background",
-                        },
+                    labelPlacement="outside"
+                    fullWidth={true}
+                    onChange={(e) => {
+                        setQuery(e.target.value);
                     }}
-                    startContent={<SearchIcon className="text-default-400" strokeWidth={2.5} size={20} />}
-                    radius="full"
-                    variant="bordered"
-                    isLoading={isLoading}
-                    items={items}
+                />
+                <Popover placement="bottom-start">
+                    <PopoverTrigger>
+                        <Button variant="flat" className="capitalize" onClick={async (e) => {
+                            setIsLoading(true);
+                            const results = await findAddress(query);
+                            setItems(Array.isArray(results) ? results : []);
+                            setIsLoading(false);
+                        }}>
+                            Search
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[240px]">
+                        {items.map((item) => (
+                            <Link href="#" onClick={(e: any) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const mapSize = map?.getSize();
+                                if (mapSize) {
+                                    map?.getView().centerOn([parseFloat(item.lon), parseFloat(item.lat)], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+                                }
+                                setItems([]);
+                            }}>{item.display_name}</Link>
+                        ))}
+                    </PopoverContent>
+                </Popover>
+
+{/* 
+
                     onSelectionChange={(place_id) => {
                         const selectedItem = items.find(item => item.place_id == place_id);
                         if (selectedItem) {
@@ -234,13 +235,27 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                             const results = await findAddress(query);
                             setItems(Array.isArray(results) ? results : []);
                             setIsLoading(false);
+                            var keyboardEvent = document.createEvent('KeyboardEvent');
+                            var initMethod = typeof keyboardEvent.initKeyboardEvent !== 'undefined' ? 'initKeyboardEvent' : 'initKeyEvent';
+
+                            (keyboardEvent as any)[initMethod](
+                                'keydown', // event type: keydown, keyup, keypress
+                                true, // bubbles
+                                true, // cancelable
+                                window, // view: should be window
+                                false, // ctrlKey
+                                true, // altKey
+                                false, // shiftKey
+                                false, // metaKey
+                                25, // keyCode: unsigned long - the virtual key code, else 0
+                                0, // charCode: unsigned long - the Unicode character associated with the depressed key, else 0
+                            );
+                            document.dispatchEvent(keyboardEvent);
                         }
                     }}
                     menuTrigger="manual"
-                    onOpenChange={(isOpen) => {
-                        if (!isOpen) {
-                            setItems([]);
-                        }
+                    onClear={() => {
+                        setItems([]);
                     }}
                 >
                     {(item) => (
@@ -248,7 +263,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                             {item.display_name}
                         </AutocompleteItem>
                     )}
-                </Autocomplete>
+                </Autocomplete> */}
             </CardHeader>
             <CardBody className="overflow-visible py-2">
                 <div className="bg-white p-dynamic h-full">
