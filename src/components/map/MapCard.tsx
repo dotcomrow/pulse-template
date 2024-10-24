@@ -28,6 +28,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
     const [items, setItems] = React.useState<any[]>([]);
     const [isLoading, setIsLoading] = React.useState(false);
     const [query, setQuery] = React.useState("");
+    const [open, setOpen] = React.useState(false);
     const map = useMemo(() => {
         if (mounted) {
             var mp = new Map({
@@ -176,25 +177,37 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
     return (
         <Card className="py-4 mb-auto h-full w-full">
             <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                <Image src="/assets/images/icons/location.svg" width={40} height={40} />
-
-
+                <Link href="#" onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        const mapSize = map?.getSize();
+                        if (mapSize) {
+                            map?.getView().centerOn([position.coords.longitude, position.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+                        }
+                    }, (error) => {
+                        console.error(error);
+                    });
+                }}><Image src="/assets/images/icons/location.svg" width={40} height={40} /></Link>
                 <Input
                     type="text"
                     placeholder="Enter a location"
                     labelPlacement="outside"
-                    fullWidth={true}
+                    className="w-50"
                     onChange={(e) => {
                         setQuery(e.target.value);
                     }}
+                    id="search"
                 />
-                <Popover placement="bottom-start">
+                <Popover placement="bottom-start" isOpen={open}>
                     <PopoverTrigger>
-                        <Button variant="flat" className="capitalize" onClick={async (e) => {
+                        <Button variant="flat" className="capitalize" endContent={<SearchIcon />} isLoading={isLoading} onClick={async (e) => {
                             setIsLoading(true);
                             const results = await findAddress(query);
                             setItems(Array.isArray(results) ? results : []);
                             setIsLoading(false);
+                            setOpen(true);
+                            document.getElementById('search')?.blur();
                         }}>
                             Search
                         </Button>
@@ -209,61 +222,11 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                                     map?.getView().centerOn([parseFloat(item.lon), parseFloat(item.lat)], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
                                 }
                                 setItems([]);
+                                setOpen(false);
                             }}>{item.display_name}</Link>
                         ))}
                     </PopoverContent>
                 </Popover>
-
-{/* 
-
-                    onSelectionChange={(place_id) => {
-                        const selectedItem = items.find(item => item.place_id == place_id);
-                        if (selectedItem) {
-                            const mapSize = map?.getSize();
-                            if (mapSize) {
-                                map?.getView().centerOn([parseFloat(selectedItem.lon), parseFloat(selectedItem.lat)], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
-                            }
-                        }
-                        setItems([]);
-                    }}
-                    onInputChange={(value) => {
-                        setQuery(value);
-                    }}
-                    onKeyDown={async (e) => {
-                        if (e.key === "Enter") {
-                            setIsLoading(true);
-                            const results = await findAddress(query);
-                            setItems(Array.isArray(results) ? results : []);
-                            setIsLoading(false);
-                            var keyboardEvent = document.createEvent('KeyboardEvent');
-                            var initMethod = typeof keyboardEvent.initKeyboardEvent !== 'undefined' ? 'initKeyboardEvent' : 'initKeyEvent';
-
-                            (keyboardEvent as any)[initMethod](
-                                'keydown', // event type: keydown, keyup, keypress
-                                true, // bubbles
-                                true, // cancelable
-                                window, // view: should be window
-                                false, // ctrlKey
-                                true, // altKey
-                                false, // shiftKey
-                                false, // metaKey
-                                25, // keyCode: unsigned long - the virtual key code, else 0
-                                0, // charCode: unsigned long - the Unicode character associated with the depressed key, else 0
-                            );
-                            document.dispatchEvent(keyboardEvent);
-                        }
-                    }}
-                    menuTrigger="manual"
-                    onClear={() => {
-                        setItems([]);
-                    }}
-                >
-                    {(item) => (
-                        <AutocompleteItem key={item.place_id} className="capitalize" textValue={item.display_name}>
-                            {item.display_name}
-                        </AutocompleteItem>
-                    )}
-                </Autocomplete> */}
             </CardHeader>
             <CardBody className="overflow-visible py-2">
                 <div className="bg-white p-dynamic h-full">
