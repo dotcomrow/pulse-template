@@ -28,14 +28,14 @@ export default async function fetchPictureRequests(bbox: BoundingBox): Promise<a
             `,
             }),
         })
-        await LoggingUtility.logEntry(await LoggingUtility.buildLogContext(),
-            {
-                severity: "ERROR",
-                jsonPayload: {
-                    message: "Failed to fetch picture requests using service binding, calling direct",
-                },
-            },
-        );
+        // await LoggingUtility.logEntry(await LoggingUtility.buildLogContext(),
+        //     {
+        //         severity: "ERROR",
+        //         jsonPayload: {
+        //             message: "Failed to fetch picture requests using service binding, calling direct",
+        //         },
+        //     },
+        // );
         if (res.status !== 200) {
             throw new Error("Failed to fetch picture requests using service binding, calling direct");
         }
