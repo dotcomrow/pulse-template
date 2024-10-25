@@ -204,7 +204,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
     return (
         <Card className="py-4 mb-auto h-full w-full">
             <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                <h2 className="text-2xl font-bold pb-1">Activity Near You</h2>
+                <h2 className="text-2xl font-bold pb-3">Activity Near You</h2>
                 <div className="flex-row items-center w-full flex">
                     <div className="w-1/8">
                         <Tooltip content="Click this icon to allow us to request access and show your device location on map">
