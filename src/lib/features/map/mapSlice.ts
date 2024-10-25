@@ -5,12 +5,12 @@ import fetchPictureRequests from "services/map/FetchPictureRequests";
 
 export interface MapSliceState {
     pictureRequests: Array<any>;
-    status: "idle" | "loading" | "failed" | "complete";
+    pictureRequestStatus: "idle" | "loading" | "failed" | "complete";
 }
 
 const initialState: MapSliceState = {
     pictureRequests: [],
-    status: "idle",
+    pictureRequestStatus: "idle",
 };
 
 export interface BoundingBox {
@@ -28,13 +28,14 @@ export const mapSlice = createAppSlice({
     reducers: (create) => ({
         initPictureRequests: create.reducer((state, action: PayloadAction<Array<any>>) => {
             state.pictureRequests = action.payload;
-            state.status = "complete";
+            state.pictureRequestStatus = "complete";
         }),
-        setStatus: create.reducer((state, action: PayloadAction<"idle" | "loading" | "failed" | "complete">) => {
-            state.status = action.payload;
+        setPictureRequestStatus: create.reducer((state, action: PayloadAction<"idle" | "loading" | "failed" | "complete">) => {
+            state.pictureRequestStatus = action.payload;
         }),
     }),
     selectors: {
+        selectPictureRequestStatus: (state) => state.pictureRequestStatus,
         selectPictureRequests: (state) => {
             const returnObj = {
                 type: "FeatureCollection",
@@ -56,7 +57,7 @@ export const mapSlice = createAppSlice({
     },
 });
 
-export const { selectPictureRequests } = mapSlice.selectors;
+export const { selectPictureRequests, selectPictureRequestStatus } = mapSlice.selectors;
 
 export const loadPictureRequests = (bbox: BoundingBox): AppThunk => async (dispatch) => {
     try {
@@ -65,6 +66,6 @@ export const loadPictureRequests = (bbox: BoundingBox): AppThunk => async (dispa
             dispatch(mapSlice.actions.initPictureRequests(pictureRequests.data.fetchPictureRequestsByBoundingBox));
         });
     } catch (error) {
-      dispatch(mapSlice.actions.setStatus("failed"));
+      dispatch(mapSlice.actions.setPictureRequestStatus("failed"));
     }
   }

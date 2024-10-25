@@ -24,7 +24,7 @@ import Link from "next/link";
 import { Tooltip } from "@nextui-org/tooltip";
 import "@styles/map/spinner.css"
 import { loadPictureRequests } from "@lib/features/map/mapSlice";
-import { selectPictureRequests } from "@lib/features/map/mapSlice";
+import { selectPictureRequests, selectPictureRequestStatus } from "@lib/features/map/mapSlice";
 import { useAppSelector, useAppStore, useAppDispatch } from "@hook/redux";
 import { debounce } from 'lodash';
 
@@ -36,6 +36,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
     const [query, setQuery] = React.useState("");
     const [open, setOpen] = React.useState(false);
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
+    const pictureRequestStatus: any = useAppSelector(selectPictureRequestStatus);
     const store = useAppStore();
 
     const vectorLayer = new VectorLayer({
@@ -145,8 +146,8 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
             map.on('loadend', function () {
                 map.getTargetElement().classList.remove('spinner');
             });
-            
             map.on('moveend', debounce(() => {
+                map.getTargetElement().classList.add('spinner');
                 const mapSize = map?.getSize();
                 const extent = map?.getView().calculateExtent(mapSize);
                 store.dispatch(loadPictureRequests({
@@ -208,13 +209,14 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
     // };
 
     useEffect(() => {
-        if (pictureRequestsState.status === "complete") {
+        if (pictureRequestStatus === "complete") {
             const features = new GeoJSON().readFeatures(pictureRequestsState.pictureRequests);
             const source = vectorLayer.getSource();
             if (source) {
                 source.clear();
                 source.addFeatures(features);
             }
+            map?.getTargetElement().classList.remove('spinner');
         }
     }, [pictureRequestsState]);
 
