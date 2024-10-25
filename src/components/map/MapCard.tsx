@@ -210,7 +210,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
 
     useEffect(() => {
         if (pictureRequestStatus === "complete") {
-            const features = new GeoJSON().readFeatures(pictureRequestsState.pictureRequests);
+            const features = new GeoJSON().readFeatures(pictureRequestsState);
             const source = vectorLayer.getSource();
             if (source) {
                 source.clear();
