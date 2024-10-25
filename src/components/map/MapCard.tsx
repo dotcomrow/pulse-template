@@ -9,13 +9,13 @@ import Overlay from "ol/Overlay";
 import View from "ol/View";
 import Map from "ol/Map";
 import TileLayer from "ol/layer/Tile";
+import { transformExtent } from "ol/proj.js";
 import OSM from "ol/source/OSM";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 // import { createRoot } from 'react-dom/client';
-import React, { ReactElement, Suspense, useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useGeographic } from "ol/proj.js";
 import { Image } from "@nextui-org/image";
-import { Autocomplete, AutocompleteSection, AutocompleteItem } from "@nextui-org/autocomplete";
 import { findAddress } from "./findAddress";
 import { Input } from "@nextui-org/input";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
@@ -45,6 +45,8 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                 type: "FeatureCollection",
                 features: []
             }),
+            strategy: bbox,
+            overlaps: false,
         }),
         style: new Style({
             fill: new Fill({
@@ -93,7 +95,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
             map.on('moveend', debounce(() => {
                 map.getTargetElement().classList.add('spinner');
                 const mapSize = map?.getSize();
-                const extent = map?.getView().calculateExtent(mapSize);
+                const extent = transformExtent(map?.getView().calculateExtent(mapSize), 'EPSG:3857', 'EPSG:4326');
                 store.dispatch(loadPictureRequests({
                     minLat: extent[1],
                     minLng: extent[0],
