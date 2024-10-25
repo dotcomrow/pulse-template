@@ -26,6 +26,7 @@ import "@styles/map/spinner.css"
 import { loadPictureRequests } from "@lib/features/map/mapSlice";
 import { selectPictureRequests } from "@lib/features/map/mapSlice";
 import { useAppSelector, useAppStore, useAppDispatch } from "@hook/redux";
+import { debounce } from 'lodash';
 
 export default function MapCard({ initialPosition }: { initialPosition: { coords: { latitude: number, longitude: number } } }) {
 
@@ -34,55 +35,83 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
     const [isLoading, setIsLoading] = React.useState(false);
     const [query, setQuery] = React.useState("");
     const [open, setOpen] = React.useState(false);
-    const state: any = useAppSelector(selectPictureRequests);
+    const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const store = useAppStore();
 
-    const buildVectorLayer = () => {
-        const vectorSource = new VectorSource({
-            format: new GeoJSON(),
-            loader: async function (extent, _resolution, _projection, success, failure) {
-                vectorSource.removeLoadedExtent(extent);
-                const format = vectorSource?.getFormat();
-                if (format) {
-                    store.dispatch(loadPictureRequests({
-                        minLat: extent[1],
-                        minLng: extent[0],
-                        maxLat: extent[3],
-                        maxLng: extent[2],
-                    }));
-                    console.log("Picture requests:", await state.pictureRequests);
-                    const features = format.readFeatures(state.pictureRequests);
-                    vectorSource.addFeatures(features);
-                    if (success) {
-                        success(features);
-                    }
-                } else {
-                    if (failure) {
-                        failure();
-                    }
-                }
-            },
-            strategy: bbox,
-            overlaps: false,
-        });
-
-        return new VectorLayer({
-            source: vectorSource,
-            style: new Style({
-                fill: new Fill({
-                    color: "rgba(255,255,255,0.2)",
-                }),
-                stroke: new Stroke({
-                    color: "rgba(0,0,255,0.3)",
-                }),
+    const vectorLayer = new VectorLayer({
+        source: new VectorSource({
+            features: new GeoJSON().readFeatures({
+                type: "FeatureCollection",
+                features: []
             }),
-            maxZoom: 18,
-            minZoom: 16,
-        });
-        // return new VectorLayer({
-        //     source: new VectorSource()
-        // });
-    };
+            // loader: function (extent, _resolution, _projection, success, failure) {
+            //     console.log("Extent:", extent);
+            //     store.dispatch(loadPictureRequests({
+            //         minLat: extent[1],
+            //         minLng: extent[0],
+            //         maxLat: extent[3],
+            //         maxLng: extent[2],
+            //     }));
+            // },
+        }),
+        style: new Style({
+            fill: new Fill({
+                color: "rgba(255,255,255,0.2)",
+            }),
+            stroke: new Stroke({
+                color: "rgba(0,0,255,0.3)",
+            }),
+        }),
+        maxZoom: 18,
+        minZoom: 16,
+    });
+
+    // const buildVectorLayer = () => {
+    //     const vectorSource = new VectorSource({
+    //         format: new GeoJSON(),
+    //         loader: async function (extent, _resolution, _projection, success, failure) {
+    //             vectorSource.removeLoadedExtent(extent);
+    //             const format = vectorSource?.getFormat();
+    //             if (format) {
+    //                 store.dispatch(loadPictureRequests({
+    //                     minLat: extent[1],
+    //                     minLng: extent[0],
+    //                     maxLat: extent[3],
+    //                     maxLng: extent[2],
+    //                 }));
+    //                 console.log("Picture requests:", await state.pictureRequests);
+    //                 const features = format.readFeatures(state.pictureRequests);
+    //                 vectorSource.addFeatures(features);
+    //                 if (success) {
+    //                     success(features);
+    //                 }
+    //             } else {
+    //                 if (failure) {
+    //                     failure();
+    //                 }
+    //             }
+    //         },
+    //         strategy: bbox,
+    //         overlaps: false,
+    //     });
+
+    //     return new VectorLayer({
+    //         source: vectorSource,
+    //         style: new Style({
+    //             fill: new Fill({
+    //                 color: "rgba(255,255,255,0.2)",
+    //             }),
+    //             stroke: new Stroke({
+    //                 color: "rgba(0,0,255,0.3)",
+    //             }),
+    //         }),
+    //         maxZoom: 18,
+    //         minZoom: 16,
+    //     });
+    //     // return new VectorLayer({
+    //     //     source: new VectorSource()
+    //     // });
+    // };
 
     const map = useMemo(() => {
         if (mounted) {
@@ -94,7 +123,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                     new TileLayer({
                         source: new OSM(), // tiles are served by OpenStreetMap
                     }),
-                    buildVectorLayer()
+                    vectorLayer
                 ],
                 // the map view will initially show the whole world
                 view: new View({
@@ -116,6 +145,17 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
             map.on('loadend', function () {
                 map.getTargetElement().classList.remove('spinner');
             });
+            
+            map.on('moveend', debounce(() => {
+                const mapSize = map?.getSize();
+                const extent = map?.getView().calculateExtent(mapSize);
+                store.dispatch(loadPictureRequests({
+                    minLat: extent[1],
+                    minLng: extent[0],
+                    maxLat: extent[3],
+                    maxLng: extent[2],
+                }));
+              }, 500));
             return map;
         }
     }, [mounted]);
@@ -166,6 +206,17 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
     //         console.error('Popup container not found');
     //     }
     // };
+
+    useEffect(() => {
+        if (pictureRequestsState.status === "complete") {
+            const features = new GeoJSON().readFeatures(pictureRequestsState.pictureRequests);
+            const source = vectorLayer.getSource();
+            if (source) {
+                source.clear();
+                source.addFeatures(features);
+            }
+        }
+    }, [pictureRequestsState]);
 
     useEffect(() => {
         if (map) {

@@ -35,7 +35,24 @@ export const mapSlice = createAppSlice({
         }),
     }),
     selectors: {
-        selectPictureRequests: (state) => state.pictureRequests,
+        selectPictureRequests: (state) => {
+            const returnObj = {
+                type: "FeatureCollection",
+                features: state.pictureRequests.map((request) => {
+                    return {
+                        type: "Feature",
+                        geometry: {
+                            type: "Point",
+                            coordinates: [request.longitude, request.latitude],
+                        },
+                        properties: {
+                            request_id: request.request_id,
+                        },
+                    };
+                }),
+            }
+            return returnObj;
+        }
     },
 });
 
@@ -44,7 +61,8 @@ export const { selectPictureRequests } = mapSlice.selectors;
 export const loadPictureRequests = (bbox: BoundingBox): AppThunk => async (dispatch) => {
     try {
         fetchPictureRequests(bbox).then((pictureRequests) => {
-            dispatch(mapSlice.actions.initPictureRequests(pictureRequests));
+            console.log("pictureRequests", pictureRequests.data.fetchPictureRequestsByBoundingBox);
+            dispatch(mapSlice.actions.initPictureRequests(pictureRequests.data.fetchPictureRequestsByBoundingBox));
         });
     } catch (error) {
       dispatch(mapSlice.actions.setStatus("failed"));
