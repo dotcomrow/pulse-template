@@ -21,6 +21,7 @@ import { Input } from "@nextui-org/input";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import Link from "next/link";
+import { Tooltip } from "@nextui-org/tooltip";
 
 export default function MapCard({ initialPosition }: { initialPosition: { coords: { latitude: number, longitude: number } } }) {
 
@@ -174,59 +175,88 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
         setMounted(true);
     }, []);
 
+    const searchHandler = async (e: any) => {
+        setIsLoading(true);
+        findAddress(query).then((results) => {
+            const searchResults = Array.isArray(results) ? results : [];
+            if (searchResults.length == 0) {
+                setItems([{ display_name: "No results found" }]);
+            }
+            setItems(searchResults);
+            setIsLoading(false);
+            setOpen(true);
+        });
+    }
+
     return (
         <Card className="py-4 mb-auto h-full w-full">
             <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                <Link href="#" onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    navigator.geolocation.getCurrentPosition((position) => {
-                        const mapSize = map?.getSize();
-                        if (mapSize) {
-                            map?.getView().centerOn([position.coords.longitude, position.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
-                        }
-                    }, (error) => {
-                        console.error(error);
-                    });
-                }}><Image src="/assets/images/icons/location.svg" width={40} height={40} /></Link>
-                <Input
-                    type="text"
-                    placeholder="Enter a location"
-                    labelPlacement="outside"
-                    className="w-50"
-                    onChange={(e) => {
-                        setQuery(e.target.value);
-                    }}
-                    id="search"
-                />
-                <Popover placement="bottom-start" isOpen={open}>
-                    <PopoverTrigger>
-                        <Button variant="flat" className="capitalize" endContent={<SearchIcon />} isLoading={isLoading} onClick={async (e) => {
-                            setIsLoading(true);
-                            const results = await findAddress(query);
-                            setItems(Array.isArray(results) ? results : []);
-                            setIsLoading(false);
-                            setOpen(true);
-                            document.getElementById('search')?.blur();
-                        }}>
-                            Search
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[240px]">
-                        {items.map((item) => (
-                            <Link href="#" onClick={(e: any) => {
+                <h2 className="text-2xl font-bold pb-1">Activity Near You</h2>
+                <div className="flex-row items-center w-full flex">
+                    <div className="w-50">
+                        <Tooltip content="Click this icon to allow us to request access and show your device location on map">
+                            <Link href="#" onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                const mapSize = map?.getSize();
-                                if (mapSize) {
-                                    map?.getView().centerOn([parseFloat(item.lon), parseFloat(item.lat)], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+                                navigator.geolocation.getCurrentPosition((position) => {
+                                    const mapSize = map?.getSize();
+                                    if (mapSize) {
+                                        map?.getView().centerOn([position.coords.longitude, position.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+                                    }
+                                }, (error) => {
+                                    console.error(error);
+                                });
+                            }}>
+                                <Image src="/assets/images/icons/location.svg" width={40} height={40} alt="Click to move map to current location" />
+                            </Link>
+                        </Tooltip>
+                    </div>
+                    <div className="w-1/2">
+                        <Input
+                            type="text"
+                            placeholder="Enter a location"
+                            labelPlacement="outside"
+                            className="w-full px-5"
+                            onChange={(e) => {
+                                setQuery(e.target.value);
+                            }}
+                            id="search"
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    searchHandler(e);
                                 }
-                                setItems([]);
-                                setOpen(false);
-                            }}>{item.display_name}</Link>
-                        ))}
-                    </PopoverContent>
-                </Popover>
+                            }}
+                        />
+                    </div>
+                    <div className="w-1/4 justify-center">
+                        <Popover placement="bottom-end" isOpen={open} classNames={{
+                            content: [
+                                "items-start",
+                                "flex"
+                            ]
+                        }}>
+                            <PopoverTrigger>
+                                <Button variant="flat" className="capitalize px-5" endContent={<SearchIcon />} isLoading={isLoading} onClick={searchHandler}>
+                                    Search
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                {items.map((item) => (
+                                    <Link href="#" onClick={(e: any) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        const mapSize = map?.getSize();
+                                        if (mapSize) {
+                                            map?.getView().centerOn([parseFloat(item.lon), parseFloat(item.lat)], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+                                        }
+                                        setItems([]);
+                                        setOpen(false);
+                                    }}><h2 className="w-full">{item.display_name}</h2></Link>
+                                ))}
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                </div>
             </CardHeader>
             <CardBody className="overflow-visible py-2">
                 <div className="bg-white p-dynamic h-full">
