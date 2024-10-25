@@ -8,7 +8,7 @@ export default async function fetchPictureRequests(bbox: BoundingBox): Promise<a
     const env = getRequestContext().env as { GRAPHQL?: { fetch: (url: string, options: any) => Promise<any> } };
     try {
         // using service binding when deployed
-        const res = await env.GRAPHQL?.fetch("https://pulse-graphql.dev.suncoast.systems/graphql", {
+        const res = await env.GRAPHQL?.fetch("https://api/graphql", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
