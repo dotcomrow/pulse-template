@@ -46,6 +46,9 @@
       "@component/*": [
         "components/*"
       ],
+      "@styles/*": [
+        "styles/*"
+      ],
     },
     "strictNullChecks": true
   },

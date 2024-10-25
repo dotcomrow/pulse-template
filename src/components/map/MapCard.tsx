@@ -22,6 +22,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import Link from "next/link";
 import { Tooltip } from "@nextui-org/tooltip";
+import "@styles/map/spinner.css"
 
 export default function MapCard({ initialPosition }: { initialPosition: { coords: { latitude: number, longitude: number } } }) {
 
@@ -32,7 +33,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
     const [open, setOpen] = React.useState(false);
     const map = useMemo(() => {
         if (mounted) {
-            var mp = new Map({
+            var map = new Map({
                 // the map will be created using the 'map-root' ref
                 target: "map-container",
                 layers: [
@@ -56,7 +57,13 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                 //     }),
                 // ],
             });
-            return mp;
+            map.on('loadstart', function () {
+                map.getTargetElement().classList.add('spinner');
+            });
+            map.on('loadend', function () {
+                map.getTargetElement().classList.remove('spinner');
+            });
+            return map;
         }
     }, [mounted]);
 
@@ -181,11 +188,19 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
             const searchResults = Array.isArray(results) ? results : [];
             if (searchResults.length == 0) {
                 setItems([{ display_name: "No results found" }]);
+            } else {
+                setItems(searchResults);
             }
-            setItems(searchResults);
             setIsLoading(false);
             setOpen(true);
         });
+    }
+
+    const centerMap = (position: { coords: { latitude: number, longitude: number } }) => {
+        const mapSize = map?.getSize();
+        if (mapSize) {
+            map?.getView().centerOn([position.coords.longitude, position.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+        }
     }
 
     return (
@@ -198,20 +213,23 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                             <Link href="#" onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
+                                map?.getTargetElement().classList.add('spinner');
                                 navigator.geolocation.getCurrentPosition((position) => {
-                                    const mapSize = map?.getSize();
-                                    if (mapSize) {
-                                        map?.getView().centerOn([position.coords.longitude, position.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
-                                    }
+                                    centerMap(position);
                                 }, (error) => {
                                     console.error(error);
-                                });
+                                },
+                                    {
+                                        enableHighAccuracy: false,
+                                        timeout: 2000,
+                                        maximumAge: 0,
+                                    });
                             }}>
                                 <Image src="/assets/images/icons/location.svg" width={40} height={40} alt="Click to move map to current location" />
                             </Link>
                         </Tooltip>
                     </div>
-                    <div className="w-1/2">
+                    <div className="w-3/4">
                         <Input
                             type="text"
                             placeholder="Enter a location"
@@ -229,12 +247,14 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                         />
                     </div>
                     <div className="w-1/4 justify-center">
-                        <Popover placement="bottom-end" isOpen={open} classNames={{
-                            content: [
-                                "items-start",
-                                "flex"
-                            ]
-                        }}>
+                        <Popover placement="bottom-end" isOpen={open}
+                            shouldCloseOnBlur={true}
+                            classNames={{
+                                content: [
+                                    "items-start",
+                                    "flex"
+                                ]
+                            }}>
                             <PopoverTrigger>
                                 <Button variant="flat" className="capitalize px-5" endContent={<SearchIcon />} isLoading={isLoading} onClick={searchHandler}>
                                     Search
@@ -245,10 +265,11 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                                     <Link href="#" onClick={(e: any) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        const mapSize = map?.getSize();
-                                        if (mapSize) {
-                                            map?.getView().centerOn([parseFloat(item.lon), parseFloat(item.lat)], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+                                        if (!item.lon || !item.lat) {
+                                            setOpen(false);
+                                            return;
                                         }
+                                        centerMap({ coords: { latitude: parseFloat(item.lat), longitude: parseFloat(item.lon) } });
                                         setItems([]);
                                         setOpen(false);
                                     }}><h2 className="w-full">{item.display_name}</h2></Link>
