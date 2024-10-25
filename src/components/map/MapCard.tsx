@@ -12,7 +12,7 @@ import TileLayer from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 // import { createRoot } from 'react-dom/client';
-import React, { ReactElement, Suspense, useEffect, useMemo } from "react";
+import React, { ReactElement, Suspense, useEffect, useMemo, useRef } from "react";
 import { useGeographic } from "ol/proj.js";
 import { Image } from "@nextui-org/image";
 import { Autocomplete, AutocompleteSection, AutocompleteItem } from "@nextui-org/autocomplete";
@@ -23,6 +23,9 @@ import { Button, ButtonGroup } from "@nextui-org/button";
 import Link from "next/link";
 import { Tooltip } from "@nextui-org/tooltip";
 import "@styles/map/spinner.css"
+import { loadPictureRequests } from "@lib/features/map/mapSlice";
+import { selectPictureRequests } from "@lib/features/map/mapSlice";
+import { useAppSelector, useAppStore, useAppDispatch } from "@hook/redux";
 
 export default function MapCard({ initialPosition }: { initialPosition: { coords: { latitude: number, longitude: number } } }) {
 
@@ -31,6 +34,56 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
     const [isLoading, setIsLoading] = React.useState(false);
     const [query, setQuery] = React.useState("");
     const [open, setOpen] = React.useState(false);
+    const state: any = useAppSelector(selectPictureRequests);
+    const store = useAppStore();
+
+    const buildVectorLayer = () => {
+        const vectorSource = new VectorSource({
+            format: new GeoJSON(),
+            loader: async function (extent, _resolution, _projection, success, failure) {
+                vectorSource.removeLoadedExtent(extent);
+                const format = vectorSource?.getFormat();
+                if (format) {
+                    store.dispatch(loadPictureRequests({
+                        minLat: extent[1],
+                        minLng: extent[0],
+                        maxLat: extent[3],
+                        maxLng: extent[2],
+                    }));
+                    console.log("Picture requests:", await state.pictureRequests);
+                    const features = format.readFeatures(state.pictureRequests);
+                    vectorSource.addFeatures(features);
+                    if (success) {
+                        success(features);
+                    }
+                } else {
+                    if (failure) {
+                        failure();
+                    }
+                }
+            },
+            strategy: bbox,
+            overlaps: false,
+        });
+
+        return new VectorLayer({
+            source: vectorSource,
+            style: new Style({
+                fill: new Fill({
+                    color: "rgba(255,255,255,0.2)",
+                }),
+                stroke: new Stroke({
+                    color: "rgba(0,0,255,0.3)",
+                }),
+            }),
+            maxZoom: 18,
+            minZoom: 16,
+        });
+        // return new VectorLayer({
+        //     source: new VectorSource()
+        // });
+    };
+
     const map = useMemo(() => {
         if (mounted) {
             var map = new Map({
@@ -41,7 +94,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                     new TileLayer({
                         source: new OSM(), // tiles are served by OpenStreetMap
                     }),
-                    // buildVectorLayer()
+                    buildVectorLayer()
                 ],
                 // the map view will initially show the whole world
                 view: new View({
@@ -114,60 +167,6 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
     //     }
     // };
 
-
-    // const buildVectorLayer = () => {
-    //     var params = JSON.parse(localStorage.getItem('user-token'));
-    //     if (params) {
-    //         const vectorSource = new VectorSource({
-    //             format: new GeoJSON(),
-    //             loader: function (extent, _resolution, _projection, success, failure) {
-    //                 vectorSource.removeLoadedExtent(extent);
-    //                 const url = "https://api.suncoast.systems/features?bbox=" + extent.join(',');
-    //                 const xhr = new XMLHttpRequest();
-    //                 xhr.open("GET", url);
-    //                 xhr.setRequestHeader("Authorization", "Bearer " + params['id_token']);
-    //                 const onError = function () {
-    //                     vectorSource.removeLoadedExtent(extent);
-    //                     failure();
-    //                 };
-    //                 xhr.onerror = onError;
-    //                 xhr.onload = function () {
-    //                     if (xhr.status === 200) {
-    //                         const features = vectorSource
-    //                             .getFormat()
-    //                             .readFeatures(xhr.responseText);
-    //                         vectorSource.addFeatures(features);
-    //                         success(features);
-    //                     } else {
-    //                         onError();
-    //                     }
-    //                 };
-    //                 xhr.send();
-    //             },
-    //             strategy: bbox,
-    //             overlaps: false,
-    //         });
-
-    //         return new VectorLayer({
-    //             source: vectorSource,
-    //             style: new Style({
-    //                 fill: new Fill({
-    //                     color: "rgba(255,255,255,0.2)",
-    //                 }),
-    //                 stroke: new Stroke({
-    //                     color: "rgba(0,0,255,0.3)",
-    //                 }),
-    //             }),
-    //             maxZoom: 14,
-    //             minZoom: 8,
-    //         });
-    //     } else {
-    //         return new VectorLayer({
-    //             source: new VectorSource()
-    //         });
-    //     }
-    // };
-
     useEffect(() => {
         if (map) {
             const mapSize = map?.getSize();
@@ -208,7 +207,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
             <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                 <h2 className="text-2xl font-bold pb-1">Activity Near You</h2>
                 <div className="flex-row items-center w-full flex">
-                    <div className="w-50">
+                    <div className="w-1/8">
                         <Tooltip content="Click this icon to allow us to request access and show your device location on map">
                             <Link href="#" onClick={(e) => {
                                 e.preventDefault();
@@ -229,7 +228,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                             </Link>
                         </Tooltip>
                     </div>
-                    <div className="w-3/4">
+                    <div className="w-5/6">
                         <Input
                             type="text"
                             placeholder="Enter a location"
@@ -246,7 +245,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                             }}
                         />
                     </div>
-                    <div className="w-1/4 justify-center">
+                    <div className="w-1/8 content-end">
                         <Popover placement="bottom-end" isOpen={open}
                             shouldCloseOnBlur={true}
                             classNames={{
