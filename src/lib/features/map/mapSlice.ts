@@ -62,7 +62,6 @@ export const { selectPictureRequests, selectPictureRequestStatus } = mapSlice.se
 export const loadPictureRequests = (bbox: BoundingBox): AppThunk => async (dispatch) => {
     try {
         fetchPictureRequests(bbox).then((pictureRequests) => {
-            console.log("pictureRequests", pictureRequests.data.fetchPictureRequestsByBoundingBox);
             dispatch(mapSlice.actions.initPictureRequests(pictureRequests.data.fetchPictureRequestsByBoundingBox));
         });
     } catch (error) {

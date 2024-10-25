@@ -79,7 +79,6 @@ export const userSlice = createAppSlice({
   // You can define your selectors here. These selectors receive the slice
   // state as their first argument.
   selectors: {
-    selectStatus: (state) => state.status,
     selectUser: (state) => {
       return state;
     },
@@ -91,7 +90,7 @@ export const userSlice = createAppSlice({
 //   userSlice.actions;
 
 // Selectors returned by `slice.selectors` take the root state as their first argument.
-export const { selectUser, selectStatus } = userSlice.selectors;
+export const { selectUser } = userSlice.selectors;
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
 // export const incrementIfOdd =

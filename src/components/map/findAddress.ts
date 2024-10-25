@@ -1,8 +1,6 @@
 "use client";
 
 export async function findAddress(query: string) {
-
-
     const controller = new AbortController();
     const { signal } = controller;
 
@@ -17,7 +15,5 @@ export async function findAddress(query: string) {
 
     let json = await res.json();
 
-    // Append new results to existing ones
     return json;
-
 };

@@ -45,15 +45,6 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                 type: "FeatureCollection",
                 features: []
             }),
-            // loader: function (extent, _resolution, _projection, success, failure) {
-            //     console.log("Extent:", extent);
-            //     store.dispatch(loadPictureRequests({
-            //         minLat: extent[1],
-            //         minLng: extent[0],
-            //         maxLat: extent[3],
-            //         maxLng: extent[2],
-            //     }));
-            // },
         }),
         style: new Style({
             fill: new Fill({
@@ -66,53 +57,6 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
         maxZoom: 18,
         minZoom: 16,
     });
-
-    // const buildVectorLayer = () => {
-    //     const vectorSource = new VectorSource({
-    //         format: new GeoJSON(),
-    //         loader: async function (extent, _resolution, _projection, success, failure) {
-    //             vectorSource.removeLoadedExtent(extent);
-    //             const format = vectorSource?.getFormat();
-    //             if (format) {
-    //                 store.dispatch(loadPictureRequests({
-    //                     minLat: extent[1],
-    //                     minLng: extent[0],
-    //                     maxLat: extent[3],
-    //                     maxLng: extent[2],
-    //                 }));
-    //                 console.log("Picture requests:", await state.pictureRequests);
-    //                 const features = format.readFeatures(state.pictureRequests);
-    //                 vectorSource.addFeatures(features);
-    //                 if (success) {
-    //                     success(features);
-    //                 }
-    //             } else {
-    //                 if (failure) {
-    //                     failure();
-    //                 }
-    //             }
-    //         },
-    //         strategy: bbox,
-    //         overlaps: false,
-    //     });
-
-    //     return new VectorLayer({
-    //         source: vectorSource,
-    //         style: new Style({
-    //             fill: new Fill({
-    //                 color: "rgba(255,255,255,0.2)",
-    //             }),
-    //             stroke: new Stroke({
-    //                 color: "rgba(0,0,255,0.3)",
-    //             }),
-    //         }),
-    //         maxZoom: 18,
-    //         minZoom: 16,
-    //     });
-    //     // return new VectorLayer({
-    //     //     source: new VectorSource()
-    //     // });
-    // };
 
     const map = useMemo(() => {
         if (mounted) {
