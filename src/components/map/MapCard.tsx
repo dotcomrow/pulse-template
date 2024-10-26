@@ -237,7 +237,10 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
             const source = vectorLayer?.getSource();
             if (source) {
                 source.clear();
-                features.concat(geojson.readFeature(document.getElementById('feature')?.getAttribute('value')));
+                const inputFeature = document.getElementById('feature')?.getAttribute('value');
+                if (inputFeature && inputFeature.length > 0) {
+                    features.concat(geojson.readFeature(document.getElementById('feature')?.getAttribute('value')));
+                }
                 source.addFeatures(features);
             }
             map?.getTargetElement().classList.remove('spinner');
