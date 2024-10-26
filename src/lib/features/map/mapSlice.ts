@@ -14,10 +14,10 @@ const initialState: MapSliceState = {
 };
 
 export interface BoundingBox {
-    minLat: number; // Minimum latitude
-    minLng: number; // Minimum longitude
-    maxLat: number; // Maximum latitude
-    maxLng: number; // Maximum longitude
+    min_latitude: number; // Minimum latitude
+    min_longitude: number; // Minimum longitude
+    max_latitude: number; // Maximum latitude
+    max_longitude: number; // Maximum longitude
 }
 
 export const mapSlice = createAppSlice({
@@ -65,6 +65,7 @@ export const { selectPictureRequests, selectPictureRequestStatus } = mapSlice.se
 
 export const loadPictureRequests = (bbox: BoundingBox): AppThunk => async (dispatch) => {
     try {
+        console.log(bbox);
         fetchPictureRequests(bbox).then((pictureRequests) => {
             dispatch(mapSlice.actions.initPictureRequests(pictureRequests.data.fetchPictureRequestsByBoundingBox));
         });

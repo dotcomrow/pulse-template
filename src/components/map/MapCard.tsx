@@ -21,7 +21,7 @@ import { Button, ButtonGroup } from "@nextui-org/button";
 import Link from "next/link";
 import { Tooltip } from "@nextui-org/tooltip";
 import "@styles/map/spinner.css"
-import { loadPictureRequests } from "@lib/features/map/mapSlice";
+import { BoundingBox, loadPictureRequests } from "@lib/features/map/mapSlice";
 import { selectPictureRequests, selectPictureRequestStatus } from "@lib/features/map/mapSlice";
 import { useAppSelector, useAppStore, useAppDispatch } from "@hook/redux";
 import { debounce } from 'lodash';
@@ -105,12 +105,13 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                 map.getTargetElement().classList.add('spinner');
                 const mapSize = map?.getSize();
                 const extent = transformExtent(map?.getView().calculateExtent(mapSize), 'EPSG:3857', 'EPSG:4326');
-                store.dispatch(loadPictureRequests({
-                    minLat: extent[1],
-                    minLng: extent[0],
-                    maxLat: extent[3],
-                    maxLng: extent[2],
-                }));
+                const bbox: BoundingBox = {
+                    min_latitude: extent[1],
+                    min_longitude: extent[0],
+                    max_latitude: extent[3],
+                    max_longitude: extent[2],
+                };
+                store.dispatch(loadPictureRequests(bbox));
             }, 500));
             map.on('singleclick', function (evt) {
                 const coordinate = evt.coordinate;

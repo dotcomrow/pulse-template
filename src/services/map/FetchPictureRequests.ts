@@ -2,7 +2,6 @@
 
 import { getRequestContext } from "@cloudflare/next-on-pages";
 import { BoundingBox } from "@lib/features/map/mapSlice";
-import LoggingUtility from "@utils/LoggingUtility";
 
 export default async function fetchPictureRequests(bbox: BoundingBox): Promise<any> {
     const env = getRequestContext().env as { GRAPHQL?: { fetch: (url: string, options: any) => Promise<any> } };
@@ -16,12 +15,12 @@ export default async function fetchPictureRequests(bbox: BoundingBox): Promise<a
             body: JSON.stringify({
                 query: `
                 query {
-                    fetchPictureRequestsByBoundingBox(
-                        min_latitude: ${bbox.minLat},
-                        min_longitude: ${bbox.minLng},
-                        max_latitude: ${bbox.maxLat},
-                        max_longitude: ${bbox.maxLng}
-                    ) {
+                    fetchPictureRequestsByBoundingBox(bbox: {
+                        min_latitude: ${bbox.min_latitude},
+                        min_longitude: ${bbox.min_longitude},
+                        max_latitude: ${bbox.max_latitude},
+                        max_longitude: ${bbox.max_longitude}
+                    }) {
                         request_id
                     }
                 }
@@ -42,12 +41,12 @@ export default async function fetchPictureRequests(bbox: BoundingBox): Promise<a
             body: JSON.stringify({
                 query: `
                 query {
-                    fetchPictureRequestsByBoundingBox(
-                        min_latitude: ${bbox.minLat},
-                        min_longitude: ${bbox.minLng},
-                        max_latitude: ${bbox.maxLat},
-                        max_longitude: ${bbox.maxLng}
-                    ) {
+                    fetchPictureRequestsByBoundingBox(bbox: {
+                        min_latitude: ${bbox.min_latitude},
+                        min_longitude: ${bbox.min_longitude},
+                        max_latitude: ${bbox.max_latitude},
+                        max_longitude: ${bbox.max_longitude}
+                    }) {
                         request_id
                     }
                 }
