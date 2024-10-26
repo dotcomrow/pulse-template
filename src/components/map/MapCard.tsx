@@ -11,7 +11,7 @@ import TileLayer from "ol/layer/Tile";
 import { transformExtent } from "ol/proj.js";
 import OSM from "ol/source/OSM";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useCallback } from "react";
 import { useGeographic, toLonLat } from "ol/proj.js";
 import { Image } from "@nextui-org/image";
 import { findAddress } from "./findAddress";
@@ -24,43 +24,77 @@ import "@styles/map/spinner.css"
 import { BoundingBox, loadPictureRequests } from "@lib/features/map/mapSlice";
 import { selectPictureRequests, selectPictureRequestStatus } from "@lib/features/map/mapSlice";
 import { useAppSelector, useAppStore, useAppDispatch } from "@hook/redux";
-import { debounce } from 'lodash';
+import { debounce, set } from 'lodash';
+import { Fill, Stroke, Style } from 'ol/style';
+import Checkmark from '@images/icons/check.svg';
+import { Spinner } from "@nextui-org/spinner";
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
-import { Fill, RegularShape, Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 
 export default function MapCard({ initialPosition }: { initialPosition: { coords: { latitude: number, longitude: number } } }) {
 
+    const store = useAppStore();
     const [mounted, setMounted] = React.useState(false);
     const [items, setItems] = React.useState<any[]>([]);
-    const [isLoading, setIsLoading] = React.useState(false);
     const [query, setQuery] = React.useState("");
     const [open, setOpen] = React.useState(false);
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: any = useAppSelector(selectPictureRequestStatus);
-    const store = useAppStore();
+    const [searchDisabled, setSearchDisabled] = React.useState(true);
+    const [requestMode, setRequestMode] = React.useState(false);
+    const [searchLoading, setSearchLoading] = React.useState(false);
+    const [vectorLayer, setVectorLayer] = React.useState<VectorLayer>();
+    const [overlay, setOverlay] = React.useState<Overlay>();
 
-    const vectorLayer = new VectorLayer({
-        source: new VectorSource({
-            features: new GeoJSON().readFeatures({
-                type: "FeatureCollection",
-                features: []
-            }),
-            strategy: bbox,
-            overlaps: false,
-        }),
-        style: new Style({
-            fill: new Fill({
-                color: "rgba(255,255,255,0.2)",
-            }),
-            stroke: new Stroke({
-                color: "rgba(0,0,255,0.3)",
-            }),
-        }),
-        maxZoom: 18,
-        minZoom: 16,
-    });
+    const mapClickHandler = (e: any, content: any, overlay: any, vectorLayer: any) => {
+        if (document.getElementById("pictureRequestBtn")?.classList.contains("requestModeDisabled")) {
+            return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        var geojson = new GeoJSON();
+        const source = vectorLayer.getSource();
+        if (source) {
+            source.clear();
+        }
+
+        const coordinate = e.coordinate;
+
+        if (!source || !content) {
+            return;
+        }
+        var feat = new Feature(new Point(coordinate));
+        feat.setStyle(new Style({
+            image: new CircleStyle({
+                radius: 10,
+                fill: new Fill({
+                    color: 'rgba(0, 0, 255, 0.1)',
+                }),
+                stroke: new Stroke({
+                    color: 'rgba(0, 0, 255, 0.3)',
+                    width: 1,
+                }),
+            })
+        }));
+
+        var geoJsonStr = geojson.writeFeature(feat);
+        document.getElementById('feature')?.setAttribute('value', geoJsonStr);
+        if (source) {
+            source.addFeature(feat);
+        }
+
+
+        const hdms = toLonLat(coordinate);
+        content.innerHTML = '<p>You clicked here:</p><code>' + hdms + '</code>';
+        overlay.setPosition(coordinate);
+
+        document.getElementById('popup-closer')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            overlay.setPosition(undefined);
+        });
+    };
 
     const map = useMemo(() => {
         if (mounted) {
@@ -74,6 +108,29 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                     },
                 },
             }) : new Overlay({});
+            setOverlay(overlay);
+            const vectorLayer = new VectorLayer({
+                source: new VectorSource({
+                    features: new GeoJSON().readFeatures({
+                        type: "FeatureCollection",
+                        features: []
+                    }),
+                    strategy: bbox,
+                    overlaps: false,
+                    wrapX: false,
+                }),
+                style: new Style({
+                    fill: new Fill({
+                        color: "rgba(255,255,255,0.2)",
+                    }),
+                    stroke: new Stroke({
+                        color: "rgba(0,0,255,0.3)",
+                    }),
+                }),
+                maxZoom: 18,
+                minZoom: 16,
+            });
+            setVectorLayer(vectorLayer);
             var map = new Map({
                 // the map will be created using the 'map-root' ref
                 target: "map-container",
@@ -113,79 +170,74 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                 };
                 store.dispatch(loadPictureRequests(bbox));
             }, 500));
-            map.on('singleclick', function (evt) {
-                const coordinate = evt.coordinate;
-                var feat = new Feature(new Point(coordinate));
-                feat.setStyle(new Style({
-                    image: new CircleStyle({
-                        radius: 10,
-                        fill: new Fill({
-                            color: 'rgba(0, 0, 255, 0.1)',
-                        }),
-                        stroke: new Stroke({
-                            color: 'rgba(0, 0, 255, 0.3)',
-                            width: 1,
-                        }),
-                    })
-                }));
-                const source = vectorLayer.getSource();
-                if (source) {
-                    source.addFeature(feat);
-                }
-                const hdms = toLonLat(coordinate);
-
-                if (content) {
-                    content.innerHTML = '<p>You clicked here:</p><code>' + hdms + '</code>';
-                }
-                overlay.setPosition(coordinate);
-            });
-            document.getElementById('popup-closer')?.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                overlay.setPosition(undefined);
+            map.on('click', (e) => {
+                mapClickHandler(e, content, overlay, vectorLayer);
             });
             return map;
         }
     }, [mounted]);
 
+    const searchHandler = (e: any) => {
+        if (searchDisabled) {
+            return;
+        }
+        setSearchLoading(true);
+        findAddress(query).then((results) => {
+            const searchResults = Array.isArray(results) ? results : [];
+            if (searchResults.length == 0) {
+                setItems([{ display_name: "No results found" }]);
+            } else {
+                setItems(searchResults);
+            }
+            setQuery("");
+            setSearchDisabled(true);
+            setOpen(true);
+            setSearchLoading(false);
+        });
+    }
+
     const SearchIcon = ({
         size = 24,
-        strokeWidth = 1.5,
+        isDisabled = { searchDisabled },
         ...props
     }) => (
-        <svg
-            aria-hidden="true"
-            fill="none"
-            focusable="false"
-            height={size}
-            role="presentation"
-            viewBox="0 0 24 24"
-            width={size}
-            {...props}
-        >
-            <path
-                d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={strokeWidth}
-            />
-            <path
-                d="M22 22L20 20"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={strokeWidth}
-            />
-        </svg>
+        <Link href="#" style={{ cursor: isDisabled.searchDisabled ? "default" : "pointer" }}>
+            <svg
+                aria-hidden="true"
+                fill="none"
+                focusable="false"
+                height={size}
+                role="presentation"
+                viewBox="0 0 24 24"
+                width={size}
+                {...props}
+            >
+                <path
+                    d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z"
+                    stroke={isDisabled.searchDisabled ? "grey" : "blue"}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={isDisabled.searchDisabled ? 1.5 : 2.5}
+                />
+                <path
+                    d="M22 22L20 20"
+                    stroke={isDisabled.searchDisabled ? "grey" : "blue"}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={isDisabled.searchDisabled ? 1.5 : 2.5}
+                />
+            </svg>
+        </Link>
     );
 
     useEffect(() => {
         if (pictureRequestStatus === "complete") {
-            const features = new GeoJSON().readFeatures(pictureRequestsState);
-            const source = vectorLayer.getSource();
+            const geojson = new GeoJSON();
+            const features = geojson.readFeatures(pictureRequestsState);
+            const source = vectorLayer?.getSource();
             if (source) {
                 source.clear();
+                features.concat(geojson.readFeature(document.getElementById('feature')?.getAttribute('value')));
                 source.addFeatures(features);
             }
             map?.getTargetElement().classList.remove('spinner');
@@ -206,26 +258,20 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
         setMounted(true);
     }, []);
 
-    const searchHandler = async (e: any) => {
-        setIsLoading(true);
-        findAddress(query).then((results) => {
-            const searchResults = Array.isArray(results) ? results : [];
-            if (searchResults.length == 0) {
-                setItems([{ display_name: "No results found" }]);
-            } else {
-                setItems(searchResults);
-            }
-            setIsLoading(false);
-            setOpen(true);
-        });
-    }
-
     const centerMap = (position: { coords: { latitude: number, longitude: number } }) => {
         const mapSize = map?.getSize();
         if (mapSize) {
             map?.getView().centerOn([position.coords.longitude, position.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
         }
     }
+
+    const pictureRequestMode = (e: any) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setRequestMode(!requestMode);
+        vectorLayer?.getSource()?.clear();
+        overlay?.setPosition(undefined);
+    };
 
     return (
         <Card className="py-4 mb-auto h-full w-full">
@@ -255,12 +301,23 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                     </div>
                     <div className="w-5/6">
                         <Input
+                            isClearable
+                            value={query}
                             type="text"
                             placeholder="Enter a location"
                             labelPlacement="outside"
-                            className="w-full px-5"
+                            className="w-full px-2 z-20"
+                            onClear={() => {
+                                setQuery("")
+                                setSearchDisabled(true);
+                            }}
                             onChange={(e) => {
                                 setQuery(e.target.value);
+                                if (query.length > 0) {
+                                    setSearchDisabled(false);
+                                } else {
+                                    setSearchDisabled(true);
+                                }
                             }}
                             id="search"
                             onKeyDown={(e) => {
@@ -268,38 +325,49 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                                     searchHandler(e);
                                 }
                             }}
+                            endContent={searchLoading ? <Spinner size="md" /> : <></>}
+                            startContent={
+                                <Popover placement="bottom-start" isOpen={open}
+                                    classNames={{
+                                        content: [
+                                            "items-start",
+                                            "flex"
+                                        ]
+                                    }}>
+                                    <PopoverTrigger>
+                                        <SearchIcon onClick={searchHandler} />
+                                    </PopoverTrigger>
+                                    <PopoverContent>
+                                        {items.map((item) => (
+                                            <Link href="#" onClick={(e: any) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                if (!item.lon || !item.lat) {
+                                                    setOpen(false);
+                                                    return;
+                                                }
+                                                setQuery("");
+                                                setSearchDisabled(true);
+                                                centerMap({ coords: { latitude: parseFloat(item.lat), longitude: parseFloat(item.lon) } });
+                                                setItems([]);
+                                                setOpen(false);
+                                            }}><h2 className="w-full">{item.display_name}</h2></Link>
+                                        ))}
+                                    </PopoverContent>
+                                </Popover>
+                            }
                         />
                     </div>
                     <div className="w-1/8 content-end">
-                        <Popover placement="bottom-end" isOpen={open}
-                            shouldCloseOnBlur={true}
-                            classNames={{
-                                content: [
-                                    "items-start",
-                                    "flex"
-                                ]
-                            }}>
-                            <PopoverTrigger>
-                                <Button variant="flat" className="capitalize px-5" endContent={<SearchIcon />} isLoading={isLoading} onClick={searchHandler}>
-                                    Search
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent>
-                                {items.map((item) => (
-                                    <Link href="#" onClick={(e: any) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        if (!item.lon || !item.lat) {
-                                            setOpen(false);
-                                            return;
-                                        }
-                                        centerMap({ coords: { latitude: parseFloat(item.lat), longitude: parseFloat(item.lon) } });
-                                        setItems([]);
-                                        setOpen(false);
-                                    }}><h2 className="w-full">{item.display_name}</h2></Link>
-                                ))}
-                            </PopoverContent>
-                        </Popover>
+                        <>
+                            <input type="hidden" id="feature" value="" />
+                            <Button id="pictureRequestBtn"
+                                startContent={requestMode ? Checkmark() : <></>}
+                                onClick={pictureRequestMode}
+                                className={requestMode ? "requestModeEnabled" : "requestModeDisabled"}>
+                                Request Mode
+                            </Button>
+                        </>
                     </div>
                 </div>
             </CardHeader>

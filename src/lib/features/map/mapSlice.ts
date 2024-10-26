@@ -1,7 +1,7 @@
 import { createAppSlice } from "@lib/createAppSlice";
 import type { AppThunk } from "@lib/store";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import fetchPictureRequests from "services/map/FetchPictureRequests";
+import fetchPictureRequests from "@services/map/FetchPictureRequests";
 
 export interface MapSliceState {
     pictureRequests: Array<any>;
@@ -65,7 +65,6 @@ export const { selectPictureRequests, selectPictureRequestStatus } = mapSlice.se
 
 export const loadPictureRequests = (bbox: BoundingBox): AppThunk => async (dispatch) => {
     try {
-        console.log(bbox);
         fetchPictureRequests(bbox).then((pictureRequests) => {
             dispatch(mapSlice.actions.initPictureRequests(pictureRequests.data.fetchPictureRequestsByBoundingBox));
         });

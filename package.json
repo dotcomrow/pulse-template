@@ -55,7 +55,10 @@
     "url": "^0.11.0",
     "vm-browserify": "^1.1.2",
     "webpack": "^5.94.0",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "@svgr/core":"^8.1.0",
+    "@svgr/webpack":"^8.1.0",
+    "@svgr/rollup":"^8.1.0"
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.5",
