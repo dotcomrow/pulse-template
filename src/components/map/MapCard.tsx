@@ -3,7 +3,6 @@
 import VectorSource from "ol/source/Vector";
 import GeoJSON from "ol/format/GeoJSON";
 import { bbox } from "ol/loadingstrategy.js";
-import { Style, Fill, Stroke } from "ol/style";
 import VectorLayer from "ol/layer/Vector";
 import Overlay from "ol/Overlay";
 import View from "ol/View";
@@ -12,9 +11,8 @@ import TileLayer from "ol/layer/Tile";
 import { transformExtent } from "ol/proj.js";
 import OSM from "ol/source/OSM";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
-// import { createRoot } from 'react-dom/client';
 import React, { useEffect, useMemo } from "react";
-import { useGeographic } from "ol/proj.js";
+import { useGeographic, toLonLat } from "ol/proj.js";
 import { Image } from "@nextui-org/image";
 import { findAddress } from "./findAddress";
 import { Input } from "@nextui-org/input";
@@ -27,6 +25,10 @@ import { loadPictureRequests } from "@lib/features/map/mapSlice";
 import { selectPictureRequests, selectPictureRequestStatus } from "@lib/features/map/mapSlice";
 import { useAppSelector, useAppStore, useAppDispatch } from "@hook/redux";
 import { debounce } from 'lodash';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
+import { Fill, RegularShape, Stroke, Style } from 'ol/style';
+import CircleStyle from 'ol/style/Circle';
 
 export default function MapCard({ initialPosition }: { initialPosition: { coords: { latitude: number, longitude: number } } }) {
 
@@ -62,6 +64,16 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
 
     const map = useMemo(() => {
         if (mounted) {
+            const container = document.getElementById('popup-container');
+            const content = document.getElementById('popup-content');
+            const overlay = container ? new Overlay({
+                element: container,
+                autoPan: {
+                    animation: {
+                        duration: 250,
+                    },
+                },
+            }) : new Overlay({});
             var map = new Map({
                 // the map will be created using the 'map-root' ref
                 target: "map-container",
@@ -79,12 +91,9 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                     minZoom: 16,
                     constrainResolution: true,
                 }),
-                // overlays: [
-                //     new Overlay({
-                //         element: buildPopup(),
-                //         autoPan: true,
-                //     }),
-                // ],
+                overlays: [
+                    overlay
+                ],
             });
             map.on('loadstart', function () {
                 map.getTargetElement().classList.add('spinner');
@@ -102,7 +111,38 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                     maxLat: extent[3],
                     maxLng: extent[2],
                 }));
-              }, 500));
+            }, 500));
+            map.on('singleclick', function (evt) {
+                const coordinate = evt.coordinate;
+                var feat = new Feature(new Point(coordinate));
+                feat.setStyle(new Style({
+                    image: new CircleStyle({
+                        radius: 10,
+                        fill: new Fill({
+                            color: 'rgba(0, 0, 255, 0.1)',
+                        }),
+                        stroke: new Stroke({
+                            color: 'rgba(0, 0, 255, 0.3)',
+                            width: 1,
+                        }),
+                    })
+                }));
+                const source = vectorLayer.getSource();
+                if (source) {
+                    source.addFeature(feat);
+                }
+                const hdms = toLonLat(coordinate);
+
+                if (content) {
+                    content.innerHTML = '<p>You clicked here:</p><code>' + hdms + '</code>';
+                }
+                overlay.setPosition(coordinate);
+            });
+            document.getElementById('popup-closer')?.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                overlay.setPosition(undefined);
+            });
             return map;
         }
     }, [mounted]);
@@ -138,21 +178,6 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
             />
         </svg>
     );
-
-    // const buildPopup = () => {
-    //     const container = document.getElementById('popup-container');
-    //     if (container) {
-    //         const root = createRoot(container);
-    //         root.render(`<div class="popup">
-    //             <h3 className="header"></h3>
-    //             <p className="description"></p>
-    //             <p><a href="#" className="moreInfo">More info</a></p>
-    //           </div>`);
-    //         return container;
-    //     } else {
-    //         console.error('Popup container not found');
-    //     }
-    // };
 
     useEffect(() => {
         if (pictureRequestStatus === "complete") {
@@ -280,7 +305,16 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
             <CardBody className="overflow-visible py-2">
                 <div className="bg-white p-dynamic h-full">
                     <div id="map-container" className="h-full"></div>
-                    <div id="popup-container"></div>
+                    <div id="popup-container">
+                        <Card>
+                            <CardHeader>
+                                <Link href="#" id="popup-closer">Close</Link>
+                            </CardHeader>
+                            <CardBody>
+                                <div id="popup-content"></div>
+                            </CardBody>
+                        </Card>
+                    </div>
                 </div>
             </CardBody>
         </Card>

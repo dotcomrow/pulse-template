@@ -37,22 +37,26 @@ export const mapSlice = createAppSlice({
     selectors: {
         selectPictureRequestStatus: (state) => state.pictureRequestStatus,
         selectPictureRequests: (state) => {
-            const returnObj = {
-                type: "FeatureCollection",
-                features: state.pictureRequests.map((request) => {
-                    return {
-                        type: "Feature",
-                        geometry: {
-                            type: "Point",
-                            coordinates: [request.longitude, request.latitude],
-                        },
-                        properties: {
-                            request_id: request.request_id,
-                        },
-                    };
-                }),
+            if (state.pictureRequests === undefined) {
+                return [];
+            } else {
+                const returnObj = {
+                    type: "FeatureCollection",
+                    features: state.pictureRequests.map((request) => {
+                        return {
+                            type: "Feature",
+                            geometry: {
+                                type: "Point",
+                                coordinates: [request.longitude, request.latitude],
+                            },
+                            properties: {
+                                request_id: request.request_id,
+                            },
+                        };
+                    }),
+                }
+                return returnObj;
             }
-            return returnObj;
         }
     },
 });
@@ -65,6 +69,6 @@ export const loadPictureRequests = (bbox: BoundingBox): AppThunk => async (dispa
             dispatch(mapSlice.actions.initPictureRequests(pictureRequests.data.fetchPictureRequestsByBoundingBox));
         });
     } catch (error) {
-      dispatch(mapSlice.actions.setPictureRequestStatus("failed"));
+        dispatch(mapSlice.actions.setPictureRequestStatus("failed"));
     }
-  }
+}
