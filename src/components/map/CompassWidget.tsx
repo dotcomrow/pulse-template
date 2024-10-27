@@ -1,9 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import "@styles/map/compass.css"
 
 export default function CompassWidget({ direction, setDirection}: { direction: number, setDirection: (direction: number) => void }) {
 
     const [directionDisplay, setDirectionDisplay] = React.useState('N');
+
+    useEffect(() => {
+        const needle = document.getElementById('needle');
+        if (needle) {
+            needle.style.transform = `rotate(${direction}deg)`;
+        }
+    }, [direction]);
+
+    useEffect(() => {
+        const needle = document.getElementById('needle');
+        if (needle) {
+            needle.style.transform = `rotate(${direction}deg)`;
+        }
+    }, []);
 
     return (
         <div className="w-full flex-col flex p-3">
@@ -19,13 +33,11 @@ export default function CompassWidget({ direction, setDirection}: { direction: n
                 
                 const directionIndex = Math.round(adjustedAngle / 45) % 8;
                 const direction = directions[directionIndex];
-                const needle = document.getElementById('needle');
+                
                 
                 setDirection(Math.floor(adjustedAngle));
                 setDirectionDisplay(direction);
-                if (needle) {
-                    needle.style.transform = `rotate(${direction}deg)`;
-                }
+                
             }}>
                     <div className="needle" id="needle"></div>
                 </div>
