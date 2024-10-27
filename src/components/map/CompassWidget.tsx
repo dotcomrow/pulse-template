@@ -24,7 +24,7 @@ export default function CompassWidget({ direction, setDirection}: { direction: n
                 setDirection(Math.floor(adjustedAngle));
                 setDirectionDisplay(direction);
                 if (needle) {
-                    needle.style.transform = `rotate(${adjustedAngle}deg)`;
+                    needle.style.transform = `rotate(${direction}deg)`;
                 }
             }}>
                     <div className="needle" id="needle"></div>
