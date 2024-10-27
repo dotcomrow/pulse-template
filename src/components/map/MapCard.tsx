@@ -58,13 +58,8 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
         var geojson = new GeoJSON();
         const source = vectorLayer.getSource();
         const features = geojson.readFeatures(pictureRequestsState);
-        if (source) {
-            source.clear();
-        }
-
-        if (!source || !content) {
-            return;
-        }
+        source.clear();
+        
         var feat = new Feature(new Point(coordinate));
         feat.setStyle(new Style({
             image: new CircleStyle({
