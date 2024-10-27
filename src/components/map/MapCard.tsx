@@ -60,7 +60,6 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
         const features = geojson.readFeatures(pictureRequestsState);
         if (source) {
             source.clear();
-            
         }
 
         if (!source || !content) {
@@ -92,7 +91,9 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
             e.preventDefault();
             e.stopPropagation();
             overlay.setPosition(undefined);
-            source.removeFeature(feat);
+            source.clear();
+            const features = geojson.readFeatures(pictureRequestsState);
+            source.addFeatures(features);
         });
     };
 
