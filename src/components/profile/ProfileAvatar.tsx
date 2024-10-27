@@ -69,7 +69,7 @@ const ProfileAvatar = () => {
 
   useEffect(() => {
     if (state.user == undefined && state.status == "complete") {
-      setProfileAvatar(<div className="w-full flex justify-end flex items-center">
+      setProfileAvatar(<div className="w-full flex justify-end">
         <Button size="md" onClick={(e) => handleClick(e)}>Login</Button>
       </div>);
     } else if (state.status == "complete") {
@@ -149,7 +149,7 @@ const ProfileAvatar = () => {
       );
     } else {
       setProfileAvatar(
-        <div className="w-2/5 flex justify-end flex items-center gap-3">
+        <div className="w-2/5 flex justify-end gap-3">
           <div>
             <Skeleton className="flex rounded-full w-10 h-10" />
           </div>

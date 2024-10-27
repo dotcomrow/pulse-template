@@ -8,7 +8,7 @@ import Overlay from "ol/Overlay";
 import View from "ol/View";
 import Map from "ol/Map";
 import TileLayer from "ol/layer/Tile";
-import { transformExtent } from "ol/proj.js";
+import { transformExtent, transform } from "ol/proj.js";
 import OSM from "ol/source/OSM";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import React, { useEffect, useMemo, useCallback } from "react";
@@ -32,6 +32,8 @@ import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import CircleStyle from 'ol/style/Circle';
 import DragPan from 'ol/interaction/DragPan';
+import RequestSubmit from "./RequestSubmit";
+import CloseCross from '@images/icons/close.svg';
 
 export default function MapCard({ initialPosition }: { initialPosition: { coords: { latitude: number, longitude: number } } }) {
 
@@ -48,6 +50,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
     const [vectorLayer, setVectorLayer] = React.useState<VectorLayer>();
     const [overlay, setOverlay] = React.useState<Overlay>();
     const [geomString, setGeomString] = React.useState("");
+    const geojson = new GeoJSON();
 
     const mapClickHandler = (e: any, content: any, overlay: any, vectorLayer: any) => {
         if (document.getElementById("pictureRequestBtn")?.classList.contains("requestModeDisabled")) {
@@ -56,11 +59,10 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
         const coordinate = e.coordinate;
         e.preventDefault();
         e.stopPropagation();
-        var geojson = new GeoJSON();
         const source = vectorLayer.getSource();
         const features = geojson.readFeatures(pictureRequestsState);
         source.clear();
-        
+
         var feat = new Feature(new Point(coordinate));
         feat.setStyle(new Style({
             image: new CircleStyle({
@@ -77,10 +79,6 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
         setGeomString(JSON.stringify(coordinate));
         features.push(feat);
         source.addFeatures(features);
-        
-
-        const hdms = toLonLat(coordinate);
-        content.innerHTML = '<p>You clicked here:</p><code>' + hdms + '</code>';
         overlay.setPosition(coordinate);
 
         document.getElementById('popup-closer')?.addEventListener('click', function (e) {
@@ -109,7 +107,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
             setOverlay(overlay);
             const vectorLayer = new VectorLayer({
                 source: new VectorSource({
-                    features: new GeoJSON().readFeatures({
+                    features: geojson.readFeatures({
                         type: "FeatureCollection",
                         features: []
                     }),
@@ -230,7 +228,6 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
 
     useEffect(() => {
         if (pictureRequestStatus === "complete") {
-            const geojson = new GeoJSON();
             const features = geojson.readFeatures(pictureRequestsState);
             const source = vectorLayer?.getSource();
             if (source) {
@@ -285,7 +282,6 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
         vectorLayer?.getSource()?.clear();
         overlay?.setPosition(undefined);
         setGeomString("");
-        var geojson = new GeoJSON();
         const features = geojson.readFeatures(pictureRequestsState);
         vectorLayer?.getSource()?.addFeatures(features);
 
@@ -306,10 +302,12 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
 
     return (
         <Card className="py-4 mb-auto h-full w-full">
-            <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                <h2 className="text-2xl font-bold pb-3">Activity Near You</h2>
-                <div className="flex-row items-center w-full flex">
-                    <div className="w-1/8">
+            <CardHeader className="pb-0 pt-2 px-4 flex-col">
+                <div className="flex-row w-full flex justify-start">
+                    <h2 className="text-2xl font-bold pb-3">Activity Near You</h2>
+                </div>
+                <div className="flex-row w-full flex">
+                    <div className="w-1/8 justify-start flex">
                         <Tooltip content="Click this icon to allow us to request access and show your device location on map">
                             <Link href="#" onClick={(e) => {
                                 e.preventDefault();
@@ -330,7 +328,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                             </Link>
                         </Tooltip>
                     </div>
-                    <div className="w-5/6">
+                    <div className="md:w-5/6 sm:w-2/3 flex">
                         <Input
                             isClearable
                             value={query}
@@ -358,8 +356,8 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                             }}
                             endContent={searchLoading ? <Spinner size="md" /> : <></>}
                             startContent={
-                                <Popover 
-                                    placement="bottom-start" 
+                                <Popover
+                                    placement="bottom-start"
                                     isOpen={open}
                                     onOpenChange={(e) => {
                                         setOpen(e);
@@ -375,15 +373,15 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                                     </PopoverTrigger>
                                     <PopoverContent>
                                         {items.map((item) => (
-                                            <Link 
-                                                href="#" 
+                                            <Link
+                                                href="#"
                                                 onMouseOver={(e) => {
-                                                    e.currentTarget.style.backgroundColor='#0008ff'
-                                                    e.currentTarget.style.color='#FFFFFF'
+                                                    e.currentTarget.style.backgroundColor = '#0008ff'
+                                                    e.currentTarget.style.color = '#FFFFFF'
                                                 }}
                                                 onMouseOut={(e) => {
-                                                    e.currentTarget.style.backgroundColor='#FFFFFF'
-                                                    e.currentTarget.style.color='#0008ff'
+                                                    e.currentTarget.style.backgroundColor = '#FFFFFF'
+                                                    e.currentTarget.style.color = '#0008ff'
                                                 }}
                                                 onClick={(e: any) => {
                                                     e.preventDefault();
@@ -397,7 +395,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                                                     centerMap({ coords: { latitude: parseFloat(item.lat), longitude: parseFloat(item.lon) } });
                                                     setItems([]);
                                                     setOpen(false);
-                                            }}>
+                                                }}>
                                                 <h2 className="w-full">{item.display_name}</h2>
                                             </Link>
                                         ))}
@@ -406,7 +404,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                             }
                         />
                     </div>
-                    <div className="w-1/8 content-end">
+                    <div className="md:w-1/6 sm:1/3 justify-end flex">
                         <Button id="pictureRequestBtn"
                             startContent={requestMode ? Checkmark() : <></>}
                             onClick={pictureRequestMode}
@@ -421,11 +419,20 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                     <div id="map-container" className="h-full"></div>
                     <div id="popup-container">
                         <Card>
-                            <CardHeader>
-                                <Link href="#" id="popup-closer">Close</Link>
+                            <CardHeader className="flex-row items-center w-full flex">
+                                <div className="w-1/2 justify-start flex">
+                                    <h2 className="font-bold">Request Picture</h2>
+                                </div>
+                                <div className="w-1/2 justify-end flex">
+                                    <Tooltip content="Click this icon to close the request picture popup">
+                                        <Link href="#" id="popup-closer"><CloseCross /></Link>
+                                    </Tooltip>
+                                </div>
                             </CardHeader>
                             <CardBody>
-                                <div id="popup-content"></div>
+                                <div id="popup-content">
+                                    <RequestSubmit geomString={geomString} />
+                                </div>
                             </CardBody>
                         </Card>
                     </div>
