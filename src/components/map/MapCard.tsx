@@ -46,20 +46,22 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
     const [searchLoading, setSearchLoading] = React.useState(false);
     const [vectorLayer, setVectorLayer] = React.useState<VectorLayer>();
     const [overlay, setOverlay] = React.useState<Overlay>();
+    const [geomString, setGeomString] = React.useState("");
 
     const mapClickHandler = (e: any, content: any, overlay: any, vectorLayer: any) => {
         if (document.getElementById("pictureRequestBtn")?.classList.contains("requestModeDisabled")) {
             return;
         }
+        const coordinate = e.coordinate;
         e.preventDefault();
         e.stopPropagation();
         var geojson = new GeoJSON();
         const source = vectorLayer.getSource();
+        const features = geojson.readFeatures(pictureRequestsState);
         if (source) {
             source.clear();
+            
         }
-
-        const coordinate = e.coordinate;
 
         if (!source || !content) {
             return;
@@ -77,13 +79,10 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                 }),
             })
         }));
-
-        var geoJsonStr = geojson.writeFeature(feat);
-        document.getElementById('feature')?.setAttribute('value', geoJsonStr);
-        if (source) {
-            source.addFeature(feat);
-        }
-
+        setGeomString(JSON.stringify(coordinate));
+        features.push(feat);
+        source.addFeatures(features);
+        
 
         const hdms = toLonLat(coordinate);
         content.innerHTML = '<p>You clicked here:</p><code>' + hdms + '</code>';
@@ -93,6 +92,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
             e.preventDefault();
             e.stopPropagation();
             overlay.setPosition(undefined);
+            source.removeFeature(feat);
         });
     };
 
@@ -237,9 +237,21 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
             const source = vectorLayer?.getSource();
             if (source) {
                 source.clear();
-                const inputFeature = document.getElementById('feature')?.getAttribute('value');
-                if (inputFeature && inputFeature.length > 0) {
-                    features.concat(geojson.readFeature(document.getElementById('feature')?.getAttribute('value')));
+                if (geomString.length > 0) {
+                    var feat = new Feature(new Point(JSON.parse(geomString)));
+                    feat.setStyle(new Style({
+                        image: new CircleStyle({
+                            radius: 10,
+                            fill: new Fill({
+                                color: 'rgba(0, 0, 255, 0.1)',
+                            }),
+                            stroke: new Stroke({
+                                color: 'rgba(0, 0, 255, 0.3)',
+                                width: 1,
+                            }),
+                        })
+                    }));
+                    features.push(feat);
                 }
                 source.addFeatures(features);
             }
@@ -362,15 +374,12 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                         />
                     </div>
                     <div className="w-1/8 content-end">
-                        <>
-                            <input type="hidden" id="feature" value="" />
-                            <Button id="pictureRequestBtn"
-                                startContent={requestMode ? Checkmark() : <></>}
-                                onClick={pictureRequestMode}
-                                className={requestMode ? "requestModeEnabled" : "requestModeDisabled"}>
-                                Request Mode
-                            </Button>
-                        </>
+                        <Button id="pictureRequestBtn"
+                            startContent={requestMode ? Checkmark() : <></>}
+                            onClick={pictureRequestMode}
+                            className={requestMode ? "requestModeEnabled" : "requestModeDisabled"}>
+                            Request Mode
+                        </Button>
                     </div>
                 </div>
             </CardHeader>

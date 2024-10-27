@@ -40,22 +40,28 @@ export const mapSlice = createAppSlice({
             if (state.pictureRequests === undefined) {
                 return [];
             } else {
-                const returnObj = {
-                    type: "FeatureCollection",
-                    features: state.pictureRequests.map((request) => {
-                        return {
-                            type: "Feature",
-                            geometry: {
-                                type: "Point",
-                                coordinates: [request.longitude, request.latitude],
-                            },
-                            properties: {
-                                request_id: request.request_id,
-                            },
-                        };
-                    }),
+                try {
+                    const returnObj = {
+                        type: "FeatureCollection",
+                        features: state.pictureRequests.map((request) => {
+                            return {
+                                type: "Feature",
+                                geometry: {
+                                    type: "Point",
+                                    coordinates: [request.longitude, request.latitude],
+                                },
+                                properties: {
+                                    request_id: request.request_id,
+                                },
+                            };
+                        }),
+                    }
+                    return returnObj;
+                } catch (error) {
+                    console.log(error);
+                    console.log(state.pictureRequests);
+                    return [];
                 }
-                return returnObj;
             }
         }
     },
