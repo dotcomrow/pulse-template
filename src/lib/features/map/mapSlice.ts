@@ -37,8 +37,11 @@ export const mapSlice = createAppSlice({
     selectors: {
         selectPictureRequestStatus: (state) => state.pictureRequestStatus,
         selectPictureRequests: (state) => {
-            if (state.pictureRequests === undefined) {
-                return [];
+            if (state.pictureRequests == null) {
+                return {
+                    type: "FeatureCollection",
+                    features: [],
+                };
             } else {
                 try {
                     const returnObj = {
@@ -58,9 +61,10 @@ export const mapSlice = createAppSlice({
                     }
                     return returnObj;
                 } catch (error) {
-                    console.log(error);
-                    console.log(state.pictureRequests);
-                    return [];
+                    return {
+                        type: "FeatureCollection",
+                        features: [],
+                    };
                 }
             }
         }

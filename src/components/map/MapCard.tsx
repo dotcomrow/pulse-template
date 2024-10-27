@@ -31,6 +31,7 @@ import { Spinner } from "@nextui-org/spinner";
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import CircleStyle from 'ol/style/Circle';
+import DragPan from 'ol/interaction/DragPan';
 
 export default function MapCard({ initialPosition }: { initialPosition: { coords: { latitude: number, longitude: number } } }) {
 
@@ -287,6 +288,20 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
         var geojson = new GeoJSON();
         const features = geojson.readFeatures(pictureRequestsState);
         vectorLayer?.getSource()?.addFeatures(features);
+
+        if (requestMode) {
+            map?.getInteractions().forEach(function (interaction) {
+                if (interaction instanceof DragPan) {
+                    interaction.setActive(true);
+                }
+            });
+        } else {
+            map?.getInteractions().forEach(function (interaction) {
+                if (interaction instanceof DragPan) {
+                    interaction.setActive(false);
+                }
+            });
+        }
     };
 
     return (
