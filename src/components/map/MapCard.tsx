@@ -348,7 +348,12 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                             }}
                             endContent={searchLoading ? <Spinner size="md" /> : <></>}
                             startContent={
-                                <Popover placement="bottom-start" isOpen={open}
+                                <Popover 
+                                    placement="bottom-start" 
+                                    isOpen={open}
+                                    onOpenChange={(e) => {
+                                        setOpen(e);
+                                    }}
                                     classNames={{
                                         content: [
                                             "items-start",
