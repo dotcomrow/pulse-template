@@ -10,11 +10,15 @@
     "compile": "clear && export NODE_OPTIONS=--max_old_space_size=16384 && npm install && npx @cloudflare/next-on-pages@latest"
   },
   "dependencies": {
+    "@internationalized/date": "^3.5.6",
     "@next/third-parties": "^15.0.1-canary.3",
-    "node": "18.18.0",
     "@nextui-org/react": "^2.4.8",
+    "@react-aria/i18n": "^3.12.3",
     "@reduxjs/toolkit": "^2.2.7",
     "@styled-system/theme-get": "^5.1.2",
+    "@svgr/core": "^8.1.0",
+    "@svgr/rollup": "^8.1.0",
+    "@svgr/webpack": "^8.1.0",
     "axios": "^1.7.7",
     "axios-mock-adapter": "^1.21.2",
     "chart.js": "^4.1.1",
@@ -29,6 +33,7 @@
     "lodash": "^4.17.21",
     "next": "^15.0.1-canary.3",
     "next-themes": "^0.3.0",
+    "node": "18.18.0",
     "npm-gcp-logging": "^1.0.59",
     "npm-gcp-token": "^1.0.19",
     "nprogress": "^0.2.0",
@@ -55,10 +60,7 @@
     "url": "^0.11.0",
     "vm-browserify": "^1.1.2",
     "webpack": "^5.94.0",
-    "yup": "^0.32.11",
-    "@svgr/core":"^8.1.0",
-    "@svgr/webpack":"^8.1.0",
-    "@svgr/rollup":"^8.1.0"
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.5",
