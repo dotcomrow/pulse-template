@@ -18,7 +18,7 @@ import { findAddress } from "./findAddress";
 import { Input } from "@nextui-org/input";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import { Button, ButtonGroup } from "@nextui-org/button";
-import Link from "next/link";
+import { Link } from "@nextui-org/link";
 import { Tooltip } from "@nextui-org/tooltip";
 import "@styles/map/spinner.css"
 import { BoundingBox, loadPictureRequests } from "@lib/features/map/mapSlice";
@@ -91,6 +91,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
             e.preventDefault();
             e.stopPropagation();
             overlay.setPosition(undefined);
+            setGeomString("");
             source.clear();
             const features = geojson.readFeatures(pictureRequestsState);
             source.addFeatures(features);
@@ -287,6 +288,10 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
         setRequestMode(!requestMode);
         vectorLayer?.getSource()?.clear();
         overlay?.setPosition(undefined);
+        setGeomString("");
+        var geojson = new GeoJSON();
+        const features = geojson.readFeatures(pictureRequestsState);
+        vectorLayer?.getSource()?.addFeatures(features);
     };
 
     return (
@@ -355,19 +360,31 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                                     </PopoverTrigger>
                                     <PopoverContent>
                                         {items.map((item) => (
-                                            <Link href="#" onClick={(e: any) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                if (!item.lon || !item.lat) {
+                                            <Link 
+                                                href="#" 
+                                                onMouseOver={(e) => {
+                                                    e.currentTarget.style.backgroundColor='#0008ff'
+                                                    e.currentTarget.style.color='#FFFFFF'
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    e.currentTarget.style.backgroundColor='#FFFFFF'
+                                                    e.currentTarget.style.color='#0008ff'
+                                                }}
+                                                onClick={(e: any) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    if (!item.lon || !item.lat) {
+                                                        setOpen(false);
+                                                        return;
+                                                    }
+                                                    setQuery("");
+                                                    setSearchDisabled(true);
+                                                    centerMap({ coords: { latitude: parseFloat(item.lat), longitude: parseFloat(item.lon) } });
+                                                    setItems([]);
                                                     setOpen(false);
-                                                    return;
-                                                }
-                                                setQuery("");
-                                                setSearchDisabled(true);
-                                                centerMap({ coords: { latitude: parseFloat(item.lat), longitude: parseFloat(item.lon) } });
-                                                setItems([]);
-                                                setOpen(false);
-                                            }}><h2 className="w-full">{item.display_name}</h2></Link>
+                                            }}>
+                                                <h2 className="w-full">{item.display_name}</h2>
+                                            </Link>
                                         ))}
                                     </PopoverContent>
                                 </Popover>
