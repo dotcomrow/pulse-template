@@ -11,8 +11,9 @@ import { RadioGroup, Radio, useRadio, VisuallyHidden, cn } from "@nextui-org/rea
 import { Button, ButtonGroup } from "@nextui-org/button";
 import savePictureRequests from "@services/map/SavePictureRequest";
 import { Tooltip } from "@nextui-org/tooltip";
+import {Spinner} from "@nextui-org/spinner";
 
-export default function RequestSubmit({ geomString, token }: { geomString: string, token: string }) {
+export default function RequestSubmit({ geomString, token, popupClose }: { geomString: string, token: string, popupClose: any }) {
 
     const [compassDirectionEnabled, setCompassDirectionEnabled] = useState(true);
     const [direction, setDirection] = useState(0);
@@ -21,6 +22,7 @@ export default function RequestSubmit({ geomString, token }: { geomString: strin
     const [requestDescription, setRequestDescription] = useState("");
     const [bidType, setBidType] = useState("free");
     const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
+    const [showLoading, setShowLoading] = useState(false);
 
     useEffect(() => {
         var isSubmitEnabled = true;
@@ -83,6 +85,8 @@ export default function RequestSubmit({ geomString, token }: { geomString: strin
     const submitRequest = (e: any) => {
         e.preventDefault();
 
+        setShowLoading(true);
+
         const parseDate = new Date(
             requestDate.year,
             requestDate.month - 1,
@@ -101,77 +105,87 @@ export default function RequestSubmit({ geomString, token }: { geomString: strin
         };
 
         savePictureRequests(request, token).then((res) => {
-            console.log(res);
+            popupClose(e);
         });
     }
 
     return (
         <div className="flex w-full flex-col">
-            <Tabs aria-label="Options">
-                <Tab key="details" title="Details">
-                    <Checkbox
-                        isSelected={compassDirectionEnabled}
-                        onValueChange={(e) => {
-                            setCompassDirectionEnabled(e);
-                            if (!e) {
-                                setDirection(-1);
-                            } else {
-                                setDirection(0);
-                            }
-                        }}>Verify Compass Direction</Checkbox>
-                    <div className="flex flex-col" id="compass">
-                        <CompassWidget enabled={compassDirectionEnabled} direction={direction} setDirection={setDirection} />
-                        <DateInput
-                            label={"Picture date/time"}
-                            value={requestDate}
-                            className="max-w-sm pt-3"
-                            minValue={parseAbsolute(new Date().toISOString(), Intl.DateTimeFormat().resolvedOptions().timeZone)}
-                            onChange={(e) => {
-                                setRequestDate(e);
-                            }}
-                        />
-                    </div>
-                </Tab>
-                <Tab key="description" title="Description">
-                    <Input
-                        label="Request Title"
-                        placeholder="Enter a title for the request"
-                        className="w-full p-3"
-                        value={requestTitle}
-                        onChange={(e) => {
-                            setRequestTitle(e.currentTarget.value);
-                        }}
+            {showLoading ? 
+                <div>
+                    <Spinner 
+                        size="lg"
+                        color="primary"
+                        label="Submitting request..."
                     />
-                    <Input
-                        label="Request Description"
-                        placeholder="Add details about the request"
-                        className="w-full p-3"
-                        maxLength={500}
-                        value={requestDescription}
-                        onChange={(e) => {
-                            setRequestDescription(e.currentTarget.value);
-                        }}
-                    />
-                </Tab>
-                <Tab key="payment" title="Payment">
-                    <RadioGroup
-                        label="Request Bid"
-                        description="Choose what you are willing to pay for this request"
-                        value={bidType}
-                        onChange={(e) => {
-                            setBidType(e.currentTarget.value);
-                        }}
-                        onValueChange={(e) => {
-                            setBidType(e);
-                        }}
-                    >
-                        <CustomRadio
-                            description="Request will be fulfilled through kindness of community"
-                            value="free"
-                        >
-                            Free
-                        </CustomRadio>
-                        {/* <CustomRadio
+                </div>
+                :
+                <>
+                    <Tabs aria-label="Options">
+                        <Tab key="details" title="Details">
+                            <Checkbox
+                                isSelected={compassDirectionEnabled}
+                                onValueChange={(e) => {
+                                    setCompassDirectionEnabled(e);
+                                    if (!e) {
+                                        setDirection(-1);
+                                    } else {
+                                        setDirection(0);
+                                    }
+                                }}>Verify Compass Direction</Checkbox>
+                            <div className="flex flex-col" id="compass">
+                                <CompassWidget enabled={compassDirectionEnabled} direction={direction} setDirection={setDirection} />
+                                <DateInput
+                                    label={"Picture date/time"}
+                                    value={requestDate}
+                                    className="max-w-sm pt-3"
+                                    minValue={parseAbsolute(new Date().toISOString(), Intl.DateTimeFormat().resolvedOptions().timeZone)}
+                                    onChange={(e) => {
+                                        setRequestDate(e);
+                                    }}
+                                />
+                            </div>
+                        </Tab>
+                        <Tab key="description" title="Description">
+                            <Input
+                                label="Request Title"
+                                placeholder="Enter a title for the request"
+                                className="w-full p-3"
+                                value={requestTitle}
+                                onChange={(e) => {
+                                    setRequestTitle(e.currentTarget.value);
+                                }}
+                            />
+                            <Input
+                                label="Request Description"
+                                placeholder="Add details about the request"
+                                className="w-full p-3"
+                                maxLength={500}
+                                value={requestDescription}
+                                onChange={(e) => {
+                                    setRequestDescription(e.currentTarget.value);
+                                }}
+                            />
+                        </Tab>
+                        <Tab key="payment" title="Payment">
+                            <RadioGroup
+                                label="Request Bid"
+                                description="Choose what you are willing to pay for this request"
+                                value={bidType}
+                                onChange={(e) => {
+                                    setBidType(e.currentTarget.value);
+                                }}
+                                onValueChange={(e) => {
+                                    setBidType(e);
+                                }}
+                            >
+                                <CustomRadio
+                                    description="Request will be fulfilled through kindness of community"
+                                    value="free"
+                                >
+                                    Free
+                                </CustomRadio>
+                                {/* <CustomRadio
                             description="Choose a price to pay for request fulfillment"
                             value="pay"
                             isDisabled={true}
@@ -187,29 +201,25 @@ export default function RequestSubmit({ geomString, token }: { geomString: strin
                         >
                             Enterprise
                         </CustomRadio> */}
-                    </RadioGroup>
-                    <div>
-                        More payment options coming soon!
+                            </RadioGroup>
+                            <div>
+                                More payment options coming soon!
+                            </div>
+                        </Tab>
+                    </Tabs>
+                    <div className="w-full flex justify-end">
+                        <Tooltip content={token.length == 0 ? "Please login to submit a request" : "Complete all fields to submit request"}>
+                            <Button
+                                size="sm"
+                                isDisabled={!isSubmitEnabled}
+                                onClick={submitRequest}
+                            >
+                                Submit Request
+                            </Button>
+                        </Tooltip>
                     </div>
-                </Tab>
-            </Tabs>
-            <div className="w-full flex justify-end">
-                {token.length == 0 ?
-                    <Tooltip content="Please login to submit a request">
-                        <Button
-                            size="sm"
-                            isDisabled={true}
-                            onClick={submitRequest}
-                        >Submit Request</Button>
-                    </Tooltip>
-                    :
-                    <Button
-                        size="sm"
-                        disabled={!isSubmitEnabled}
-                        onClick={submitRequest}
-                    >Submit Request</Button>
-                }
-            </div>
+                </>
+            }
         </div>
     );
 }

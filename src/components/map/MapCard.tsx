@@ -80,16 +80,6 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
         features.push(feat);
         source.addFeatures(features);
         overlay.setPosition(coordinate);
-
-        document.getElementById('popup-closer')?.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            overlay.setPosition(undefined);
-            setGeomString("");
-            source.clear();
-            const features = geojson.readFeatures(pictureRequestsState);
-            source.addFeatures(features);
-        });
     };
 
     const map = useMemo(() => {
@@ -157,7 +147,9 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
             map.on('moveend', debounce(() => {
                 map.getTargetElement().classList.add('spinner');
                 const mapSize = map?.getSize();
+                console.log(map?.getView().calculateExtent(mapSize))
                 const extent = transformExtent(map?.getView().calculateExtent(mapSize), 'EPSG:3857', 'EPSG:4326');
+                console.log(extent);
                 const bbox: BoundingBox = {
                     min_latitude: extent[1],
                     min_longitude: extent[0],
@@ -300,6 +292,16 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
         }
     };
 
+    const closePopup = (e: any) => {
+        e.preventDefault();
+        e.stopPropagation();
+        overlay?.setPosition(undefined);
+        setGeomString("");
+        vectorLayer?.getSource()?.clear();
+        const features = geojson.readFeatures(pictureRequestsState);
+        vectorLayer?.getSource()?.addFeatures(features);
+    }
+
     return (
         <Card className="py-4 mb-auto h-full w-full">
             <CardHeader className="pb-0 pt-2 px-4 flex-col">
@@ -425,13 +427,13 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                                 </div>
                                 <div className="w-1/2 justify-end flex">
                                     <Tooltip content="Click this icon to close the request picture popup">
-                                        <Link href="#" id="popup-closer"><CloseCross /></Link>
+                                        <Link href="#" onClick={closePopup}><CloseCross /></Link>
                                     </Tooltip>
                                 </div>
                             </CardHeader>
                             <CardBody>
                                 <div id="popup-content">
-                                    <RequestSubmit geomString={geomString} token={token}/>
+                                    <RequestSubmit geomString={geomString} token={token} popupClose={closePopup}/>
                                 </div>
                             </CardBody>
                         </Card>
