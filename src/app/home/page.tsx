@@ -28,7 +28,7 @@ export default async function Home() {
             latitude: parseFloat(headersList.get('x-vercel-ip-latitude') ?? '0'),
             longitude: parseFloat(headersList.get('x-vercel-ip-longitude') ?? '0'),
           }
-        }} />
+        }} token={headersList.get("token") ?? ""} />
       </div>
       <div className="w-1/3 flex flex-col">
         <div>

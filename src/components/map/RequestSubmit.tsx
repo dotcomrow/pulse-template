@@ -10,8 +10,9 @@ import { Input } from "@nextui-org/input";
 import { RadioGroup, Radio, useRadio, VisuallyHidden, cn } from "@nextui-org/react";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import savePictureRequests from "@services/map/SavePictureRequest";
+import { Tooltip } from "@nextui-org/tooltip";
 
-export default function RequestSubmit({ geomString }: { geomString: string }) {
+export default function RequestSubmit({ geomString, token }: { geomString: string, token: string }) {
 
     const [compassDirectionEnabled, setCompassDirectionEnabled] = useState(true);
     const [direction, setDirection] = useState(0);
@@ -31,6 +32,10 @@ export default function RequestSubmit({ geomString }: { geomString: string }) {
             if (direction < 0 || direction > 360) {
                 isSubmitEnabled = false;
             }
+        }
+
+        if (token.length == 0) {
+            isSubmitEnabled = false;
         }
 
         setIsSubmitEnabled(isSubmitEnabled);
@@ -75,17 +80,17 @@ export default function RequestSubmit({ geomString }: { geomString: string }) {
         );
     };
 
-    const submitRequest = (e:any) => {
+    const submitRequest = (e: any) => {
         e.preventDefault();
 
         const parseDate = new Date(
-                requestDate.year, 
-                requestDate.month - 1, 
-                requestDate.day, 
-                requestDate.hour, 
-                requestDate.minute,
-                requestDate.second);
-                
+            requestDate.year,
+            requestDate.month - 1,
+            requestDate.day,
+            requestDate.hour,
+            requestDate.minute,
+            requestDate.second);
+
         const request = {
             title: requestTitle,
             description: requestDescription,
@@ -95,7 +100,7 @@ export default function RequestSubmit({ geomString }: { geomString: string }) {
             direction: direction
         };
 
-        savePictureRequests(request).then((res) => {
+        savePictureRequests(request, token).then((res) => {
             console.log(res);
         });
     }
@@ -189,11 +194,13 @@ export default function RequestSubmit({ geomString }: { geomString: string }) {
                 </Tab>
             </Tabs>
             <div className="w-full flex justify-end">
-                <Button 
-                    size="sm" 
-                    isDisabled={!isSubmitEnabled}
-                    onClick={submitRequest}
-                >Submit Request</Button>
+                (token.length == 0) ? <Tooltip content="Please login to submit a request"> : <></>
+                    <Button
+                        size="sm"
+                        isDisabled={!isSubmitEnabled}
+                        onClick={submitRequest}
+                    >Submit Request</Button>
+                (token.length == 0) ? </Tooltip> : <></>
             </div>
         </div>
     );

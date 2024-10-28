@@ -35,7 +35,7 @@ import DragPan from 'ol/interaction/DragPan';
 import RequestSubmit from "./RequestSubmit";
 import CloseCross from '@images/icons/close.svg';
 
-export default function MapCard({ initialPosition }: { initialPosition: { coords: { latitude: number, longitude: number } } }) {
+export default function MapCard({ initialPosition, token }: { initialPosition: { coords: { latitude: number, longitude: number } }, token: string }) {
 
     const store = useAppStore();
     const [mounted, setMounted] = React.useState(false);
@@ -431,7 +431,7 @@ export default function MapCard({ initialPosition }: { initialPosition: { coords
                             </CardHeader>
                             <CardBody>
                                 <div id="popup-content">
-                                    <RequestSubmit geomString={geomString} />
+                                    <RequestSubmit geomString={geomString} token=""/>
                                 </div>
                             </CardBody>
                         </Card>

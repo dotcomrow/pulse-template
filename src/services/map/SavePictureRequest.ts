@@ -14,6 +14,7 @@ export default async function savePictureRequests(
         geom: string;
         direction: number;
     },
+    token: string
 ): Promise<any> {
     const geojson = new GeoJSON();
     var feat = new Feature(new Point(JSON.parse(request.geom)));
@@ -26,6 +27,7 @@ export default async function savePictureRequests(
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
             },
             body: JSON.stringify({
                 query:`
@@ -57,6 +59,7 @@ export default async function savePictureRequests(
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
             },
             body: JSON.stringify({
                 query:`
