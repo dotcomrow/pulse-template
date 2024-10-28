@@ -1,7 +1,8 @@
 import MapCard from "@component/map/MapCard";
 import Link from "next/link";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
-import { headers } from 'next/headers'
+import { headers, cookies } from 'next/headers'
+import LogUtility from "@utils/LoggingUtility";
 
 export const runtime = 'edge';
 
@@ -12,14 +13,14 @@ export default async function Home() {
   //     severity: "INFO",
   //     jsonPayload: {
   //       message: "App Request",
-  //       context: getRequestContext(),
-  //       headers: headers(),
+  //       // context: getRequestContext(),
+  //       headers: await headers(),
   //     },
   //   }
   // ]);
 
   const headersList = await headers();
-
+  const cookieStore = await cookies()
   return (
     <div className="columns-2 flex gap-2 h-full">
       <div className="w-2/3 flex">
@@ -28,7 +29,7 @@ export default async function Home() {
             latitude: parseFloat(headersList.get('x-vercel-ip-latitude') ?? '0'),
             longitude: parseFloat(headersList.get('x-vercel-ip-longitude') ?? '0'),
           }
-        }} token={headersList.get("token") ?? ""} />
+        }} token={cookieStore.get('token')?.value || ''} />
       </div>
       <div className="w-1/3 flex flex-col">
         <div>

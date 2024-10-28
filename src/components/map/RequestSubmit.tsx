@@ -194,13 +194,21 @@ export default function RequestSubmit({ geomString, token }: { geomString: strin
                 </Tab>
             </Tabs>
             <div className="w-full flex justify-end">
-                (token.length == 0) ? <Tooltip content="Please login to submit a request"> : <></>
+                {token.length == 0 ?
+                    <Tooltip content="Please login to submit a request">
+                        <Button
+                            size="sm"
+                            isDisabled={true}
+                            onClick={submitRequest}
+                        >Submit Request</Button>
+                    </Tooltip>
+                    :
                     <Button
                         size="sm"
-                        isDisabled={!isSubmitEnabled}
+                        disabled={!isSubmitEnabled}
                         onClick={submitRequest}
                     >Submit Request</Button>
-                (token.length == 0) ? </Tooltip> : <></>
+                }
             </div>
         </div>
     );
