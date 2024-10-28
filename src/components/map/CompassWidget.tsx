@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import "@styles/map/compass.css"
 
-export default function CompassWidget({ direction, setDirection}: { direction: number, setDirection: (direction: number) => void }) {
+export default function CompassWidget({ enabled, direction, setDirection}: { enabled: boolean, direction: number, setDirection: (direction: number) => void }) {
 
     const [directionDisplay, setDirectionDisplay] = React.useState('N');
 
@@ -20,6 +20,7 @@ export default function CompassWidget({ direction, setDirection}: { direction: n
     }, []);
 
     return (
+        !enabled ? <></> :
         <div className="w-full flex-col flex p-3">
             <div className="w-full flex justify-center">
                 <div className="compass w-2/5 h-24" onClick={(e: React.MouseEvent<HTMLElement>) => {
@@ -34,10 +35,8 @@ export default function CompassWidget({ direction, setDirection}: { direction: n
                 const directionIndex = Math.round(adjustedAngle / 45) % 8;
                 const direction = directions[directionIndex];
                 
-                
                 setDirection(Math.floor(adjustedAngle));
                 setDirectionDisplay(direction);
-                
             }}>
                     <div className="needle" id="needle"></div>
                 </div>
