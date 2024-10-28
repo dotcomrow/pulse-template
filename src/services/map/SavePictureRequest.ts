@@ -39,7 +39,7 @@ export default async function savePictureRequests(
                         }`,
                 variables:{
                     request:{
-                        location: JSON.stringify(geometry),
+                        location: JSON.stringify(geometry).replace(/"/g, "'"),
                         direction: request.direction,
                         capture_timestamp: request.date,
                         requestTitle: request.title,
@@ -71,7 +71,7 @@ export default async function savePictureRequests(
                         }`,
                 variables:{
                     request:{
-                        location: JSON.stringify(geometry),
+                        location: JSON.stringify(geometry).replace(/"/g, "'"),
                         direction: request.direction,
                         capture_timestamp: request.date,
                         requestTitle: request.title,

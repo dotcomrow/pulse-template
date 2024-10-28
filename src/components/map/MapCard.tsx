@@ -431,7 +431,7 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                             </CardHeader>
                             <CardBody>
                                 <div id="popup-content">
-                                    <RequestSubmit geomString={geomString} token=""/>
+                                    <RequestSubmit geomString={geomString} token={token}/>
                                 </div>
                             </CardBody>
                         </Card>
