@@ -399,7 +399,7 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                             }
                         />
                     </div>
-                    <div className="lg:w-1/6 sm:1/3 justify-end flex">
+                    <div className="lg:w-1/6 sm:w-1/3 justify-end flex">
                         <Tooltip content={token.length == 0 ? "Please login to submit a request" : "Select a location on the map and complete the request submit dialog form"}>
                             <div className="w-full justify-end flex">
                                 <Button id="pictureRequestBtn"
