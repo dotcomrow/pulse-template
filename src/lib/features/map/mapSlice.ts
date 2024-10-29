@@ -5,17 +5,23 @@ import fetchPictureRequests from "@services/map/FetchPictureRequests";
 import CircleStyle from 'ol/style/Circle';
 import { Fill, Stroke, Style } from 'ol/style';
 import WKT from 'ol/format/WKT';
+import Feature from 'ol/Feature';
+import Geometry from 'ol/geom/Geometry';
 
 const wktRead = new WKT();
 
 export interface MapSliceState {
     pictureRequests: Array<any>;
     pictureRequestStatus: "idle" | "loading" | "failed" | "complete";
+    limit: number;
+    offset: number;
 }
 
 const initialState: MapSliceState = {
     pictureRequests: [],
     pictureRequestStatus: "idle",
+    limit: 10,
+    offset: 0
 };
 
 export interface BoundingBox {
@@ -38,12 +44,20 @@ export const mapSlice = createAppSlice({
         setPictureRequestStatus: create.reducer((state, action: PayloadAction<"idle" | "loading" | "failed" | "complete">) => {
             state.pictureRequestStatus = action.payload;
         }),
+        setLimit: create.reducer((state, action: PayloadAction<number>) => {
+            state.limit = action.payload;
+        }),
+        setOffset: create.reducer((state, action: PayloadAction<number>) => {
+            state.offset = action.payload;
+        }),
     }),
     selectors: {
         selectPictureRequestStatus: (state) => state.pictureRequestStatus,
-        selectPictureRequests: (state) => {
+        selectLimit: (state) => state.limit,
+        selectOffset: (state) => state.offset,
+        selectPictureRequests: (state): Feature<Geometry>[] => {
             if (state.pictureRequests == null) {
-                return [];
+                return [] as Feature<Geometry>[];
             } else {
                 try {
                     return state.pictureRequests.map((request) => {
@@ -71,21 +85,38 @@ export const mapSlice = createAppSlice({
                         return retFeature;
                     });
                 } catch (error) {
-                    return [];
+                    return [] as Feature<Geometry>[];
                 }
             }
-        }
+        },
     },
 });
 
-export const { selectPictureRequests, selectPictureRequestStatus } = mapSlice.selectors;
+export const { 
+    selectPictureRequests, 
+    selectPictureRequestStatus,
+    selectLimit,
+    selectOffset
+} = mapSlice.selectors;
 
-export const loadPictureRequests = (bbox: BoundingBox): AppThunk => async (dispatch) => {
+export const loadPictureRequests = (bbox: BoundingBox, limit: number, offset: number): AppThunk => async (dispatch) => {
     try {
-        fetchPictureRequests(bbox).then((pictureRequests) => {
+        fetchPictureRequests(bbox, limit, offset).then((pictureRequests) => {
             dispatch(mapSlice.actions.initPictureRequests(pictureRequests.data.fetchPictureRequestsByBoundingBox));
         });
     } catch (error) {
         dispatch(mapSlice.actions.setPictureRequestStatus("failed"));
     }
+}
+
+export const changePage = (page: number): AppThunk => async (dispatch, getState) => {
+    const limit = selectLimit(getState());
+    const offset = (page - 1) * limit;
+    dispatch(mapSlice.actions.setOffset(offset));
+    dispatch(loadPictureRequests({
+        min_latitude: 0,
+        min_longitude: 0,
+        max_latitude: 0,
+        max_longitude: 0
+    }, limit, offset));
 }

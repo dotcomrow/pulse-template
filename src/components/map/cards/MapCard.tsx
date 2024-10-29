@@ -2,7 +2,7 @@
 
 import VectorSource from "ol/source/Vector";
 import GeoJSON from "ol/format/GeoJSON";
-import { bbox } from "ol/loadingstrategy.js";
+import { bbox } from "ol/loadingstrategy";
 import VectorLayer from "ol/layer/Vector";
 import Overlay from "ol/Overlay";
 import View from "ol/View";
@@ -10,8 +10,8 @@ import Map from "ol/Map";
 import TileLayer from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
-import React, { useEffect, useMemo, useCallback } from "react";
-import { useGeographic, toLonLat, fromLonLat } from "ol/proj.js";
+import React, { useEffect, useMemo } from "react";
+import { useGeographic } from "ol/proj.js";
 import { Image } from "@nextui-org/image";
 import { findAddress } from "@component/map/components/findAddress";
 import { Input } from "@nextui-org/input";
@@ -21,21 +21,29 @@ import { Link } from "@nextui-org/link";
 import { Tooltip } from "@nextui-org/tooltip";
 import "@styles/map/spinner.css"
 import { BoundingBox, loadPictureRequests } from "@lib/features/map/mapSlice";
-import { selectPictureRequests, selectPictureRequestStatus } from "@lib/features/map/mapSlice";
+import { 
+    selectPictureRequests, 
+    selectPictureRequestStatus,
+    selectLimit,
+    selectOffset
+} from "@lib/features/map/mapSlice";
 import { useAppSelector, useAppStore, useAppDispatch } from "@hook/redux";
-import { debounce, set } from 'lodash';
+import { debounce } from 'lodash';
 import { Fill, Stroke, Style } from 'ol/style';
-import Checkmark from '@images/icons/check.svg';
 import { Spinner } from "@nextui-org/spinner";
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import CircleStyle from 'ol/style/Circle';
 import DragPan from 'ol/interaction/DragPan';
-import RequestSubmit from "../components/RequestSubmit";
-import CloseCross from '@images/icons/close.svg';
-import SearchIcon from '@images/icons/search.svg';
+import MapRequestPopup from "@component/modals/map/MapRequestPopup";
 
-export default function MapCard({ initialPosition, token }: { initialPosition: { coords: { latitude: number, longitude: number } }, token: string }) {
+export default function MapCard({
+    initialPosition,
+    token
+}: {
+    initialPosition: { coords: { latitude: number, longitude: number } },
+    token: string
+}) {
 
     const store = useAppStore();
     const [mounted, setMounted] = React.useState(false);
@@ -44,6 +52,8 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
     const [open, setOpen] = React.useState(false);
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: any = useAppSelector(selectPictureRequestStatus);
+    const limitSelect: number = useAppSelector(selectLimit);
+    const offsetSelect: number = useAppSelector(selectOffset);
     const [searchDisabled, setSearchDisabled] = React.useState(true);
     const [requestMode, setRequestMode] = React.useState(false);
     const [searchLoading, setSearchLoading] = React.useState(false);
@@ -170,7 +180,7 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                     max_latitude: extent[2],
                     max_longitude: extent[3],
                 };
-                store.dispatch(loadPictureRequests(bbox));
+                store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
             }, 500));
             map.on('click', (e) => {
                 mapClickHandler(e, overlay, vectorLayer);
@@ -230,10 +240,15 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
     const pictureRequestMode = (e: any) => {
         e.preventDefault();
         e.stopPropagation();
-        setRequestMode(!requestMode);
+
+        var rm = !document.getElementById("pictureRequestBtn")?.classList.toggle("requestModeDisabled");
+        if (rm == undefined) {
+            rm = false;
+        }
+        setRequestMode(rm);
         overlay?.setPosition(undefined);
         clearRequest();
-        if (requestMode) {
+        if (rm) {
             map?.getInteractions().forEach(function (interaction) {
                 if (interaction instanceof DragPan) {
                     interaction.setActive(true);
@@ -247,13 +262,6 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
             });
         }
     };
-
-    const closePopup = (e: any) => {
-        e.preventDefault();
-        e.stopPropagation();
-        overlay?.setPosition(undefined);
-        clearRequest();
-    }
 
     return (
         <Card className="py-4 mb-auto h-full w-full">
@@ -335,12 +343,10 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                                                     width={35}
                                                     height={35}
                                                     shadow="sm"
-                                                    // radius="sm"
                                                     onClick={searchHandler}
                                                     style={{
                                                         cursor: searchDisabled ? "default" : "pointer",
                                                         padding: "0.5rem",
-                                                        borderRadius: "50%",
                                                     }}
                                                     alt="Click to move map to current location"
                                                 />
@@ -385,10 +391,20 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                         <Tooltip content={token.length == 0 ? "Please login to submit a request" : "Select a location on the map and complete the request submit dialog form"}>
                             <div className="w-full justify-end flex">
                                 <Button id="pictureRequestBtn"
-                                    startContent={requestMode ? Checkmark() : <></>}
+                                    startContent={requestMode ? <div className="shrink-0">
+                                        <Image
+                                            src="/assets/images/icons/check.svg"
+                                            width={40}
+                                            height={40}
+                                            style={{
+                                                padding: "0.5rem",
+                                            }}
+                                        />
+                                    </div> : <></>}
                                     onClick={pictureRequestMode}
                                     isDisabled={token.length == 0}
-                                    className={requestMode ? "requestModeEnabled" : "requestModeDisabled"}>
+                                    className="requestModeDisabled"
+                                >
                                     Request Mode
                                 </Button>
                             </div>
@@ -400,25 +416,16 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                 <div className="bg-white p-dynamic h-full">
                     <div id="map-container" className="h-full"></div>
                     <div id="popup-container">
-                        <Card>
-                            <CardHeader className="flex-row items-center w-full flex">
-                                <div className="w-1/2 justify-start flex">
-                                    <h2 className="font-bold">Request Picture</h2>
-                                </div>
-                                <div className="w-1/2 justify-end flex">
-                                    <Tooltip content="Click this icon to close the request picture popup">
-                                        <Link href="#" onClick={closePopup}><CloseCross /></Link>
-                                    </Tooltip>
-                                </div>
-                            </CardHeader>
-                            <CardBody>
-                                <div id="popup-content">
-                                    <RequestSubmit geomString={
-                                        JSON.stringify(vectorLayer?.getSource()?.getFeatureById("request")?.getGeometry()?.getCoordinates())
-                                    } token={token} popupClose={closePopup} />
-                                </div>
-                            </CardBody>
-                        </Card>
+                        <MapRequestPopup 
+                            closePopup={(e: any) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                overlay?.setPosition(undefined);
+                                clearRequest();
+                            }}
+                            vectorLayer={vectorLayer}
+                            token={token} 
+                        />
                     </div>
                 </div>
             </CardBody>

@@ -3,7 +3,7 @@
 import { getRequestContext } from "@cloudflare/next-on-pages";
 import { BoundingBox } from "@lib/features/map/mapSlice";
 
-export default async function fetchPictureRequests(bbox: BoundingBox): Promise<any> {
+export default async function fetchPictureRequests(bbox: BoundingBox, limit: number, offset: number): Promise<any> {
     const env = getRequestContext().env as { GRAPHQL?: { fetch: (url: string, options: any) => Promise<any> } };
     try {
         // using service binding when deployed
@@ -21,8 +21,8 @@ export default async function fetchPictureRequests(bbox: BoundingBox): Promise<a
                         max_latitude: ${bbox.max_latitude},
                         max_longitude: ${bbox.max_longitude}
                     },
-                    limit: 10,
-                    offset: 0) {
+                    limit: ${limit},
+                    offset: ${offset}) {
                         request_id
                         account_id
                         capture_timestamp
@@ -32,6 +32,7 @@ export default async function fetchPictureRequests(bbox: BoundingBox): Promise<a
                         bid_type
                         request_title
                         request_description
+                        total
                     }
                 }
             `,
@@ -57,8 +58,8 @@ export default async function fetchPictureRequests(bbox: BoundingBox): Promise<a
                         max_latitude: ${bbox.max_latitude},
                         max_longitude: ${bbox.max_longitude}
                     },
-                    limit: 10,
-                    offset: 0) {
+                    limit: ${limit},
+                    offset: ${offset}) {
                         request_id
                         account_id
                         capture_timestamp
@@ -68,6 +69,7 @@ export default async function fetchPictureRequests(bbox: BoundingBox): Promise<a
                         bid_type
                         request_title
                         request_description
+                        total
                     }
                 }
             `,
