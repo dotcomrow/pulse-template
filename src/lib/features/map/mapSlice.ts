@@ -43,45 +43,35 @@ export const mapSlice = createAppSlice({
         selectPictureRequestStatus: (state) => state.pictureRequestStatus,
         selectPictureRequests: (state) => {
             if (state.pictureRequests == null) {
-                return {
-                    type: "FeatureCollection",
-                    features: [],
-                };
+                return [];
             } else {
                 try {
-                    const returnObj = {
-                        type: "FeatureCollection",
-                        features: state.pictureRequests.map((request) => {
-                            var retFeature = wktRead.readFeature(request.location);
-                            retFeature.setStyle(new Style({
-                                image: new CircleStyle({
-                                    radius: 10,
-                                    fill: new Fill({
-                                        color: 'rgba(0, 0, 255, 0.1)',
-                                    }),
-                                    stroke: new Stroke({
-                                        color: 'rgba(0, 0, 255, 0.3)',
-                                        width: 1,
-                                    }),
+                    return state.pictureRequests.map((request) => {
+                        var retFeature = wktRead.readFeature(request.location);
+                        retFeature.setStyle(new Style({
+                            image: new CircleStyle({
+                                radius: 10,
+                                fill: new Fill({
+                                    color: 'rgba(0, 0, 255, 0.1)',
                                 }),
-                            }));
-                            retFeature.setProperties({
-                                request_title: request.request_title,
-                                request_description: request.request_description,
-                                bid_type: request.bid_type,
-                                capture_timestamp: request.capture_timestamp,
-                                direction: request.direction,
-                            });
-                            retFeature.setId(request.request_id);
-                            return retFeature;
-                        }),
-                    }
-                    return returnObj;
+                                stroke: new Stroke({
+                                    color: 'rgba(0, 0, 255, 0.3)',
+                                    width: 1,
+                                }),
+                            }),
+                        }));
+                        retFeature.setProperties({
+                            request_title: request.request_title,
+                            request_description: request.request_description,
+                            bid_type: request.bid_type,
+                            capture_timestamp: request.capture_timestamp,
+                            direction: request.direction,
+                        });
+                        retFeature.setId(request.request_id);
+                        return retFeature;
+                    });
                 } catch (error) {
-                    return {
-                        type: "FeatureCollection",
-                        features: [],
-                    };
+                    return [];
                 }
             }
         }

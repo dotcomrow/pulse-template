@@ -48,10 +48,9 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
     const [searchLoading, setSearchLoading] = React.useState(false);
     const [vectorLayer, setVectorLayer] = React.useState<VectorLayer>();
     const [overlay, setOverlay] = React.useState<Overlay>();
-    const [geomString, setGeomString] = React.useState("");
     const geojson = new GeoJSON();
 
-    const mapClickHandler = (e: any, content: any, overlay: any, vectorLayer: any) => {
+    const mapClickHandler = (e: any, overlay: any, vectorLayer: any) => {
         if (document.getElementById("pictureRequestBtn")?.classList.contains("requestModeDisabled")) {
             return;
         }
@@ -59,35 +58,46 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
         e.stopPropagation();
         const coordinate = e.coordinate;
         const source = vectorLayer.getSource();
-        const features = geojson.readFeatures(pictureRequestsState);
-        setGeomString(JSON.stringify(coordinate));
-        vectorLayer?.getSource()?.removeFeature(vectorLayer?.getSource()?.getFeatureById("request"));
+        const features = pictureRequestsState;
+
+        const requestFeature = vectorLayer?.getSource()?.getFeatureById("request");
+        if (!requestFeature) {
+            var feat = new Feature(new Point(coordinate));
+            feat.setStyle(new Style({
+                image: new CircleStyle({
+                    radius: 10,
+                    fill: new Fill({
+                        color: 'rgba(0, 0, 255, 0.1)',
+                    }),
+                    stroke: new Stroke({
+                        color: 'rgba(0, 0, 255, 0.3)',
+                        width: 1,
+                    }),
+                })
+            }));
+            feat.setId("request");
+            vectorLayer?.getSource()?.addFeature(feat);
+
+        } else {
+            vectorLayer?.getSource()?.getFeatureById("request").getGeometry().setCoordinates(coordinate);
+        }
         vectorLayer?.setVisible(false);
         vectorLayer?.setVisible(true);
-
-        var feat = new Feature(new Point(coordinate));
-        feat.setStyle(new Style({
-            image: new CircleStyle({
-                radius: 10,
-                fill: new Fill({
-                    color: 'rgba(0, 0, 255, 0.1)',
-                }),
-                stroke: new Stroke({
-                    color: 'rgba(0, 0, 255, 0.3)',
-                    width: 1,
-                }),
-            })
-        }));
-        feat.setId("request");
-        features.push(feat);
         source.addFeatures(features);
         overlay.setPosition(coordinate);
+    };
+
+    const clearRequest = () => {
+        if (vectorLayer?.getSource()?.getFeatureById("request")) {
+            vectorLayer?.getSource()?.getFeatureById("request").getGeometry().setCoordinates([0, 0]);
+            vectorLayer?.setVisible(false);
+            vectorLayer?.setVisible(true);
+        }
     };
 
     const map = useMemo(() => {
         if (mounted) {
             const container = document.getElementById('popup-container');
-            const content = document.getElementById('popup-content');
             const overlay = container ? new Overlay({
                 element: container,
                 autoPan: {
@@ -162,7 +172,7 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                 store.dispatch(loadPictureRequests(bbox));
             }, 500));
             map.on('click', (e) => {
-                mapClickHandler(e, content, overlay, vectorLayer);
+                mapClickHandler(e, overlay, vectorLayer);
             });
             return map;
         }
@@ -224,29 +234,7 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
     useEffect(() => {
         if (pictureRequestStatus === "complete") {
             const features = pictureRequestsState;
-            const source = vectorLayer?.getSource();
-            if (source) {
-                vectorLayer?.getSource()?.removeFeature(vectorLayer?.getSource()?.getFeatureById("request"));
-                vectorLayer?.setVisible(false);
-                vectorLayer?.setVisible(true);
-                if (geomString.length > 0) {
-                    var feat = new Feature(new Point(JSON.parse(geomString)));
-                    feat.setStyle(new Style({
-                        image: new CircleStyle({
-                            radius: 10,
-                            fill: new Fill({
-                                color: 'rgba(0, 0, 255, 0.1)',
-                            }),
-                            stroke: new Stroke({
-                                color: 'rgba(0, 0, 255, 0.3)',
-                                width: 1,
-                            }),
-                        })
-                    }));
-                    features.features.push(feat);
-                }
-                source.addFeatures(features.features);
-            }
+            vectorLayer?.getSource()?.addFeatures(features);
             map?.getTargetElement().classList.remove('spinner');
         }
     }, [pictureRequestsState]);
@@ -277,10 +265,7 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
         e.stopPropagation();
         setRequestMode(!requestMode);
         overlay?.setPosition(undefined);
-        setGeomString("");
-        vectorLayer?.getSource()?.removeFeature(vectorLayer?.getSource()?.getFeatureById("request"));
-        vectorLayer?.setVisible(false);
-        vectorLayer?.setVisible(true);
+        clearRequest();
         if (requestMode) {
             map?.getInteractions().forEach(function (interaction) {
                 if (interaction instanceof DragPan) {
@@ -300,10 +285,7 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
         e.preventDefault();
         e.stopPropagation();
         overlay?.setPosition(undefined);
-        setGeomString("");
-        vectorLayer?.getSource()?.removeFeature(vectorLayer?.getSource()?.getFeatureById("request"));
-        vectorLayer?.setVisible(false);
-        vectorLayer?.setVisible(true);
+        clearRequest();
     }
 
     return (
@@ -437,7 +419,9 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                             </CardHeader>
                             <CardBody>
                                 <div id="popup-content">
-                                    <RequestSubmit geomString={geomString} token={token} popupClose={closePopup}/>
+                                    <RequestSubmit geomString={
+                                        vectorLayer?.getSource()?.getFeatureById("request")?.getGeometry()?.getCoordinates().toString()
+                                    } token={token} popupClose={closePopup} />
                                 </div>
                             </CardBody>
                         </Card>
