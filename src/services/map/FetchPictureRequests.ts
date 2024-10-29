@@ -22,6 +22,14 @@ export default async function fetchPictureRequests(bbox: BoundingBox): Promise<a
                         max_longitude: ${bbox.max_longitude}
                     }) {
                         request_id
+                        account_id
+                        capture_timestamp
+                        direction
+                        location
+                        updated_at
+                        bid_type
+                        request_title
+                        request_description
                     }
                 }
             `,
@@ -48,6 +56,14 @@ export default async function fetchPictureRequests(bbox: BoundingBox): Promise<a
                         max_longitude: ${bbox.max_longitude}
                     }) {
                         request_id
+                        account_id
+                        capture_timestamp
+                        direction
+                        location
+                        updated_at
+                        bid_type
+                        request_title
+                        request_description
                     }
                 }
             `,
