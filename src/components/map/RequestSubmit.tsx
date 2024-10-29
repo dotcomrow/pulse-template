@@ -106,6 +106,7 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
 
         savePictureRequests(request, token).then((res) => {
             popupClose(e);
+            setShowLoading(false);
         });
     }
 
