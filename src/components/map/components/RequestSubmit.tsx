@@ -3,7 +3,7 @@
 import { Tabs, Tab } from "@nextui-org/tabs";
 import { Checkbox } from "@nextui-org/checkbox";
 import { useEffect, useState } from "react";
-import CompassWidget from "./CompassWidget";
+import CompassWidget from "../widgets/CompassWidget";
 import { DateInput } from "@nextui-org/date-input";
 import { parseAbsolute } from "@internationalized/date";
 import { Input } from "@nextui-org/input";
@@ -79,7 +79,6 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
 
     const submitRequest = (e: any) => {
         e.preventDefault();
-
         setShowLoading(true);
 
         const parseDate = new Date(

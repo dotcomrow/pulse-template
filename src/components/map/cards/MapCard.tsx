@@ -13,7 +13,7 @@ import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import React, { useEffect, useMemo, useCallback } from "react";
 import { useGeographic, toLonLat, fromLonLat } from "ol/proj.js";
 import { Image } from "@nextui-org/image";
-import { findAddress } from "./findAddress";
+import { findAddress } from "../components/findAddress";
 import { Input } from "@nextui-org/input";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import { Button, ButtonGroup } from "@nextui-org/button";
@@ -31,7 +31,7 @@ import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import CircleStyle from 'ol/style/Circle';
 import DragPan from 'ol/interaction/DragPan';
-import RequestSubmit from "./RequestSubmit";
+import RequestSubmit from "../components/RequestSubmit";
 import CloseCross from '@images/icons/close.svg';
 
 export default function MapCard({ initialPosition, token }: { initialPosition: { coords: { latitude: number, longitude: number } }, token: string }) {
@@ -432,7 +432,7 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                             <CardBody>
                                 <div id="popup-content">
                                     <RequestSubmit geomString={
-                                        vectorLayer?.getSource()?.getFeatureById("request")?.getGeometry()?.getCoordinates().toString()
+                                        JSON.stringify(vectorLayer?.getSource()?.getFeatureById("request")?.getGeometry()?.getCoordinates())
                                     } token={token} popupClose={closePopup} />
                                 </div>
                             </CardBody>
