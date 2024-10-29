@@ -33,7 +33,13 @@ export default async function Home() {
       </div>
       <div className="w-1/3 flex flex-col gap-3">
         <div>
-          <ActivityNearYouCard />
+          <ActivityNearYouCard initialPosition={{
+            coords: {
+              latitude: parseFloat(headersList.get('x-vercel-ip-latitude') ?? '0'),
+              longitude: parseFloat(headersList.get('x-vercel-ip-longitude') ?? '0'),
+            }
+          }} token={cookieStore.get('token')?.value || ''}
+          />
         </div>
         <div>
           <Card className="py-4 w-full">

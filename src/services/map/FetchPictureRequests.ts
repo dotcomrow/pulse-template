@@ -20,7 +20,9 @@ export default async function fetchPictureRequests(bbox: BoundingBox): Promise<a
                         min_longitude: ${bbox.min_longitude},
                         max_latitude: ${bbox.max_latitude},
                         max_longitude: ${bbox.max_longitude}
-                    }) {
+                    },
+                    limit: 10,
+                    offset: 0) {
                         request_id
                         account_id
                         capture_timestamp
@@ -54,7 +56,9 @@ export default async function fetchPictureRequests(bbox: BoundingBox): Promise<a
                         min_longitude: ${bbox.min_longitude},
                         max_latitude: ${bbox.max_latitude},
                         max_longitude: ${bbox.max_longitude}
-                    }) {
+                    },
+                    limit: 10,
+                    offset: 0) {
                         request_id
                         account_id
                         capture_timestamp

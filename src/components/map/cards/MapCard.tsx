@@ -13,7 +13,7 @@ import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import React, { useEffect, useMemo, useCallback } from "react";
 import { useGeographic, toLonLat, fromLonLat } from "ol/proj.js";
 import { Image } from "@nextui-org/image";
-import { findAddress } from "../components/findAddress";
+import { findAddress } from "@component/map/components/findAddress";
 import { Input } from "@nextui-org/input";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import { Button, ButtonGroup } from "@nextui-org/button";
@@ -33,6 +33,7 @@ import CircleStyle from 'ol/style/Circle';
 import DragPan from 'ol/interaction/DragPan';
 import RequestSubmit from "../components/RequestSubmit";
 import CloseCross from '@images/icons/close.svg';
+import SearchIcon from '@images/icons/search.svg';
 
 export default function MapCard({ initialPosition, token }: { initialPosition: { coords: { latitude: number, longitude: number } }, token: string }) {
 
@@ -191,45 +192,11 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                 setItems(searchResults);
             }
             setQuery("");
-            setSearchDisabled(true);
             setOpen(true);
+            setSearchDisabled(true);
             setSearchLoading(false);
         });
     }
-
-    const SearchIcon = ({
-        size = 24,
-        isDisabled = { searchDisabled },
-        ...props
-    }) => (
-        <Link href="#" style={{ cursor: isDisabled.searchDisabled ? "default" : "pointer" }}>
-            <svg
-                aria-hidden="true"
-                fill="none"
-                focusable="false"
-                height={size}
-                role="presentation"
-                viewBox="0 0 24 24"
-                width={size}
-                {...props}
-            >
-                <path
-                    d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z"
-                    stroke={isDisabled.searchDisabled ? "grey" : "blue"}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={isDisabled.searchDisabled ? 1.5 : 2.5}
-                />
-                <path
-                    d="M22 22L20 20"
-                    stroke={isDisabled.searchDisabled ? "grey" : "blue"}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={isDisabled.searchDisabled ? 1.5 : 2.5}
-                />
-            </svg>
-        </Link>
-    );
 
     useEffect(() => {
         if (pictureRequestStatus === "complete") {
@@ -312,13 +279,14 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                                         maximumAge: 0,
                                     });
                             }}>
-                                <Image 
-                                    src="/assets/images/icons/location.svg" 
-                                    width={40} 
-                                    height={40} 
+                                <Image
+                                    src="/assets/images/icons/location.svg"
+                                    width={40}
+                                    height={40}
                                     shadow="sm"
                                     radius="sm"
-                                    alt="Click to move map to current location" 
+                                    className="p-1"
+                                    alt="Click to move map to current location"
                                 />
                             </Link>
                         </Tooltip>
@@ -331,10 +299,6 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                             placeholder="Enter a location"
                             labelPlacement="outside"
                             className="w-full px-2 z-20"
-                            onClear={() => {
-                                setQuery("")
-                                setSearchDisabled(true);
-                            }}
                             onChange={(e) => {
                                 setQuery(e.target.value);
                                 if (query.length > 0) {
@@ -364,7 +328,25 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                                         ]
                                     }}>
                                     <PopoverTrigger>
-                                        <SearchIcon onClick={searchHandler} />
+                                        <div className="shrink-0">
+                                            <Tooltip content={searchDisabled ? "Enter a point of interest to find" : "Click this icon or press enter to search"}>
+                                                <Image
+                                                    src="/assets/images/icons/search.svg"
+                                                    width={35}
+                                                    height={35}
+                                                    shadow="sm"
+                                                    // radius="sm"
+                                                    onClick={searchHandler}
+                                                    style={{
+                                                        cursor: searchDisabled ? "default" : "pointer",
+                                                        padding: "0.5rem",
+                                                        borderRadius: "50%",
+                                                    }}
+                                                    alt="Click to move map to current location"
+                                                />
+                                            </Tooltip>
+                                        </div>
+
                                     </PopoverTrigger>
                                     <PopoverContent>
                                         {items.map((item) => (

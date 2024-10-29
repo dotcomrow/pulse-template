@@ -1,12 +1,12 @@
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 
-export default function ActivityNearYouCard() {
+export default function ActivityNearYouCard({ initialPosition, token }: { initialPosition: { coords: { latitude: number, longitude: number } }, token: string }) {
     return (
         <Card className="py-4 w-full">
             <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                <p className="text-tiny uppercase font-bold">Daily Mix</p>
-                <small className="text-default-500">12 Tracks</small>
-                <h4 className="font-bold text-large">Frontend Radio</h4>
+                <div className="flex-row w-full flex justify-start">
+                    <h2 className="text-2xl font-bold pb-3">Nearby Requests</h2>
+                </div>
             </CardHeader>
             <CardBody className="overflow-visible py-2">
                 open requests near you
