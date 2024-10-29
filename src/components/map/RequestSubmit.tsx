@@ -10,8 +10,7 @@ import { Input } from "@nextui-org/input";
 import { RadioGroup, Radio, useRadio, VisuallyHidden, cn } from "@nextui-org/react";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import savePictureRequests from "@services/map/SavePictureRequest";
-import { Tooltip } from "@nextui-org/tooltip";
-import {Spinner} from "@nextui-org/spinner";
+import { Spinner } from "@nextui-org/spinner";
 
 export default function RequestSubmit({ geomString, token, popupClose }: { geomString: string, token: string, popupClose: any }) {
 
@@ -34,10 +33,6 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
             if (direction < 0 || direction > 360) {
                 isSubmitEnabled = false;
             }
-        }
-
-        if (token.length == 0) {
-            isSubmitEnabled = false;
         }
 
         setIsSubmitEnabled(isSubmitEnabled);
@@ -112,9 +107,9 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
 
     return (
         <div className="flex w-full flex-col">
-            {showLoading ? 
+            {showLoading ?
                 <div>
-                    <Spinner 
+                    <Spinner
                         size="lg"
                         color="primary"
                         label="Submitting request..."
@@ -209,15 +204,13 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
                         </Tab>
                     </Tabs>
                     <div className="w-full flex justify-end">
-                        <Tooltip content={token.length == 0 ? "Please login to submit a request" : "Complete all fields to submit request"}>
-                            <Button
-                                size="sm"
-                                isDisabled={!isSubmitEnabled}
-                                onClick={submitRequest}
-                            >
-                                Submit Request
-                            </Button>
-                        </Tooltip>
+                        <Button
+                            size="sm"
+                            isDisabled={!isSubmitEnabled}
+                            onClick={submitRequest}
+                        >
+                            Submit Request
+                        </Button>
                     </div>
                 </>
             }

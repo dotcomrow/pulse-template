@@ -295,7 +295,7 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                     <h2 className="text-2xl font-bold pb-3">Activity Near You</h2>
                 </div>
                 <div className="flex-row w-full flex">
-                    <div className="w-1/8 justify-start flex">
+                    <div className="w-1/8 shrink-0 justify-start flex">
                         <Tooltip content="Click this icon to allow us to request access and show your device location on map">
                             <Link href="#" onClick={(e) => {
                                 e.preventDefault();
@@ -312,11 +312,18 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                                         maximumAge: 0,
                                     });
                             }}>
-                                <Image src="/assets/images/icons/location.svg" width={40} height={40} alt="Click to move map to current location" />
+                                <Image 
+                                    src="/assets/images/icons/location.svg" 
+                                    width={40} 
+                                    height={40} 
+                                    shadow="sm"
+                                    radius="sm"
+                                    alt="Click to move map to current location" 
+                                />
                             </Link>
                         </Tooltip>
                     </div>
-                    <div className="md:w-5/6 sm:w-2/3 flex">
+                    <div className="lg:w-5/6 sm:w-2/3 flex">
                         <Input
                             isClearable
                             value={query}
@@ -392,13 +399,18 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                             }
                         />
                     </div>
-                    <div className="md:w-1/6 sm:1/3 justify-end flex">
-                        <Button id="pictureRequestBtn"
-                            startContent={requestMode ? Checkmark() : <></>}
-                            onClick={pictureRequestMode}
-                            className={requestMode ? "requestModeEnabled" : "requestModeDisabled"}>
-                            Request Mode
-                        </Button>
+                    <div className="lg:w-1/6 sm:1/3 justify-end flex">
+                        <Tooltip content={token.length == 0 ? "Please login to submit a request" : "Select a location on the map and complete the request submit dialog form"}>
+                            <div className="w-full justify-end flex">
+                                <Button id="pictureRequestBtn"
+                                    startContent={requestMode ? Checkmark() : <></>}
+                                    onClick={pictureRequestMode}
+                                    isDisabled={token.length == 0}
+                                    className={requestMode ? "requestModeEnabled" : "requestModeDisabled"}>
+                                    Request Mode
+                                </Button>
+                            </div>
+                        </Tooltip>
                     </div>
                 </div>
             </CardHeader>
