@@ -20,6 +20,8 @@ export default async function savePictureRequests(
     var feat = new Feature(new Point(JSON.parse(request.geom)));
     const featureObj = JSON.parse(geojson.writeFeature(feat));
     const geometry = featureObj.geometry;
+    const revGeom = [geometry.coordinates[1], geometry.coordinates[0]];
+    geometry.coordinates = revGeom;
     const env = getRequestContext().env as { GRAPHQL?: { fetch: (url: string, options: any) => Promise<any> } };
     try {
         // using service binding when deployed

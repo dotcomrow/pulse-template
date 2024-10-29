@@ -12,7 +12,7 @@ import { transformExtent, transform } from "ol/proj.js";
 import OSM from "ol/source/OSM";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import React, { useEffect, useMemo, useCallback } from "react";
-import { useGeographic, toLonLat } from "ol/proj.js";
+import { useGeographic, toLonLat, fromLonLat } from "ol/proj.js";
 import { Image } from "@nextui-org/image";
 import { findAddress } from "./findAddress";
 import { Input } from "@nextui-org/input";
@@ -147,14 +147,12 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
             map.on('moveend', debounce(() => {
                 map.getTargetElement().classList.add('spinner');
                 const mapSize = map?.getSize();
-                console.log(map?.getView().calculateExtent(mapSize))
-                const extent = transformExtent(map?.getView().calculateExtent(mapSize), 'EPSG:3857', 'EPSG:4326');
-                console.log(extent);
+                const extent = map?.getView().calculateExtent(mapSize);
                 const bbox: BoundingBox = {
-                    min_latitude: extent[1],
-                    min_longitude: extent[0],
-                    max_latitude: extent[3],
-                    max_longitude: extent[2],
+                    min_latitude: extent[0],
+                    min_longitude: extent[1],
+                    max_latitude: extent[2],
+                    max_longitude: extent[3],
                 };
                 store.dispatch(loadPictureRequests(bbox));
             }, 500));
