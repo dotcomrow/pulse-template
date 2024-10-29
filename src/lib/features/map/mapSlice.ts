@@ -2,6 +2,11 @@ import { createAppSlice } from "@lib/createAppSlice";
 import type { AppThunk } from "@lib/store";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import fetchPictureRequests from "@services/map/FetchPictureRequests";
+import CircleStyle from 'ol/style/Circle';
+import { Fill, Stroke, Style } from 'ol/style';
+import WKT from 'ol/format/WKT';
+
+const wktRead = new WKT();
 
 export interface MapSliceState {
     pictureRequests: Array<any>;
@@ -47,16 +52,28 @@ export const mapSlice = createAppSlice({
                     const returnObj = {
                         type: "FeatureCollection",
                         features: state.pictureRequests.map((request) => {
-                            return {
-                                type: "Feature",
-                                geometry: {
-                                    type: "Point",
-                                    coordinates: [request.longitude, request.latitude],
-                                },
-                                properties: {
-                                    request_id: request.request_id,
-                                },
-                            };
+                            var retFeature = wktRead.readFeature(request.location);
+                            retFeature.setStyle(new Style({
+                                image: new CircleStyle({
+                                    radius: 10,
+                                    fill: new Fill({
+                                        color: 'rgba(0, 0, 255, 0.1)',
+                                    }),
+                                    stroke: new Stroke({
+                                        color: 'rgba(0, 0, 255, 0.3)',
+                                        width: 1,
+                                    }),
+                                }),
+                            }));
+                            retFeature.setProperties({
+                                request_id: request.request_id,
+                                request_title: request.request_title,
+                                request_description: request.request_description,
+                                bid_type: request.bid_type,
+                                capture_timestamp: request.capture_timestamp,
+                                direction: request.direction,
+                            });
+                            return retFeature;
                         }),
                     }
                     return returnObj;

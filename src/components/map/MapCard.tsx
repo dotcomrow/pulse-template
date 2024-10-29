@@ -8,7 +8,6 @@ import Overlay from "ol/Overlay";
 import View from "ol/View";
 import Map from "ol/Map";
 import TileLayer from "ol/layer/Tile";
-import { transformExtent, transform } from "ol/proj.js";
 import OSM from "ol/source/OSM";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import React, { useEffect, useMemo, useCallback } from "react";
@@ -123,7 +122,10 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                 layers: [
                     // adding a background tiled layer
                     new TileLayer({
-                        source: new OSM(), // tiles are served by OpenStreetMap
+                        source: new OSM({
+                            wrapX: false
+                        }),
+                        visible: true
                     }),
                     vectorLayer
                 ],
@@ -218,7 +220,7 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
 
     useEffect(() => {
         if (pictureRequestStatus === "complete") {
-            const features = geojson.readFeatures(pictureRequestsState);
+            const features = pictureRequestsState;
             const source = vectorLayer?.getSource();
             if (source) {
                 source.clear();
@@ -236,9 +238,9 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                             }),
                         })
                     }));
-                    features.push(feat);
+                    features.features.push(feat);
                 }
-                source.addFeatures(features);
+                source.addFeatures(features.features);
             }
             map?.getTargetElement().classList.remove('spinner');
         }
@@ -272,8 +274,8 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
         vectorLayer?.getSource()?.clear();
         overlay?.setPosition(undefined);
         setGeomString("");
-        const features = geojson.readFeatures(pictureRequestsState);
-        vectorLayer?.getSource()?.addFeatures(features);
+        const features = pictureRequestsState;
+        vectorLayer?.getSource()?.addFeatures(features.features);
 
         if (requestMode) {
             map?.getInteractions().forEach(function (interaction) {
@@ -296,8 +298,8 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
         overlay?.setPosition(undefined);
         setGeomString("");
         vectorLayer?.getSource()?.clear();
-        const features = geojson.readFeatures(pictureRequestsState);
-        vectorLayer?.getSource()?.addFeatures(features);
+        const features = pictureRequestsState;
+        vectorLayer?.getSource()?.addFeatures(features.features);
     }
 
     return (
