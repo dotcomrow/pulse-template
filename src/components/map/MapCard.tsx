@@ -55,12 +55,15 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
         if (document.getElementById("pictureRequestBtn")?.classList.contains("requestModeDisabled")) {
             return;
         }
-        const coordinate = e.coordinate;
         e.preventDefault();
         e.stopPropagation();
+        const coordinate = e.coordinate;
         const source = vectorLayer.getSource();
         const features = geojson.readFeatures(pictureRequestsState);
-        source.clear();
+        setGeomString(JSON.stringify(coordinate));
+        vectorLayer?.getSource()?.removeFeature(vectorLayer?.getSource()?.getFeatureById("request"));
+        vectorLayer?.setVisible(false);
+        vectorLayer?.setVisible(true);
 
         var feat = new Feature(new Point(coordinate));
         feat.setStyle(new Style({
@@ -75,7 +78,7 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
                 }),
             })
         }));
-        setGeomString(JSON.stringify(coordinate));
+        feat.setId("request");
         features.push(feat);
         source.addFeatures(features);
         overlay.setPosition(coordinate);
@@ -223,7 +226,9 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
             const features = pictureRequestsState;
             const source = vectorLayer?.getSource();
             if (source) {
-                source.clear();
+                vectorLayer?.getSource()?.removeFeature(vectorLayer?.getSource()?.getFeatureById("request"));
+                vectorLayer?.setVisible(false);
+                vectorLayer?.setVisible(true);
                 if (geomString.length > 0) {
                     var feat = new Feature(new Point(JSON.parse(geomString)));
                     feat.setStyle(new Style({
@@ -271,12 +276,11 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
         e.preventDefault();
         e.stopPropagation();
         setRequestMode(!requestMode);
-        vectorLayer?.getSource()?.clear();
         overlay?.setPosition(undefined);
         setGeomString("");
-        const features = pictureRequestsState;
-        vectorLayer?.getSource()?.addFeatures(features.features);
-
+        vectorLayer?.getSource()?.removeFeature(vectorLayer?.getSource()?.getFeatureById("request"));
+        vectorLayer?.setVisible(false);
+        vectorLayer?.setVisible(true);
         if (requestMode) {
             map?.getInteractions().forEach(function (interaction) {
                 if (interaction instanceof DragPan) {
@@ -297,9 +301,9 @@ export default function MapCard({ initialPosition, token }: { initialPosition: {
         e.stopPropagation();
         overlay?.setPosition(undefined);
         setGeomString("");
-        vectorLayer?.getSource()?.clear();
-        const features = pictureRequestsState;
-        vectorLayer?.getSource()?.addFeatures(features.features);
+        vectorLayer?.getSource()?.removeFeature(vectorLayer?.getSource()?.getFeatureById("request"));
+        vectorLayer?.setVisible(false);
+        vectorLayer?.setVisible(true);
     }
 
     return (

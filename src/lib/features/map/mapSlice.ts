@@ -66,13 +66,13 @@ export const mapSlice = createAppSlice({
                                 }),
                             }));
                             retFeature.setProperties({
-                                request_id: request.request_id,
                                 request_title: request.request_title,
                                 request_description: request.request_description,
                                 bid_type: request.bid_type,
                                 capture_timestamp: request.capture_timestamp,
                                 direction: request.direction,
                             });
+                            retFeature.setId(request.request_id);
                             return retFeature;
                         }),
                     }
