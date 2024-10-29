@@ -20,8 +20,8 @@ export default async function savePictureRequests(
     var feat = new Feature(new Point(JSON.parse(request.geom)));
     const featureObj = JSON.parse(geojson.writeFeature(feat));
     const geometry = featureObj.geometry;
-    const revGeom = [geometry.coordinates[1], geometry.coordinates[0]];
-    geometry.coordinates = revGeom;
+    // const revGeom = [geometry.coordinates[1], geometry.coordinates[0]];
+    // geometry.coordinates = revGeom;
     const env = getRequestContext().env as { GRAPHQL?: { fetch: (url: string, options: any) => Promise<any> } };
     try {
         // using service binding when deployed
@@ -44,9 +44,9 @@ export default async function savePictureRequests(
                         location: JSON.stringify(geometry).replace(/"/g, "'"),
                         direction: request.direction,
                         capture_timestamp: request.date,
-                        requestTitle: request.title,
-                        requestDescription: request.description,
-                        bidType: request.bidType
+                        request_title: request.title,
+                        request_description: request.description,
+                        bid_type: request.bidType
                     }
                 }
             }),
@@ -76,9 +76,9 @@ export default async function savePictureRequests(
                         location: JSON.stringify(geometry).replace(/"/g, "'"),
                         direction: request.direction,
                         capture_timestamp: request.date,
-                        requestTitle: request.title,
-                        requestDescription: request.description,
-                        bidType: request.bidType
+                        request_title: request.title,
+                        request_description: request.description,
+                        bid_type: request.bidType
                     }
                 }
             }),
