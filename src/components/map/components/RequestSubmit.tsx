@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import CompassWidget from "../widgets/CompassWidget";
 import { DateInput } from "@nextui-org/date-input";
 import { parseAbsolute } from "@internationalized/date";
-import { Input, Textarea } from "@nextui-org/input";
+import { Input } from "@nextui-org/input";
 import { RadioGroup, Radio, useRadio, VisuallyHidden, cn } from "@nextui-org/react";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import savePictureRequests from "@services/map/SavePictureRequest";
@@ -151,7 +151,7 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
                                     setRequestTitle(e.currentTarget.value);
                                 }}
                             />
-                            <Textarea
+                            <Input
                                 label="Request Description"
                                 placeholder="Add details about the request"
                                 className="w-full p-3"
@@ -160,7 +160,7 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
                                 onChange={(e) => {
                                     setRequestDescription(e.currentTarget.value);
                                 }}
-                                />
+                            />
                         </Tab>
                         <Tab key="payment" title="Payment">
                             <RadioGroup
