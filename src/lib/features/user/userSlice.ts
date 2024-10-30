@@ -1,27 +1,24 @@
-"use client"
 import { createAppSlice } from "@lib/createAppSlice";
 import type { AppThunk } from "@lib/store";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import fetchAccountInfo from "@services/auth/AuthenticationService";
 
 export interface UserSliceState {
   user: any;
   profile: any;
-  status: "idle" | "loading" | "failed";
+  status: "idle" | "loading" | "failed" | "complete";
 }
 
-
-
 const initialState: UserSliceState = {
-  user: {
-    name: "John Doe",
-    email: "test@test.com",
-    id: "123",
-  },
-  profile: {},
+  user: undefined,
+  profile: undefined,
   status: "idle",
 };
 
-
+export interface UserProfileState {
+  user: any;
+  profile: any;
+}
 
 // If you are not using async thunks you can use the standalone `createSlice`.
 export const userSlice = createAppSlice({
@@ -30,6 +27,14 @@ export const userSlice = createAppSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: (create) => ({
+    initUser: create.reducer((state, action: PayloadAction<UserProfileState>) => {
+      state.user = action.payload.user;
+      state.profile = action.payload.profile;
+      state.status = "complete";
+    }),
+    setStatus: create.reducer((state, action: PayloadAction<"idle" | "loading" | "failed" | "complete">) => {
+      state.status = action.payload;
+    }),
     // increment: create.reducer((state) => {
     //   // Redux Toolkit allows us to write "mutating" logic in reducers. It
     //   // doesn't actually mutate the state because it uses the Immer library,
@@ -75,8 +80,7 @@ export const userSlice = createAppSlice({
   // state as their first argument.
   selectors: {
     selectUser: (state) => {
-      console.log("state", state);
-      return undefined
+      return state;
     },
   },
 });
@@ -87,7 +91,6 @@ export const userSlice = createAppSlice({
 
 // Selectors returned by `slice.selectors` take the root state as their first argument.
 export const { selectUser } = userSlice.selectors;
-
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
 // export const incrementIfOdd =
@@ -99,3 +102,18 @@ export const { selectUser } = userSlice.selectors;
 //       dispatch(incrementByAmount(amount));
 //     }
 //   };
+
+export const initializeUser = (token: string): AppThunk => async (dispatch) => {
+  try {
+    dispatch(userSlice.actions.initUser({
+      user: await fetchAccountInfo(token),
+      profile: {},
+    }));
+  } catch (error) {
+    dispatch(userSlice.actions.setStatus("failed"));
+  }
+}
+
+export const setNoToken = (): AppThunk => async (dispatch) => {
+  dispatch(userSlice.actions.initUser({ user: undefined, profile: undefined }));
+}

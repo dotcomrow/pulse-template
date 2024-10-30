@@ -1,11 +1,10 @@
 import { serializeError } from "serialize-error";
 import { default as LogUtility } from "@utils/LoggingUtility";
 import { drizzle } from "drizzle-orm/d1";
-// import { getRequestContext } from "@cloudflare/next-on-pages";
 import { sqliteTable, text, numeric } from "drizzle-orm/sqlite-core";
 
 export default {
-  databases: (env) => {
+  databases: (env: any) => {
     return {
       CACHE: drizzle(env.CACHE),
     };
@@ -27,7 +26,7 @@ export default {
     })
   },
 
-  init: async (env) => {
+  init: async (env: any) => {
     try {
       await env.CACHE
         .prepare(
@@ -40,8 +39,8 @@ export default {
           )`
         )
         .run();
-  
-        await env.CACHE
+
+      await env.CACHE
         .prepare(
           `CREATE TABLE account_token_cache (
             token varchar(64) PRIMARY KEY,
@@ -50,8 +49,8 @@ export default {
           )`
         )
         .run();
-  
-        await env.CACHE
+
+      await env.CACHE
         .prepare(
           `CREATE TABLE account_groups_cache (
             token varchar(64) PRIMARY KEY,

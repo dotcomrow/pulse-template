@@ -1,14 +1,27 @@
-export const deviceSize = {
-  xs: 425,
-  sm: 768,
-  md: 1024,
-  lg: 1440,
-};
 
-export const layoutConstant = {
-  headerHeight: "80px",
-  mobileNavHeight: "64px",
-  containerWidth: "1200px",
-  mobileHeaderHeight: "64px",
-  grocerySidenavWidth: "280px",
+const navLinks = [
+  { title: "Home", link: "/home", secure: false },
+  { title: "How It Works", link: "/how-it-works", secure: false },
+  { title: "API Docs", link: "/api-docs", secure: false },
+];
+
+const profileNavLinks = [
+  { title: "My Dashboard", link: "/dashboard", secure: true },
+  { title: "My Settings", link: "/settings", secure: true },
+  { title: "Help & Feedback", link: "/help-feedback", secure: true },
+];
+
+var securePaths: string[] = [];
+for (const link of [
+  ...navLinks,
+  ...profileNavLinks]) {
+  if (link.secure) {
+    securePaths.push(link.link);
+  }
+}
+
+export default {
+  navLinks,
+  profileNavLinks,
+  securePaths,
 };

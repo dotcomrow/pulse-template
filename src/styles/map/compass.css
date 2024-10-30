@@ -1,0 +1,14 @@
+.compass {
+  border-radius: 50%;
+  border: 5px solid #333;
+  background-color: #fff;
+}
+
+.needle {
+  width: 4px;
+  height: 50%;
+  background-color: red;
+  margin-left:50%;
+  transform-origin: bottom center;
+  transition: transform 0.3s;
+}

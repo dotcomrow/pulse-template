@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
     "target": "ESNext",
     "lib": [
       "dom",
@@ -12,7 +11,7 @@
     ],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
@@ -29,22 +28,31 @@
     ],
     "paths": {
       "@lib/*": [
-        "lib/*"
+        "./src/lib/*"
       ],
       "@data/*": [
-        "data/*"
+        "./src/data/*"
       ],
       "@hook/*": [
-        "hooks/*"
+        "./src/hooks/*"
       ],
       "@utils/*": [
-        "utils/*"
+        "./src/utils/*"
       ],
       "@context/*": [
-        "contexts/*"
+        "./src/contexts/*"
       ],
       "@component/*": [
-        "components/*"
+        "./src/components/*"
+      ],
+      "@styles/*": [
+        "./src/styles/*"
+      ],
+      "@services/*": [
+        "./src/services/*"
+      ],
+      "@images/*": [
+        "./public/assets/images/*"
       ],
     },
     "strictNullChecks": true
@@ -55,7 +63,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "middleware.ts"  ],
   "exclude": [
     "node_modules"
   ]
