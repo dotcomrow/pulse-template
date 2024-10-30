@@ -1,4 +1,4 @@
-resource "cloudflare_pages_domain" "app" {
+resource "cloudflare_pages_domain" "app_domain" {
   account_id   = var.cloudflare_account_id
   project_name = var.project_name
   domain       = "${var.project_name}.${var.domain}"
