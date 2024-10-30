@@ -13,7 +13,7 @@ import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import React, { useEffect, useMemo } from "react";
 import { useGeographic } from "ol/proj.js";
 import { Image } from "@nextui-org/image";
-import { findAddress } from "@component/map/components/findAddress";
+import { findAddress } from "@services/map/findAddress";
 import { Input } from "@nextui-org/input";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import { Button, ButtonGroup } from "@nextui-org/button";
