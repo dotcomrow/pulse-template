@@ -7,8 +7,7 @@ export default function ActivityTable({
     }) {
     return (
         <>
-        
-        <div>test</div>
+            
         </>
     );
 }

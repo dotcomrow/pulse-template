@@ -248,7 +248,7 @@ export default function MapCard({
         setRequestMode(rm);
         overlay?.setPosition(undefined);
         clearRequest();
-        if (rm) {
+        if (!rm) {
             map?.getInteractions().forEach(function (interaction) {
                 if (interaction instanceof DragPan) {
                     interaction.setActive(true);
