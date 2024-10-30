@@ -1,2 +1,2 @@
 # pulse-ui
-snapspot project
+pulse-ui project
