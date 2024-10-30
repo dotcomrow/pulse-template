@@ -15,16 +15,6 @@ resource "cloudflare_record" "app" {
   allow_overwrite = true
 }
 
-resource "cloudflare_d1_database" "prod-cache" {
-  account_id = var.cloudflare_account_id
-  name       = "${var.project_name}-prod-cache"
-}
-
-resource "cloudflare_d1_database" "dev-cache" {
-  account_id = var.cloudflare_account_id
-  name       = "${var.project_name}-dev-cache"
-}
-
 resource "cloudflare_pages_project" "app" {
   account_id        = var.cloudflare_account_id
   name              = var.project_name
@@ -63,7 +53,7 @@ resource "cloudflare_pages_project" "app" {
         }
 
         d1_databases = {
-          CACHE = cloudflare_d1_database.prod-cache.id
+          CACHE = data.local_file.load_d1_pulse_ui_prod_cache_id.content
         }
 
         service_binding {
@@ -92,7 +82,7 @@ resource "cloudflare_pages_project" "app" {
         }
 
         d1_databases = {
-          CACHE = cloudflare_d1_database.dev-cache.id
+          CACHE = data.local_file.load_d1_pulse_ui_dev_cache_id.content
         }
 
         service_binding {
