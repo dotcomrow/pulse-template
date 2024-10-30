@@ -7,7 +7,7 @@ resource "null_resource" "d1_pulse_ui_dev_cache_id" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/get_d1_id.sh"
     environment = {
-      d1_name               = "pulse-ui-dev-cache"
+      d1_name               = "pulse_ui_dev_cache"
       cloudflare_account_id = var.cloudflare_account_id
       cloudflare_token      = var.cloudflare_token
     }
@@ -28,7 +28,7 @@ resource "null_resource" "d1_pulse_ui_prod_cache_id" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/get_d1_id.sh"
     environment = {
-      d1_name               = "pulse-ui-prod-cache"
+      d1_name               = "pulse_ui_prod_cache"
       cloudflare_account_id = var.cloudflare_account_id
       cloudflare_token      = var.cloudflare_token
     }
