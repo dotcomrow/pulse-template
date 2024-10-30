@@ -15,7 +15,7 @@ resource "null_resource" "d1_pulse_ui_dev_cache_id" {
 }
 
 data "local_file" "load_d1_pulse_ui_dev_cache_id" {
-  filename   = "${path.module}/pulse-ui-dev-cache"
+  filename   = "${path.module}/pulse_ui_dev_cache"
   depends_on = [null_resource.d1_pulse_ui_dev_cache_id]
 }
 
@@ -36,6 +36,6 @@ resource "null_resource" "d1_pulse_ui_prod_cache_id" {
 }
 
 data "local_file" "load_d1_pulse_ui_prod_cache_id" {
-  filename   = "${path.module}/pulse-ui-prod-cache"
+  filename   = "${path.module}/pulse_ui_prod_cache"
   depends_on = [null_resource.d1_pulse_ui_prod_cache_id]
 }
