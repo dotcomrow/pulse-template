@@ -1,2 +1,2 @@
 # pulse-ui
-pulse-ui project
+pulse-ui project src
