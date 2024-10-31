@@ -5,8 +5,27 @@
     "background_color": "#ffffff",
     "display": "standalone",
     "orientation": "any",
+    "display_override": [
+        "standalone"
+    ],
     "scope": "/",
     "start_url": "/home",
+    "screenshots": [
+        {
+            "src": "screenshot-wide.png",
+            "sizes": "2800x1600",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Homescreen of Awesome App"
+        },
+        {
+            "src": "screenshot-narrow.png",
+            "sizes": "1300x1600",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "List of Awesome Resources available in Awesome App"
+        }
+    ],
     "icons": [
         {
             "src": "/pulse-logo-192.png",

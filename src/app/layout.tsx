@@ -11,8 +11,8 @@ import Script from "next/script";
 export const runtime = 'edge';
 
 export const metadata: Metadata = {
-  title: "Create Next App",
-  description: "Generated with create app",
+  title: "SnapSpot",
+  description: "SnapSpot lets you request a picture of any location in the world.",
   generator: "Next.js",
   manifest: "/manifest.json",
   keywords: ["nextjs", "next14", "pwa", "next-pwa"],
