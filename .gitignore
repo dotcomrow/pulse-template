@@ -35,3 +35,5 @@ dist
 pages
 types
 *-manifest*
+
+/public/*.js
