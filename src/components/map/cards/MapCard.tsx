@@ -36,6 +36,7 @@ import Point from 'ol/geom/Point';
 import CircleStyle from 'ol/style/Circle';
 import DragPan from 'ol/interaction/DragPan';
 import MapRequestPopup from "@component/modals/map/MapRequestPopup";
+import { setError } from "@lib/features/error/errorSlice";
 
 export default function MapCard({
     initialPosition,
@@ -275,15 +276,16 @@ export default function MapCard({
                             <Link href="#" onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
+                                store.dispatch(setError({ error: "Geolocation error", details: "", exception: {} }));
                                 map?.getTargetElement().classList.add('spinner');
                                 navigator.geolocation.getCurrentPosition((position) => {
                                     centerMap(position);
                                 }, (error) => {
-                                    console.error(error);
+                                    store.dispatch(setError({ error: "Geolocation error", details: error.message, exception: error }));
                                 },
                                     {
                                         enableHighAccuracy: false,
-                                        timeout: 2000,
+                                        timeout: 3000,
                                         maximumAge: 0,
                                     });
                             }}>

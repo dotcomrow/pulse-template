@@ -2,6 +2,7 @@ import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { combineSlices, configureStore } from "@reduxjs/toolkit";
 import { userSlice } from "@lib/features/user/userSlice";
 import { mapSlice } from "./features/map/mapSlice";
+import { errorSlice } from "./features/error/errorSlice";
 // import { counterSlice } from "./features/counter/counterSlice";
 // import { quotesApiSlice } from "./features/quotes/quotesApiSlice";
 
@@ -11,7 +12,8 @@ import { mapSlice } from "./features/map/mapSlice";
 
 const rootReducer = combineSlices(
   userSlice, 
-  mapSlice
+  mapSlice,
+  errorSlice
 );
 
 // Infer the `RootState` type from the root reducer

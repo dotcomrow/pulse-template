@@ -7,6 +7,7 @@ import Footer from "@component/layout/footer/Footer";
 import "ol/ol.css";
 import { GoogleAnalytics } from '@next/third-parties/google'
 import Script from "next/script";
+import ErrorDialog from "@component/modals/error/ErrorDialog";
 
 export const runtime = 'edge';
 
@@ -28,7 +29,6 @@ export const metadata: Metadata = {
   ],
 };
 
-
 export const viewport: Viewport = {
   themeColor: [{ media: "(prefers-color-scheme: dark)", color: "#fff" }],
   initialScale: 1,
@@ -42,8 +42,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies()
-  var token = cookieStore.get('token')?.value || ''
+  const cookieStore = await cookies();
+  var token = cookieStore.get('token')?.value || '';
   return (
     <html lang="en">
       <body>
@@ -53,6 +53,7 @@ export default async function RootLayout({
             {children}
           </main>
           <Footer />
+          <ErrorDialog />
         </Providers>
       </body>
       <GoogleAnalytics gaId="G-8MHBD6Z0FG" />
