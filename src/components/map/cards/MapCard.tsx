@@ -12,13 +12,6 @@ import OSM from "ol/source/OSM";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import React, { useEffect, useMemo } from "react";
 import { useGeographic } from "ol/proj.js";
-import { Image } from "@nextui-org/image";
-import { findAddress } from "@services/map/findAddress";
-import { Input } from "@nextui-org/input";
-import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
-import { Button, ButtonGroup } from "@nextui-org/button";
-import { Link } from "@nextui-org/link";
-import { Tooltip } from "@nextui-org/tooltip";
 import "@styles/map/spinner.css"
 import { BoundingBox, loadPictureRequests } from "@lib/features/map/mapSlice";
 import { 
@@ -30,16 +23,15 @@ import {
 import { useAppSelector, useAppStore, useAppDispatch } from "@hook/redux";
 import { debounce } from 'lodash';
 import { Fill, Stroke, Style } from 'ol/style';
-import { Spinner } from "@nextui-org/spinner";
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import CircleStyle from 'ol/style/Circle';
 import DragPan from 'ol/interaction/DragPan';
 import MapRequestPopup from "@component/modals/map/MapRequestPopup";
-import { setError } from "@lib/features/error/errorSlice";
 import GeolocationControl from "@component/map/widgets/GeolocationControl";
 import {Control, defaults as defaultControls} from 'ol/control';
 import RequestModeControl from "@component/map/widgets/RequestModeControl";
+import LocationSearchControl from "@component/map/widgets/LocationSearchControl";
 
 export default function MapCard({
     initialPosition,
@@ -51,16 +43,12 @@ export default function MapCard({
 
     const store = useAppStore();
     const [mounted, setMounted] = React.useState(false);
-    const [items, setItems] = React.useState<any[]>([]);
-    const [query, setQuery] = React.useState("");
-    const [open, setOpen] = React.useState(false);
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: any = useAppSelector(selectPictureRequestStatus);
     const limitSelect: number = useAppSelector(selectLimit);
     const offsetSelect: number = useAppSelector(selectOffset);
     const [searchDisabled, setSearchDisabled] = React.useState(true);
     const [requestMode, setRequestMode] = React.useState(false);
-    const [searchLoading, setSearchLoading] = React.useState(false);
     const [vectorLayer, setVectorLayer] = React.useState<VectorLayer>();
     const [overlay, setOverlay] = React.useState<Overlay>();
     const geojson = new GeoJSON();
@@ -143,24 +131,7 @@ export default function MapCard({
         }
     };
 
-    const searchHandler = (e: any) => {
-        if (searchDisabled) {
-            return;
-        }
-        setSearchLoading(true);
-        findAddress(query).then((results) => {
-            const searchResults = Array.isArray(results) ? results : [];
-            if (searchResults.length == 0) {
-                setItems([{ display_name: "No results found" }]);
-            } else {
-                setItems(searchResults);
-            }
-            setQuery("");
-            setOpen(true);
-            setSearchDisabled(true);
-            setSearchLoading(false);
-        });
-    };
+    
 
     const map = useMemo(() => {
         if (mounted) {
@@ -219,7 +190,11 @@ export default function MapCard({
                 overlays: [
                     overlay
                 ],
-                controls: defaultControls().extend([new GeolocationControl(centerMap), new RequestModeControl(pictureRequestMode, token)]),
+                controls: defaultControls().extend([
+                    new GeolocationControl(centerMap), 
+                    new RequestModeControl(pictureRequestMode, token),
+                    new LocationSearchControl(centerMap)
+                ]),
             });
             map.on('loadstart', function () {
                 map.getTargetElement().classList.add('spinner');
@@ -269,100 +244,8 @@ export default function MapCard({
     }, []);
 
     return (
-        <Card className="py-4 mb-auto h-full w-full">
-            <CardHeader className="pb-0 pt-2 px-4 flex-col">
-                <div className="flex-row w-full flex">
-                    <div className="lg:w-5/6 sm:w-2/3 flex">
-                        <Input
-                            isClearable
-                            value={query}
-                            type="text"
-                            placeholder="Enter a location"
-                            labelPlacement="outside"
-                            className="w-full px-2 z-20"
-                            onChange={(e) => {
-                                setQuery(e.target.value);
-                                if (query.length > 0) {
-                                    setSearchDisabled(false);
-                                } else {
-                                    setSearchDisabled(true);
-                                }
-                            }}
-                            id="search"
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    searchHandler(e);
-                                }
-                            }}
-                            endContent={searchLoading ? <Spinner size="md" /> : <></>}
-                            startContent={
-                                <Popover
-                                    placement="bottom-start"
-                                    isOpen={open}
-                                    onOpenChange={(e) => {
-                                        setOpen(e);
-                                    }}
-                                    classNames={{
-                                        content: [
-                                            "items-start",
-                                            "flex"
-                                        ]
-                                    }}>
-                                    <PopoverTrigger>
-                                        <div className="shrink-0">
-                                            <Tooltip content={searchDisabled ? "Enter a point of interest to find" : "Click this icon or press enter to search"}>
-                                                <Image
-                                                    src="/assets/images/icons/search.svg"
-                                                    width={35}
-                                                    height={35}
-                                                    shadow="sm"
-                                                    onClick={searchHandler}
-                                                    style={{
-                                                        cursor: searchDisabled ? "default" : "pointer",
-                                                        padding: "0.5rem",
-                                                    }}
-                                                    alt="Click to move map to current location"
-                                                />
-                                            </Tooltip>
-                                        </div>
-
-                                    </PopoverTrigger>
-                                    <PopoverContent>
-                                        {items.map((item) => (
-                                            <Link
-                                                href="#"
-                                                onMouseOver={(e) => {
-                                                    e.currentTarget.style.backgroundColor = '#0008ff'
-                                                    e.currentTarget.style.color = '#FFFFFF'
-                                                }}
-                                                onMouseOut={(e) => {
-                                                    e.currentTarget.style.backgroundColor = '#FFFFFF'
-                                                    e.currentTarget.style.color = '#0008ff'
-                                                }}
-                                                onClick={(e: any) => {
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    if (!item.lon || !item.lat) {
-                                                        setOpen(false);
-                                                        return;
-                                                    }
-                                                    setQuery("");
-                                                    setSearchDisabled(true);
-                                                    centerMap({ coords: { latitude: parseFloat(item.lat), longitude: parseFloat(item.lon) } });
-                                                    setItems([]);
-                                                    setOpen(false);
-                                                }}>
-                                                <h2 className="w-full">{item.display_name}</h2>
-                                            </Link>
-                                        ))}
-                                    </PopoverContent>
-                                </Popover>
-                            }
-                        />
-                    </div>
-                </div>
-            </CardHeader>
-            <CardBody className="overflow-visible py-2">
+        <Card className="py-2 mb-auto h-full w-full">
+            <CardBody className="overflow-visible">
                 <div className="bg-white p-dynamic h-full">
                     <div id="map-container" className="h-full"></div>
                     <div id="popup-container">
