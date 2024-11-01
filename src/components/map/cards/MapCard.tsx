@@ -120,8 +120,9 @@ export default function MapCard({
     const pictureRequestMode = (e: any) => {
         e.preventDefault();
         e.stopPropagation();
-
+        console.log("Request mode");
         var rm = !document.getElementById("pictureRequestBtn")?.classList.toggle("requestModeDisabled");
+        console.log(rm);
         if (rm == undefined) {
             rm = false;
         }
@@ -129,14 +130,18 @@ export default function MapCard({
         overlay?.setPosition(undefined);
         clearRequest();
         if (!rm) {
+            console.log("Request mode disabled");
             map?.getInteractions().forEach(function (interaction: { setActive: (arg0: boolean) => void; }) {
                 if (interaction instanceof DragPan) {
+                    console.log("DragPan disabled");
                     interaction.setActive(true);
                 }
             });
         } else {
+            console.log("Request mode enabled");
             map?.getInteractions().forEach(function (interaction: { setActive: (arg0: boolean) => void; }) {
                 if (interaction instanceof DragPan) {
+                    console.log("DragPan enabled");
                     interaction.setActive(false);
                 }
             });
@@ -359,9 +364,6 @@ export default function MapCard({
                                 </Popover>
                             }
                         />
-                    </div>
-                    <div className="lg:w-1/6 sm:w-1/3 justify-end flex">
-                        
                     </div>
                 </div>
             </CardHeader>

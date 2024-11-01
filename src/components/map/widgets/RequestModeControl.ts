@@ -25,7 +25,12 @@ export default class GeolocationControl extends Control {
             element: element,
         });
 
-        image.addEventListener('click', pictureRequestMode, false);
+        if (token.length > 0) {
+            image.style.cursor = "pointer";
+            image.addEventListener('click', pictureRequestMode, false);
+        } else {
+            image.style.cursor = "not-allowed";
+        }
 
     }
 }
