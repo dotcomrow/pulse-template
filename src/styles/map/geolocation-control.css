@@ -16,3 +16,11 @@
     width: 25px;
     height: 25px;
 }
+
+.ol-touch .geolocate-icon {
+    cursor: pointer;
+    opacity: 1;
+    background-color: white;
+    width: 40px;
+    height: 40px;
+}
