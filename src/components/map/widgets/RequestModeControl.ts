@@ -14,7 +14,7 @@ export default class GeolocationControl extends Control {
         image.height = 25;
         image.alt = token.length > 0 ? "Select a location on the map and complete the request submit dialog form" : "Please login to submit a request";
         image.title = token.length > 0 ? "Select a location on the map and complete the request submit dialog form" : "Please login to submit a request";
-        image.className = "capture-request-icon p-1 rounded-small bg-grey";
+        image.className = "capture-request-icon p-1 rounded-small bg-grey requestModeDisabled";
         image.id = "pictureRequestBtn";
 
         const element = document.createElement('div');
