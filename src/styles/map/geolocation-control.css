@@ -5,10 +5,14 @@
 
 .ol-touch .geolocate {
     top: 80px;
+    width: 40px;
+    height: 40px;
 }
 
 .geolocate-icon {
     cursor: pointer;
     opacity: 1;
     background-color: white;
+    width: 25px;
+    height: 25px;
 }

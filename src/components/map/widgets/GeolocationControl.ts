@@ -12,8 +12,6 @@ export default class GeolocationControl extends Control {
     constructor(centerMap: any) {
         const image = document.createElement('img');
         image.src = "/assets/images/icons/location.svg";
-        image.width = 25;
-        image.height = 25;
         image.alt = "Click this icon to geolocate your device position";
         image.title = "Click this icon to geolocate your device position";
         image.className = "geolocate-icon p-1 rounded-small bg-grey";
