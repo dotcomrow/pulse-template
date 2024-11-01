@@ -276,12 +276,12 @@ export default function MapCard({
                             <Link href="#" onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                store.dispatch(setError({ error: "Geolocation error", details: "", exception: {} }));
                                 map?.getTargetElement().classList.add('spinner');
                                 navigator.geolocation.getCurrentPosition((position) => {
                                     centerMap(position);
                                 }, (error) => {
-                                    store.dispatch(setError({ error: "Geolocation error", details: error.message, exception: error }));
+                                    const errorMsg = "An error occured while trying to get your location. Please ensure you have location services enabled on your device and allow this site permission to read device location.  Error message: " + error.message;
+                                    store.dispatch(setError({ error: "Geolocation error", details: errorMsg, exception: error }));
                                 },
                                     {
                                         enableHighAccuracy: false,
