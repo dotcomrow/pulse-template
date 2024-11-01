@@ -37,6 +37,9 @@ import CircleStyle from 'ol/style/Circle';
 import DragPan from 'ol/interaction/DragPan';
 import MapRequestPopup from "@component/modals/map/MapRequestPopup";
 import { setError } from "@lib/features/error/errorSlice";
+import GeolocationControl from "@component/map/widgets/GeolocationControl";
+import {Control, defaults as defaultControls} from 'ol/control';
+import RequestModeControl from "@component/map/widgets/RequestModeControl";
 
 export default function MapCard({
     initialPosition,
@@ -107,6 +110,58 @@ export default function MapCard({
         }
     };
 
+    const centerMap = (position: { coords: { latitude: number, longitude: number } }) => {
+        const mapSize = map?.getSize();
+        if (mapSize) {
+            map?.getView().centerOn([position.coords.longitude, position.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+        }
+    };
+
+    const pictureRequestMode = (e: any) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var rm = !document.getElementById("pictureRequestBtn")?.classList.toggle("requestModeDisabled");
+        if (rm == undefined) {
+            rm = false;
+        }
+        setRequestMode(rm);
+        overlay?.setPosition(undefined);
+        clearRequest();
+        if (!rm) {
+            map?.getInteractions().forEach(function (interaction: { setActive: (arg0: boolean) => void; }) {
+                if (interaction instanceof DragPan) {
+                    interaction.setActive(true);
+                }
+            });
+        } else {
+            map?.getInteractions().forEach(function (interaction: { setActive: (arg0: boolean) => void; }) {
+                if (interaction instanceof DragPan) {
+                    interaction.setActive(false);
+                }
+            });
+        }
+    };
+
+    const searchHandler = (e: any) => {
+        if (searchDisabled) {
+            return;
+        }
+        setSearchLoading(true);
+        findAddress(query).then((results) => {
+            const searchResults = Array.isArray(results) ? results : [];
+            if (searchResults.length == 0) {
+                setItems([{ display_name: "No results found" }]);
+            } else {
+                setItems(searchResults);
+            }
+            setQuery("");
+            setOpen(true);
+            setSearchDisabled(true);
+            setSearchLoading(false);
+        });
+    };
+
     const map = useMemo(() => {
         if (mounted) {
             const container = document.getElementById('popup-container');
@@ -164,6 +219,7 @@ export default function MapCard({
                 overlays: [
                     overlay
                 ],
+                controls: defaultControls().extend([new GeolocationControl(centerMap), new RequestModeControl(pictureRequestMode, token)]),
             });
             map.on('loadstart', function () {
                 map.getTargetElement().classList.add('spinner');
@@ -190,25 +246,6 @@ export default function MapCard({
         }
     }, [mounted]);
 
-    const searchHandler = (e: any) => {
-        if (searchDisabled) {
-            return;
-        }
-        setSearchLoading(true);
-        findAddress(query).then((results) => {
-            const searchResults = Array.isArray(results) ? results : [];
-            if (searchResults.length == 0) {
-                setItems([{ display_name: "No results found" }]);
-            } else {
-                setItems(searchResults);
-            }
-            setQuery("");
-            setOpen(true);
-            setSearchDisabled(true);
-            setSearchLoading(false);
-        });
-    }
-
     useEffect(() => {
         if (pictureRequestStatus === "complete") {
             const features = pictureRequestsState;
@@ -231,80 +268,10 @@ export default function MapCard({
         setMounted(true);
     }, []);
 
-    const centerMap = (position: { coords: { latitude: number, longitude: number } }) => {
-        const mapSize = map?.getSize();
-        if (mapSize) {
-            map?.getView().centerOn([position.coords.longitude, position.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
-        }
-    }
-
-    const pictureRequestMode = (e: any) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        var rm = !document.getElementById("pictureRequestBtn")?.classList.toggle("requestModeDisabled");
-        if (rm == undefined) {
-            rm = false;
-        }
-        setRequestMode(rm);
-        overlay?.setPosition(undefined);
-        clearRequest();
-        if (!rm) {
-            map?.getInteractions().forEach(function (interaction) {
-                if (interaction instanceof DragPan) {
-                    interaction.setActive(true);
-                }
-            });
-        } else {
-            map?.getInteractions().forEach(function (interaction) {
-                if (interaction instanceof DragPan) {
-                    interaction.setActive(false);
-                }
-            });
-        }
-    };
-
     return (
         <Card className="py-4 mb-auto h-full w-full">
             <CardHeader className="pb-0 pt-2 px-4 flex-col">
                 <div className="flex-row w-full flex">
-                    <div className="w-1/8 shrink-0 justify-start flex">
-                        <Tooltip content="Click this icon to allow us to request access and show your device location on map">
-                            <Link href="#" onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                map?.getTargetElement().classList.add('spinner');
-                                navigator.geolocation.getCurrentPosition((position) => {
-                                    centerMap(position);
-                                }, (error) => {
-                                    const errorMsg = "An error occured while trying to get your location. Please ensure you have location services enabled on your device and allow this site permission to read device location.  Error message: " + error.message;
-                                    store.dispatch(setError({ 
-                                        errorTitle: "Geolocation error", 
-                                        errorDetails: errorMsg, 
-                                        exception: error,
-                                        errorSeverity: "error",
-                                        errorIcon: "error",
-                                        errorTextStyle: "text-danger"
-                                    }));
-                                },
-                                    {
-                                        enableHighAccuracy: false,
-                                        timeout: 3000,
-                                        maximumAge: 0,
-                                    });
-                            }}>
-                                <Image
-                                    src="/assets/images/icons/location.svg"
-                                    width={40}
-                                    height={40}
-                                    shadow="sm"
-                                    radius="sm"
-                                    className="p-1"
-                                    alt="Click to move map to current location"
-                                />
-                            </Link>
-                        </Tooltip>
-                    </div>
                     <div className="lg:w-5/6 sm:w-2/3 flex">
                         <Input
                             isClearable
@@ -394,27 +361,7 @@ export default function MapCard({
                         />
                     </div>
                     <div className="lg:w-1/6 sm:w-1/3 justify-end flex">
-                        <Tooltip content={token.length == 0 ? "Please login to submit a request" : "Select a location on the map and complete the request submit dialog form"}>
-                            <div className="w-full justify-end flex">
-                                <Button id="pictureRequestBtn"
-                                    startContent={requestMode ? <div className="shrink-0">
-                                        <Image
-                                            src="/assets/images/icons/check.svg"
-                                            width={40}
-                                            height={40}
-                                            style={{
-                                                padding: "0.5rem",
-                                            }}
-                                        />
-                                    </div> : <></>}
-                                    onClick={pictureRequestMode}
-                                    isDisabled={token.length == 0}
-                                    className="requestModeDisabled"
-                                >
-                                    Request Mode
-                                </Button>
-                            </div>
-                        </Tooltip>
+                        
                     </div>
                 </div>
             </CardHeader>

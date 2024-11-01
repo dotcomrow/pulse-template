@@ -1,0 +1,14 @@
+.capture-request {
+  top: 100px;
+  left: .5em;
+}
+
+.ol-touch .capture-request {
+  top: 100px;
+}
+
+.capture-request-icon {
+  cursor: pointer;
+  opacity: 1;
+  background-color: white;
+}
