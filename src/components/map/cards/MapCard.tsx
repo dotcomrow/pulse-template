@@ -267,9 +267,6 @@ export default function MapCard({
     return (
         <Card className="py-4 mb-auto h-full w-full">
             <CardHeader className="pb-0 pt-2 px-4 flex-col">
-                <div className="flex-row w-full flex justify-start">
-                    <h2 className="text-2xl font-bold pb-3">Activity Near You</h2>
-                </div>
                 <div className="flex-row w-full flex">
                     <div className="w-1/8 shrink-0 justify-start flex">
                         <Tooltip content="Click this icon to allow us to request access and show your device location on map">
