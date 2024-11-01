@@ -3,15 +3,21 @@ import type { AppThunk } from "@lib/store";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface ErrorDTO {
-    error: string | null;
-    details: string | null;
+    errorTitle: string | null;
+    errorDetails: string | null;
     exception: any | null;
+    errorSeverity: string | null;
+    errorIcon?: string | null;
+    errorTextStyle: string | null;
 }
 
 const initialState: ErrorDTO = {
-    error: null,
-    details: null,
-    exception: null
+    errorTitle: null,
+    errorDetails: null,
+    exception: null,
+    errorSeverity: null,
+    errorIcon: null,
+    errorTextStyle: null
 };
 
 export const errorSlice = createAppSlice({
@@ -21,9 +27,12 @@ export const errorSlice = createAppSlice({
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: (create) => ({
         setError : create.reducer((state, action: PayloadAction<ErrorDTO>) => {
-            state.error = action.payload.error;
-            state.details = action.payload.details;
+            state.errorTitle = action.payload.errorTitle;
+            state.errorDetails = action.payload.errorDetails;
             state.exception = action.payload.exception;
+            state.errorSeverity = action.payload.errorSeverity;
+            state.errorIcon = action.payload.errorIcon;
+            state.errorTextStyle = action.payload.errorTextStyle;
         }),
     }),
     selectors: {

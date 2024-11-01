@@ -11,17 +11,13 @@ export default function ErrorDialog() {
 
     const store = useAppStore();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const [message, setMessage] = useState<string>(); // string | undefined
-    const [error, setError] = useState<string>(); // any | undefined
-    const errorRequestsState: any = useAppSelector(selectError);
+    const errorState: any = useAppSelector(selectError);
 
     useEffect(() => {
-        if (errorRequestsState.exception) {
-            setMessage(errorRequestsState.details);
-            setError(errorRequestsState.error);
+        if (errorState.exception) {
             onOpen();
         }
-    }, [errorRequestsState]);
+    }, [errorState]);
 
     return (
         <Modal 
@@ -35,12 +31,11 @@ export default function ErrorDialog() {
             }}
         >
             <ModalContent>
-                <ModalHeader>Oops! An error occurred</ModalHeader>
+                <ModalHeader>{errorState.errorTitle}</ModalHeader>
                 <ModalBody className="px-10 py-10 flex h-20 justify-center">
-                    <h1 className="text-danger">{error}</h1>
-                    <div className="flex justify-center">
-                        {message}
-                    </div>
+                    <h1 className={
+                        "flex justify-center " + errorState.errorTextStyle
+                    }>{errorState.errorDetails}</h1>
                 </ModalBody>
             </ModalContent>
         </Modal >

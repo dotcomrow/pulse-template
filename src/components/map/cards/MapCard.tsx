@@ -281,7 +281,14 @@ export default function MapCard({
                                     centerMap(position);
                                 }, (error) => {
                                     const errorMsg = "An error occured while trying to get your location. Please ensure you have location services enabled on your device and allow this site permission to read device location.  Error message: " + error.message;
-                                    store.dispatch(setError({ error: "Geolocation error", details: errorMsg, exception: error }));
+                                    store.dispatch(setError({ 
+                                        errorTitle: "Geolocation error", 
+                                        errorDetails: errorMsg, 
+                                        exception: error,
+                                        errorSeverity: "error",
+                                        errorIcon: "error",
+                                        errorTextStyle: "text-danger"
+                                    }));
                                 },
                                     {
                                         enableHighAccuracy: false,
