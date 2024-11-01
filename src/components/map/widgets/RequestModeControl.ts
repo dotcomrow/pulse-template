@@ -17,20 +17,21 @@ export default class GeolocationControl extends Control {
         image.className = "capture-request-icon p-1 rounded-small bg-grey requestModeDisabled";
         image.id = "pictureRequestBtn";
 
-        const element = document.createElement('div');
-        element.className = 'capture-request ol-unselectable ol-control';
-        element.appendChild(image);
-
-        super({
-            element: element,
-        });
-
         if (token.length > 0) {
+            const element = document.createElement('div');
+            element.className = 'capture-request ol-unselectable ol-control';
+            element.appendChild(image);
+
+            super({
+                element: element,
+            });
+
             image.style.cursor = "pointer";
             image.addEventListener('click', pictureRequestMode, false);
         } else {
-            image.style.cursor = "not-allowed";
+            super({
+                element: document.createElement('div'),
+            });
         }
-
     }
 }
