@@ -25,10 +25,10 @@ export default async function Home() {
   return (
     <>
       {/* // <!-- Desktop view --> */}
-      <div className="columns-2 flex gap-2 h-full min-md:flex max-md:hidden">
+      <div className="px-3 pt-3 columns-2 gap-2 h-full flex max-md:hidden">
         <div className="w-2/3 flex">
-          <Card className="py-2 mb-auto h-full w-full">
-            <CardBody className="overflow-visible">
+          <Card className="py-2 mb-auto flex">
+            <CardBody className="overflow-visible flex">
               <MapCard
                 initialPosition={{
                   coords: {
@@ -67,7 +67,7 @@ export default async function Home() {
         </div>
       </div>
       {/* // <!-- Mobile view --> */}
-      <div className="h-full md:hidden max-sm:flex">
+      <div className="h-full md:hidden flex mb-auto">
         <MapCard
           initialPosition={{
             coords: {

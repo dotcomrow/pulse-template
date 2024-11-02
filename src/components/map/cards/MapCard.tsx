@@ -249,8 +249,8 @@ export default function MapCard({
     }, []);
 
     return (
-        <div className="bg-white p-dynamic h-full">
-            <div id={mapTarget} className="h-full"></div>
+        <div className="bg-white p-dynamic h-full w-full">
+            <div id={mapTarget} className="h-full w-full"></div>
             <div id={popupContainerId}>
                 <MapRequestPopup
                     closePopup={(e: any) => {
