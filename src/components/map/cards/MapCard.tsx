@@ -35,10 +35,12 @@ import LocationSearchControl from "@component/map/widgets/LocationSearchControl"
 
 export default function MapCard({
     initialPosition,
-    token
+    token,
+    mapTarget
 }: {
     initialPosition: { coords: { latitude: number, longitude: number } },
-    token: string
+    token: string,
+    mapTarget: string
 }) {
 
     const store = useAppStore();
@@ -50,9 +52,11 @@ export default function MapCard({
     const [vectorLayer, setVectorLayer] = React.useState<VectorLayer>();
     const [overlay, setOverlay] = React.useState<Overlay>();
     const geojson = new GeoJSON();
+    const pictureRequestBtn = "pictureRequestBtn" + mapTarget;
+    const popupContainerId = "popup-container" + mapTarget;
 
     const mapClickHandler = (e: any, overlay: any, vectorLayer: any) => {
-        if (document.getElementById("pictureRequestBtn")?.classList.contains("requestModeDisabled")) {
+        if (document.getElementById(pictureRequestBtn)?.classList.contains("requestModeDisabled")) {
             return;
         }
         e.preventDefault();
@@ -111,7 +115,7 @@ export default function MapCard({
     const pictureRequestMode = (e: any) => {
         e.preventDefault();
         e.stopPropagation();
-        var rm = !document.getElementById("pictureRequestBtn")?.classList.toggle("requestModeDisabled");
+        var rm = !document.getElementById(pictureRequestBtn)?.classList.toggle("requestModeDisabled");
         if (rm == undefined) {
             rm = false;
         }
@@ -136,7 +140,7 @@ export default function MapCard({
 
     const map = useMemo(() => {
         if (mounted) {
-            const container = document.getElementById('popup-container');
+            const container = document.getElementById(popupContainerId);
             const overlay = container ? new Overlay({
                 element: container,
                 autoPan: {
@@ -170,7 +174,7 @@ export default function MapCard({
             setVectorLayer(vectorLayer);
             var map = new Map({
                 // the map will be created using the 'map-root' ref
-                target: "map-container",
+                target: mapTarget,
                 layers: [
                     // adding a background tiled layer
                     new TileLayer({
@@ -193,7 +197,7 @@ export default function MapCard({
                 ],
                 controls: defaultControls().extend([
                     new GeolocationControl(centerMap),
-                    new RequestModeControl(pictureRequestMode, token),
+                    new RequestModeControl(pictureRequestMode, token, pictureRequestBtn),
                     new LocationSearchControl(centerMap)
                 ]),
             });
@@ -245,37 +249,33 @@ export default function MapCard({
     }, []);
 
     return (
-        <Card className="py-2 mb-auto h-full w-full">
-            <CardBody className="overflow-visible">
-                <div className="bg-white p-dynamic h-full">
-                    <div id="map-container" className="h-full"></div>
-                    <div id="popup-container">
-                        <MapRequestPopup
-                            closePopup={(e: any) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                if (e.savedRequest) {
-                                    const mapSize = map?.getSize();
-                                    const extent = map?.getView().calculateExtent(mapSize);
-                                    if (extent) {
-                                        const bbox: BoundingBox = {
-                                            min_latitude: extent[0],
-                                            min_longitude: extent[1],
-                                            max_latitude: extent[2],
-                                            max_longitude: extent[3],
-                                        };
-                                        store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
-                                    }
-                                }
-                                overlay?.setPosition(undefined);
-                                clearRequest();
-                            }}
-                            vectorLayer={vectorLayer}
-                            token={token}
-                        />
-                    </div>
-                </div>
-            </CardBody>
-        </Card>
+        <div className="bg-white p-dynamic h-full">
+            <div id={mapTarget} className="h-full"></div>
+            <div id={popupContainerId}>
+                <MapRequestPopup
+                    closePopup={(e: any) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (e.savedRequest) {
+                            const mapSize = map?.getSize();
+                            const extent = map?.getView().calculateExtent(mapSize);
+                            if (extent) {
+                                const bbox: BoundingBox = {
+                                    min_latitude: extent[0],
+                                    min_longitude: extent[1],
+                                    max_latitude: extent[2],
+                                    max_longitude: extent[3],
+                                };
+                                store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
+                            }
+                        }
+                        overlay?.setPosition(undefined);
+                        clearRequest();
+                    }}
+                    vectorLayer={vectorLayer}
+                    token={token}
+                />
+            </div>
+        </div>
     )
 }

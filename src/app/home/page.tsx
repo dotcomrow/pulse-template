@@ -3,7 +3,7 @@ import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { headers, cookies } from 'next/headers'
 import LogUtility from "@utils/LoggingUtility";
 import ActivityNearYouCard from "@component/map/cards/ActivityNearYouCard";
-import {  Navbar,   NavbarBrand,   NavbarContent,   NavbarItem,   NavbarMenuToggle,  NavbarMenu,  NavbarMenuItem} from "@nextui-org/navbar";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem } from "@nextui-org/navbar";
 
 export const runtime = 'edge';
 
@@ -23,14 +23,24 @@ export default async function Home() {
   const headersList = await headers();
   const cookieStore = await cookies()
   return (
-      <div className="columns-2 flex gap-2 h-full">
+    <>
+      {/* // <!-- Desktop view --> */}
+      <div className="columns-2 flex gap-2 h-full min-md:flex max-md:hidden">
         <div className="w-2/3 flex">
-          <MapCard initialPosition={{
-            coords: {
-              latitude: parseFloat(headersList.get('x-vercel-ip-latitude') ?? '0'),
-              longitude: parseFloat(headersList.get('x-vercel-ip-longitude') ?? '0'),
-            }
-          }} token={cookieStore.get('token')?.value || ''} />
+          <Card className="py-2 mb-auto h-full w-full">
+            <CardBody className="overflow-visible">
+              <MapCard
+                initialPosition={{
+                  coords: {
+                    latitude: parseFloat(headersList.get('x-vercel-ip-latitude') ?? '0'),
+                    longitude: parseFloat(headersList.get('x-vercel-ip-longitude') ?? '0'),
+                  }
+                }}
+                token={cookieStore.get('token')?.value || ''}
+                mapTarget="mapDesktop"
+              />
+            </CardBody>
+          </Card>
         </div>
         <div className="w-1/3 flex flex-col gap-3">
           <div>
@@ -56,5 +66,19 @@ export default async function Home() {
           </div>
         </div>
       </div>
+      {/* // <!-- Mobile view --> */}
+      <div className="h-full md:hidden max-sm:flex">
+        <MapCard
+          initialPosition={{
+            coords: {
+              latitude: parseFloat(headersList.get('x-vercel-ip-latitude') ?? '0'),
+              longitude: parseFloat(headersList.get('x-vercel-ip-longitude') ?? '0'),
+            }
+          }}
+          token={cookieStore.get('token')?.value || ''}
+          mapTarget="mapMobile"
+        />
+      </div>
+    </>
   );
 }

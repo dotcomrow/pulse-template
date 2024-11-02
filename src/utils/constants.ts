@@ -12,8 +12,8 @@ const profileNavLinks = [
 ];
 
 const mobileLoggedInLinks = [
-  { title: "Requests", link: "/home", secure: false },
-  { title: "Submit", link: "/submit", secure: true },
+  { title: "Requests", link: "/requests", secure: true },
+  { title: "Submit", link: "/home", secure: false },
   { title: "Dashboard", link: "/dashboard", secure: true },
   { title: "Settings", link: "/settings", secure: true },
 ];
