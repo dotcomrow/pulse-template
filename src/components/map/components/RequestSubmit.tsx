@@ -99,6 +99,10 @@ export default function RequestSubmit({ vectorLayer, token, popupClose }: { vect
 
         savePictureRequests(request, token).then((res) => {
             e.savedRequest = true;
+            setRequestDescription("");
+            setRequestTitle("");
+            setDirection(0);
+            setCompassDirectionEnabled(true);
             popupClose(e);
             setShowLoading(false);
         });
