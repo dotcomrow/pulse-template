@@ -74,10 +74,9 @@ export default function Header({ token }: { token: string }) {
 
             {/* <!-- Mobile Navbar --> */}
             <Navbar
+                className="md:hidden max-sm:flex"
                 classNames={{
                     item: [
-                        "md:hidden",
-                        "max-sm:flex",
                         "items-center",
                         "data-[active=true]:after:content-['']",
                         "data-[active=true]:after:absolute",
