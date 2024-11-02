@@ -3,8 +3,7 @@ import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { headers, cookies } from 'next/headers'
 import LogUtility from "@utils/LoggingUtility";
 import ActivityNearYouCard from "@component/map/cards/ActivityNearYouCard";
-import Link from "next/link";
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem } from "@nextui-org/navbar";
+import {  Navbar,   NavbarBrand,   NavbarContent,   NavbarItem,   NavbarMenuToggle,  NavbarMenu,  NavbarMenuItem} from "@nextui-org/navbar";
 
 export const runtime = 'edge';
 
@@ -24,8 +23,7 @@ export default async function Home() {
   const headersList = await headers();
   const cookieStore = await cookies()
   return (
-    <>
-      <div className="columns-2 gap-2 h-full md:flex max-md:hidden">
+      <div className="columns-2 flex gap-2 h-full">
         <div className="w-2/3 flex">
           <MapCard initialPosition={{
             coords: {
@@ -58,32 +56,5 @@ export default async function Home() {
           </div>
         </div>
       </div>
-      <div className="w-full md:hidden max-sm:flex">
-        <Navbar>
-          <NavbarContent className="w-full gap-4" justify="center">
-            <NavbarItem>
-              <Link color="foreground" href="#">
-                Features
-              </Link>
-            </NavbarItem>
-            <NavbarItem isActive>
-              <Link href="#" aria-current="page">
-                Customers
-              </Link>
-            </NavbarItem>
-            <NavbarItem>
-              <Link color="foreground" href="#">
-                Integrations
-              </Link>
-            </NavbarItem>
-          </NavbarContent>
-          <NavbarContent justify="end">
-            <NavbarItem className="hidden lg:flex">
-              <Link href="#">Login</Link>
-            </NavbarItem>
-          </NavbarContent>
-        </Navbar>
-      </div>
-    </>
   );
 }
