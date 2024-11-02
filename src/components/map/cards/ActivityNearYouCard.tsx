@@ -12,7 +12,7 @@ import {
 import { useAppSelector, useAppStore, useAppDispatch } from "@hook/redux";
 import Feature from 'ol/Feature';
 import Geometry from 'ol/geom/Geometry';
-import ActivityTable from "../components/ActivityTable";
+import ActivityTable from "@component/map/components/ActivityTable";
 
 export default function ActivityNearYouCard({
     initialPosition,

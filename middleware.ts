@@ -11,12 +11,12 @@ export async function middleware(req: NextRequest) {
             return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
         } else {
             // redirect to home if not logged in
-            return NextResponse.redirect(new URL("/home", req.nextUrl));
+            return NextResponse.redirect(new URL("/map", req.nextUrl));
         }
     }
     if (Constants.securePaths.includes(pathname) && !req.cookies.get("token")) {
         // Redirect to home if not authenticated
-        return NextResponse.redirect(new URL("/home", req.nextUrl));
+        return NextResponse.redirect(new URL("/map", req.nextUrl));
     }
     return NextResponse.next();
 }
