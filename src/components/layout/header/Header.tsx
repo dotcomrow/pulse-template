@@ -111,6 +111,7 @@ export default function Header({ token }: { token: string }) {
                                             color="primary"
                                             className={pathname === item.link ? "text-primary" : "text"}
                                             variant="flat"
+                                            size="sm"
                                         >
                                             {item.title}
                                         </Button>
@@ -129,6 +130,7 @@ export default function Header({ token }: { token: string }) {
                                             color="primary"
                                             className={pathname === item.link ? "text-primary" : "text"}
                                             variant="flat"
+                                            size="sm"
                                         >
                                             {item.title}
                                         </Button>
