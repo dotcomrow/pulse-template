@@ -32,6 +32,7 @@ export default function Header({ token }: { token: string }) {
             >
                 <NavbarMenuToggle
                     aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+                    className="sm:hidden"
                 />
                 <NavbarBrand>
                     <h1 className="text-2xl font-bold">SnapSpot</h1>
