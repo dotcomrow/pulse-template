@@ -30,10 +30,6 @@ export default function Header({ token }: { token: string }) {
                 onMenuOpenChange={setIsMenuOpen}
                 className="min-md:flex max-md:hidden"
             >
-                <NavbarMenuToggle
-                    aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-                    className="sm:hidden"
-                />
                 <NavbarBrand>
                     <h1 className="text-2xl font-bold">SnapSpot</h1>
                 </NavbarBrand>
@@ -54,23 +50,6 @@ export default function Header({ token }: { token: string }) {
                 <NavbarContent as="div" justify="end" className="w-2/5 flex">
                     <ProfileAvatar />
                 </NavbarContent>
-                <NavbarMenu>
-                    {Constants.navLinks.map((item, index) => (
-                        <NavbarMenuItem isActive={pathname === item.link}>
-                            <Link
-                                href={item.link}
-                                className={
-                                    (pathname === item.link ? "text-primary" : "text") + " w-full"
-                                }
-                                onClick={(e) => {
-                                    setIsMenuOpen(false);
-                                }}
-                            >
-                                {item.title}
-                            </Link>
-                        </NavbarMenuItem>
-                    ))}
-                </NavbarMenu>
             </Navbar>
 
             {/* <!-- Mobile Navbar --> */}
