@@ -17,7 +17,7 @@ export default function LocationSearchWidget(centerMap: any) {
     const [items, setItems] = React.useState<any[]>([]);
 
     const searchHandler = (e: any) => {
-        if (searchDisabled) {
+        if (searchDisabled || query.length == 0) {
             return;
         }
         setSearchLoading(true);
