@@ -47,8 +47,6 @@ export default function MapCard({
     const pictureRequestStatus: any = useAppSelector(selectPictureRequestStatus);
     const limitSelect: number = useAppSelector(selectLimit);
     const offsetSelect: number = useAppSelector(selectOffset);
-    const [searchDisabled, setSearchDisabled] = React.useState(true);
-    const [requestMode, setRequestMode] = React.useState(false);
     const [vectorLayer, setVectorLayer] = React.useState<VectorLayer>();
     const [overlay, setOverlay] = React.useState<Overlay>();
     const geojson = new GeoJSON();
@@ -90,10 +88,14 @@ export default function MapCard({
     };
 
     const clearRequest = () => {
-        if (vectorLayer?.getSource()?.getFeatureById("request")) {
-            vectorLayer?.getSource()?.getFeatureById("request").getGeometry().setCoordinates([0, 0]);
-            vectorLayer?.setVisible(false);
-            vectorLayer?.setVisible(true);
+        for (var layerIndex in map?.getLayers().getArray()) {
+            const index = Number(layerIndex);
+            const layer = map?.getLayers().getArray()[index] as VectorLayer;
+            if (layer.getSource() instanceof VectorSource) {
+                layer.getSource()?.getFeatureById("request").getGeometry().setCoordinates([0, 0]);
+                vectorLayer?.setVisible(false);
+                vectorLayer?.setVisible(true);
+            }
         }
     };
 
@@ -111,8 +113,9 @@ export default function MapCard({
         if (rm == undefined) {
             rm = false;
         }
-        setRequestMode(rm);
-        overlay?.setPosition(undefined);
+        // change here if I want to let user drag map while request window open
+        // might want this...
+        map?.getOverlays().getArray()[0].setPosition(undefined);
         clearRequest();
         if (!rm) {
             map?.getInteractions().forEach(function (interaction: { setActive: (arg0: boolean) => void; }) {
@@ -128,8 +131,6 @@ export default function MapCard({
             });
         }
     };
-
-
 
     const map = useMemo(() => {
         if (mounted) {
