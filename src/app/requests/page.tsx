@@ -1,9 +1,18 @@
 import ActivityTable from "@component/map/components/ActivityTable";
 
-export default function Settings() {
+export default function Settings({
+    initialPosition,
+    token
+}: {
+    initialPosition: { coords: { latitude: number, longitude: number } },
+    token: string
+}) {
     return (
         <div>
-            <ActivityTable />
+            <ActivityTable 
+                initialPosition={initialPosition}
+                token={token}
+            />
         </div>
     );
 }
