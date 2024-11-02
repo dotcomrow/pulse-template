@@ -34,7 +34,6 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
                 isSubmitEnabled = false;
             }
         }
-
         setIsSubmitEnabled(isSubmitEnabled);
     }, [requestTitle, requestDescription, compassDirectionEnabled, direction]);
 
@@ -94,7 +93,7 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
             description: requestDescription,
             date: parseDate.getTime(),
             bidType: bidType,
-            geom: geomString,
+            geom: JSON.stringify(geomString),
             direction: direction
         };
 

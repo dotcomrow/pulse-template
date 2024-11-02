@@ -6,11 +6,11 @@ import { Image } from "@nextui-org/image";
 
 export default function MapRequestPopup({
     closePopup,
-    vectorLayer,
+    geomString,
     token
 }: {
     closePopup: any,
-    vectorLayer: any,
+    geomString: any,
     token: string
 }) {
     return (
@@ -32,9 +32,11 @@ export default function MapRequestPopup({
             </CardHeader>
             <CardBody>
                 <div id="popup-content">
-                    <RequestSubmit geomString={
-                        JSON.stringify(vectorLayer?.getSource()?.getFeatureById("request")?.getGeometry()?.getCoordinates())
-                    } token={token} popupClose={closePopup} />
+                    <RequestSubmit 
+                        geomString={geomString}
+                        token={token} 
+                        popupClose={closePopup} 
+                    />
                 </div>
             </CardBody>
         </Card>

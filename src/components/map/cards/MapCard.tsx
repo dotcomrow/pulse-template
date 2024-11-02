@@ -62,7 +62,6 @@ export default function MapCard({
         const coordinate = e.coordinate;
         const source = vectorLayer.getSource();
         const features = pictureRequestsState;
-
         const requestFeature = vectorLayer?.getSource()?.getFeatureById("request");
         if (!requestFeature) {
             var feat = new Feature(new Point(coordinate));
@@ -109,7 +108,6 @@ export default function MapCard({
         e.preventDefault();
         e.stopPropagation();
         var rm = !document.getElementById("pictureRequestBtn")?.classList.toggle("requestModeDisabled");
-        console.log(rm);
         if (rm == undefined) {
             rm = false;
         }
@@ -256,7 +254,7 @@ export default function MapCard({
                                 overlay?.setPosition(undefined);
                                 clearRequest();
                             }}
-                            vectorLayer={vectorLayer}
+                            geomString={vectorLayer?.getSource()?.getFeatureById("request")?.getGeometry()?.getCoordinates()}
                             token={token} 
                         />
                     </div>
