@@ -35,6 +35,7 @@ export const viewport: Viewport = {
   minimumScale: 1,
   width: "device-width",
   viewportFit: "cover",
+  maximumScale: 1,
 }
 
 export default async function RootLayout({
