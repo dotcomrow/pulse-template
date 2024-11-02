@@ -152,7 +152,7 @@ const ProfileAvatar = () => {
       );
     } else {
       setProfileAvatar(
-        <div className="md:w-3/5 flex justify-end gap-3">
+        <div className="md:w-3/5 flex justify-end">
           <div>
             <Skeleton className="flex rounded-full w-10 h-10" />
           </div>
