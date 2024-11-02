@@ -274,6 +274,7 @@ export default function MapCard({
                     }}
                     vectorLayer={vectorLayer}
                     token={token}
+                    mapTarget={mapTarget}
                 />
             </div>
         </div>

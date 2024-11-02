@@ -8,11 +8,13 @@ import { useEffect, useState } from "react";
 export default function MapRequestPopup({
     closePopup,
     vectorLayer,
-    token
+    token,
+    mapTarget
 }: {
     closePopup: any,
     vectorLayer: any,
-    token: string
+    token: string,
+    mapTarget: string
 }) {    
     return (
         <Card>
@@ -37,6 +39,7 @@ export default function MapRequestPopup({
                         vectorLayer={vectorLayer}
                         token={token} 
                         popupClose={closePopup} 
+                        mapTarget={mapTarget}
                     />
                 </div>
             </CardBody>
