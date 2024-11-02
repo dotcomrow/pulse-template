@@ -14,8 +14,8 @@ import React, { useEffect, useMemo } from "react";
 import { useGeographic } from "ol/proj.js";
 import "@styles/map/spinner.css"
 import { BoundingBox, loadPictureRequests } from "@lib/features/map/mapSlice";
-import { 
-    selectPictureRequests, 
+import {
+    selectPictureRequests,
     selectPictureRequestStatus,
     selectLimit,
     selectOffset
@@ -29,7 +29,7 @@ import CircleStyle from 'ol/style/Circle';
 import DragPan from 'ol/interaction/DragPan';
 import MapRequestPopup from "@component/modals/map/MapRequestPopup";
 import GeolocationControl from "@component/map/widgets/GeolocationControl";
-import {Control, defaults as defaultControls} from 'ol/control';
+import { Control, defaults as defaultControls } from 'ol/control';
 import RequestModeControl from "@component/map/widgets/RequestModeControl";
 import LocationSearchControl from "@component/map/widgets/LocationSearchControl";
 
@@ -129,7 +129,7 @@ export default function MapCard({
         }
     };
 
-    
+
 
     const map = useMemo(() => {
         if (mounted) {
@@ -189,7 +189,7 @@ export default function MapCard({
                     overlay
                 ],
                 controls: defaultControls().extend([
-                    new GeolocationControl(centerMap), 
+                    new GeolocationControl(centerMap),
                     new RequestModeControl(pictureRequestMode, token),
                     new LocationSearchControl(centerMap)
                 ]),
@@ -247,15 +247,28 @@ export default function MapCard({
                 <div className="bg-white p-dynamic h-full">
                     <div id="map-container" className="h-full"></div>
                     <div id="popup-container">
-                        <MapRequestPopup 
+                        <MapRequestPopup
                             closePopup={(e: any) => {
                                 e.preventDefault();
                                 e.stopPropagation();
+                                if (e.savedRequest) {
+                                    const mapSize = map?.getSize();
+                                    const extent = map?.getView().calculateExtent(mapSize);
+                                    if (extent) {
+                                        const bbox: BoundingBox = {
+                                            min_latitude: extent[0],
+                                            min_longitude: extent[1],
+                                            max_latitude: extent[2],
+                                            max_longitude: extent[3],
+                                        };
+                                        store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
+                                    }
+                                }
                                 overlay?.setPosition(undefined);
                                 clearRequest();
                             }}
                             geomString={vectorLayer?.getSource()?.getFeatureById("request")?.getGeometry()?.getCoordinates()}
-                            token={token} 
+                            token={token}
                         />
                     </div>
                 </div>

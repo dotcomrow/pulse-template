@@ -34,6 +34,7 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
                 isSubmitEnabled = false;
             }
         }
+        console.log(geomString);
         setIsSubmitEnabled(isSubmitEnabled);
     }, [requestTitle, requestDescription, compassDirectionEnabled, direction]);
 
@@ -98,6 +99,7 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
         };
 
         savePictureRequests(request, token).then((res) => {
+            e.savedRequest = true;
             popupClose(e);
             setShowLoading(false);
         });
