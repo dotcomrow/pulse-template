@@ -3,7 +3,6 @@ import { Tooltip } from "@nextui-org/tooltip";
 import { Link } from "@nextui-org/link";
 import RequestSubmit from "@component/map/components/RequestSubmit";
 import { Image } from "@nextui-org/image";
-import { useEffect, useState } from "react";
 
 export default function MapRequestPopup({
     closePopup,
