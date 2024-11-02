@@ -12,7 +12,7 @@ import { Button, ButtonGroup } from "@nextui-org/button";
 import savePictureRequests from "@services/map/SavePictureRequest";
 import { Spinner } from "@nextui-org/spinner";
 
-export default function RequestSubmit({ geomString, token, popupClose }: { geomString: string, token: string, popupClose: any }) {
+export default function RequestSubmit({ vectorLayer, token, popupClose }: { vectorLayer: any, token: string, popupClose: any }) {
 
     const [compassDirectionEnabled, setCompassDirectionEnabled] = useState(true);
     const [direction, setDirection] = useState(0);
@@ -34,7 +34,6 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
                 isSubmitEnabled = false;
             }
         }
-        console.log(geomString);
         setIsSubmitEnabled(isSubmitEnabled);
     }, [requestTitle, requestDescription, compassDirectionEnabled, direction]);
 
@@ -94,7 +93,7 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
             description: requestDescription,
             date: parseDate.getTime(),
             bidType: bidType,
-            geom: JSON.stringify(geomString),
+            geom: JSON.stringify(vectorLayer?.getSource()?.getFeatureById("request")?.getGeometry()?.getCoordinates()),
             direction: direction
         };
 

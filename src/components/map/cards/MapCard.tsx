@@ -267,7 +267,7 @@ export default function MapCard({
                                 overlay?.setPosition(undefined);
                                 clearRequest();
                             }}
-                            geomString={vectorLayer?.getSource()?.getFeatureById("request")?.getGeometry()?.getCoordinates()}
+                            vectorLayer={vectorLayer}
                             token={token}
                         />
                     </div>
