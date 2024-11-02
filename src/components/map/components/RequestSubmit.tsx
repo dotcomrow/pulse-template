@@ -12,7 +12,7 @@ import { Button, ButtonGroup } from "@nextui-org/button";
 import savePictureRequests from "@services/map/SavePictureRequest";
 import { Spinner } from "@nextui-org/spinner";
 
-export default function RequestSubmit({ vectorLayer, token, popupClose }: { vectorLayer: any, token: string, popupClose: any }) {
+export default function RequestSubmit({ vectorLayer, token, popupClose, mapTarget }: { vectorLayer: any, token: string, popupClose: any, mapTarget: string }) {
 
     const [compassDirectionEnabled, setCompassDirectionEnabled] = useState(true);
     const [direction, setDirection] = useState(0);
@@ -133,7 +133,7 @@ export default function RequestSubmit({ vectorLayer, token, popupClose }: { vect
                                     }
                                 }}>Verify Compass Direction</Checkbox>
                             <div className="flex flex-col" id="compass">
-                                <CompassWidget enabled={compassDirectionEnabled} direction={direction} setDirection={setDirection} />
+                                <CompassWidget enabled={compassDirectionEnabled} direction={direction} setDirection={setDirection} mapTarget={mapTarget} />
                                 <DateInput
                                     label={"Picture date/time"}
                                     value={requestDate}

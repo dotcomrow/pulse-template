@@ -26,8 +26,8 @@ export default async function Home() {
     <>
       {/* // <!-- Desktop view --> */}
       <div className="px-3 pt-3 columns-2 gap-2 h-full flex max-md:hidden">
-        <div className="w-2/3 flex">
-          <Card className="py-2 mb-auto flex">
+        <div className="w-2/3 flex h-full">
+          <Card className="py-2 mb-auto flex h-full">
             <CardBody className="overflow-visible flex">
               <MapCard
                 initialPosition={{
