@@ -92,9 +92,11 @@ export default function MapCard({
             const index = Number(layerIndex);
             const layer = map?.getLayers().getArray()[index] as VectorLayer;
             if (layer.getSource() instanceof VectorSource) {
-                layer.getSource()?.getFeatureById("request").getGeometry().setCoordinates([0, 0]);
-                vectorLayer?.setVisible(false);
-                vectorLayer?.setVisible(true);
+                if (layer.getSource()?.getFeatureById("request")) {
+                    layer.getSource()?.getFeatureById("request").getGeometry().setCoordinates([0, 0]);
+                    vectorLayer?.setVisible(false);
+                    vectorLayer?.setVisible(true);
+                }
             }
         }
     };
