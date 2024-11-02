@@ -77,7 +77,7 @@ export default function Header({ token }: { token: string }) {
                 }}
             >
                 <NavbarContent
-                    className="w-full gap-12"
+                    className="w-full gap-8"
                     justify="center"
                 >
                     {token.length > 0 ? (
