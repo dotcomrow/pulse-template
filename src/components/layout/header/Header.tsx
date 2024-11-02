@@ -14,6 +14,7 @@ import Link from "next/link";
 import { usePathname } from 'next/navigation'
 import React, { useEffect } from "react";
 import { default as Constants } from "@utils/constants";
+import { Button, ButtonGroup } from "@nextui-org/button";
 
 export default function Header({ token }: { token: string }) {
 
@@ -104,12 +105,15 @@ export default function Header({ token }: { token: string }) {
                             {Constants.mobileLoggedInLinks.map((item, index) => {
                                 return (
                                     <NavbarItem isActive={pathname === item.link}>
-                                        <Link
+                                        <Button
                                             href={pathname === item.link ? "#" : item.link}
+                                            as={Link}
+                                            color="primary"
                                             className={pathname === item.link ? "text-primary" : "text"}
+                                            variant="flat"
                                         >
                                             {item.title}
-                                        </Link>
+                                        </Button>
                                     </NavbarItem>
                                 );
                             })}
@@ -119,12 +123,15 @@ export default function Header({ token }: { token: string }) {
                             {Constants.mobileLoggedOutLinks.map((item, index) => {
                                 return (
                                     <NavbarItem isActive={pathname === item.link}>
-                                        <Link
+                                        <Button
                                             href={pathname === item.link ? "#" : item.link}
+                                            as={Link}
+                                            color="primary"
                                             className={pathname === item.link ? "text-primary" : "text"}
+                                            variant="flat"
                                         >
                                             {item.title}
-                                        </Link>
+                                        </Button>
                                     </NavbarItem>
                                 );
                             })}

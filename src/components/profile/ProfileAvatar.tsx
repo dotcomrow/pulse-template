@@ -75,75 +75,84 @@ const ProfileAvatar = () => {
     } else if (state.status == "complete") {
       setProfileAvatar(
         <>
-          <Dropdown placement="bottom-end" backdrop="blur" onFocus={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (!Constants.profileNavLinks.find((item) => item.link === window.location.pathname)) {
-              setSelectedKey("");
-            }
-          }}>
-            <DropdownTrigger>
-              <User
-                name={state.user.name}
-                description={state.user.email}
-                className="cursor-pointer"
-                classNames={{
-                  wrapper: "max-sm:hidden"
-                }}
-                avatarProps={{
-                  src: state.user.picture
-                }}
-              />
-            </DropdownTrigger>
-            <DropdownMenu aria-label="Profile Actions" variant="flat">
-              <DropdownItem key="profile" className="h-14 gap-2" isReadOnly textValue="Sign in details">
-                <p className="font-semibold">Signed in as</p>
-                <p className="font-semibold">{state.user.email}</p>
-              </DropdownItem>
-              <DropdownSection>
-                {
-                  Constants.profileNavLinks.map((item, index) => {
-                    return (
-                      <DropdownItem key={item.link} textValue={item.title}>
-                        <Link href={item.link}
-                          onClick={(e) => { setSelectedKey(item.link) }}
-                          className={selectedKey === item.link ? "text-primary" : "text"}
-                          >
-                          {item.title}
-                        </Link>
-                      </DropdownItem>
-                    );
-                  })
-                }
-              </DropdownSection>
-              <DropdownItem textValue="Logout" key="logout" color="danger" onClick={(e) => {
+          <div className="md:hidden max-sm:flex cursor-pointer">
+            <User
+              name=""
+              avatarProps={{
+                src: state.user.picture
+              }}
+            />
+          </div>
+          <div className="min-md:flex max-md:hidden">
+            <Dropdown
+              placement="bottom-end"
+              backdrop="blur"
+              onFocus={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                var options = {
-                  path: "/",
-                  expires: new Date(Date.now()),
-                  secure: (window.location.protocol === "https:"),
-                  // httpOnly: true,
-                  sameSite: "lax"
-                } as CookieSetOptions;
-                if (!window.location.hostname.includes("localhost")) {
-                  options.domain = window.location.hostname;
-                  // options.httpOnly = true;
-                  options.sameSite = "lax";
-                }
-                removeCookie("token", options);
-                removeCookie("expires", options);
-                localStorage.clear();
-                if (Constants.navLinks.find((item) => item.link === window.location.pathname)) {
-                  window.location.reload();
-                } else {
-                  window.location.href = "/";
+                if (!Constants.profileNavLinks.find((item) => item.link === window.location.pathname)) {
+                  setSelectedKey("");
                 }
               }}>
-                Log Out
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
+              <DropdownTrigger>
+                <User
+                  name={state.user.name}
+                  description={state.user.email}
+                  avatarProps={{
+                    src: state.user.picture
+                  }}
+                />
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Profile Actions" variant="flat">
+                <DropdownItem key="profile" className="h-14 gap-2" isReadOnly textValue="Sign in details">
+                  <p className="font-semibold">Signed in as</p>
+                  <p className="font-semibold">{state.user.email}</p>
+                </DropdownItem>
+                <DropdownSection>
+                  {
+                    Constants.profileNavLinks.map((item, index) => {
+                      return (
+                        <DropdownItem key={item.link} textValue={item.title}>
+                          <Link href={item.link}
+                            onClick={(e) => { setSelectedKey(item.link) }}
+                            className={selectedKey === item.link ? "text-primary" : "text"}
+                          >
+                            {item.title}
+                          </Link>
+                        </DropdownItem>
+                      );
+                    })
+                  }
+                </DropdownSection>
+                <DropdownItem textValue="Logout" key="logout" color="danger" onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  var options = {
+                    path: "/",
+                    expires: new Date(Date.now()),
+                    secure: (window.location.protocol === "https:"),
+                    // httpOnly: true,
+                    sameSite: "lax"
+                  } as CookieSetOptions;
+                  if (!window.location.hostname.includes("localhost")) {
+                    options.domain = window.location.hostname;
+                    // options.httpOnly = true;
+                    options.sameSite = "lax";
+                  }
+                  removeCookie("token", options);
+                  removeCookie("expires", options);
+                  localStorage.clear();
+                  if (Constants.navLinks.find((item) => item.link === window.location.pathname)) {
+                    window.location.reload();
+                  } else {
+                    window.location.href = "/";
+                  }
+                }}>
+                  Log Out
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
           <SessionTimeout />
         </>
       );
