@@ -11,6 +11,17 @@ const profileNavLinks = [
   { title: "Help & Feedback", link: "/help-feedback", secure: true },
 ];
 
+const mobileLoggedInLinks = [
+  { title: "Requests", link: "/home", secure: false },
+  { title: "Submit", link: "/submit", secure: true },
+  { title: "Dashboard", link: "/dashboard", secure: true },
+  { title: "Settings", link: "/settings", secure: true },
+];
+
+const mobileLoggedOutLinks = [
+  { title: "Requests", link: "/home", secure: false },
+];
+
 var securePaths: string[] = [];
 for (const link of [
   ...navLinks,
@@ -24,4 +35,6 @@ export default {
   navLinks,
   profileNavLinks,
   securePaths,
+  mobileLoggedInLinks,
+  mobileLoggedOutLinks
 };

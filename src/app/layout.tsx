@@ -48,7 +48,7 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <Providers token={token}>
-          <Header />
+          <Header token={token}/>
           <main className="text-foreground bg-background">
             {children}
           </main>
