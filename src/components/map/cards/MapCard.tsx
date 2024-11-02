@@ -121,8 +121,10 @@ export default function MapCard({
         }
         // change here if I want to let user drag map while request window open
         // might want this...
-        map?.getOverlays().getArray()[0].setPosition(undefined);
-        clearRequest();
+        // map?.getOverlays().getArray()[0].setPosition(undefined);
+        // clearRequest();
+        // The 2 lines above will clear selection and close the request window.
+        // uncomment to clear request if user toggles out of request mode
         if (!rm) {
             map?.getInteractions().forEach(function (interaction: { setActive: (arg0: boolean) => void; }) {
                 if (interaction instanceof DragPan) {
