@@ -1,17 +1,20 @@
 import ActivityTable from "@component/map/components/ActivityTable";
+import { cookies, headers } from "next/headers";
 
-export default function Settings({
-    initialPosition,
-    token
-}: {
-    initialPosition: { coords: { latitude: number, longitude: number } },
-    token: string
-}) {
+export default async function Settings() {
+
+    const headersList = await headers();
+    const cookieStore = await cookies();
     return (
         <div>
             <ActivityTable 
-                initialPosition={initialPosition}
-                token={token}
+                initialPosition={{
+                    coords: {
+                      latitude: parseFloat(headersList.get('x-vercel-ip-latitude') ?? '0'),
+                      longitude: parseFloat(headersList.get('x-vercel-ip-longitude') ?? '0'),
+                    }
+                  }}
+                  token={cookieStore.get('token')?.value || ''}
             />
         </div>
     );

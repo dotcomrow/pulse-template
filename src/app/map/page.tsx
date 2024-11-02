@@ -21,7 +21,7 @@ export default async function Home() {
   // ]);
 
   const headersList = await headers();
-  const cookieStore = await cookies()
+  const cookieStore = await cookies();
   return (
     <>
       {/* // <!-- Desktop view --> */}
