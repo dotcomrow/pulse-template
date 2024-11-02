@@ -21,10 +21,6 @@ export default function ActivityNearYouCard({
     initialPosition: { coords: { latitude: number, longitude: number } },
     token: string
 }) {
-
-    // const [page, setPage] = React.useState(1);
-    // const pictureRequestsState: any = useAppSelector(selectPictureRequests);
-
     return (
         <Card className="py-4 w-full">
             <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
@@ -34,7 +30,10 @@ export default function ActivityNearYouCard({
             </CardHeader>
             <CardBody className="overflow-visible py-2">
                 <div>
-                    <ActivityTable />
+                    <ActivityTable 
+                        initialPosition={initialPosition}
+                        token={token}
+                    />
                 </div>
             </CardBody>
         </Card>
