@@ -12,14 +12,14 @@ const profileNavLinks = [
 ];
 
 const mobileLoggedInLinks = [
-  { title: "Requests", link: "/requests", secure: true },
-  { title: "Submit", link: "/home", secure: false },
-  { title: "Dashboard", link: "/dashboard", secure: true },
-  { title: "Settings", link: "/settings", secure: true },
+  { title: "Dashboard", link: "/dashboard", secure: true, icon: "/assets/images/icons/home.svg" },
+  { title: "Requests", link: "/requests", secure: true, icon: "/assets/images/icons/layout-list.svg" },
+  { title: "Submit", link: "/home", secure: false, icon: "/assets/images/icons/map.svg" },
+  { title: "Settings", link: "/settings", secure: true, icon: "/assets/images/icons/settings_filled.svg" },
 ];
 
 const mobileLoggedOutLinks = [
-  { title: "Requests", link: "/home", secure: false },
+  { title: "Requests", link: "/home", secure: false, icon: "/assets/images/icons/layout-list.svg" },
 ];
 
 var securePaths: string[] = [];

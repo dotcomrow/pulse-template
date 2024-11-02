@@ -15,6 +15,7 @@ import { usePathname } from 'next/navigation'
 import React, { useEffect } from "react";
 import { default as Constants } from "@utils/constants";
 import { Button, ButtonGroup } from "@nextui-org/button";
+import { Image } from "@nextui-org/image";
 
 export default function Header({ token }: { token: string }) {
 
@@ -58,14 +59,14 @@ export default function Header({ token }: { token: string }) {
                 classNames={{
                     item: [
                         "items-center",
-                        "data-[active=true]:after:content-['']",
-                        "data-[active=true]:after:absolute",
-                        "data-[active=true]:after:bottom-0",
-                        "data-[active=true]:after:left-0",
-                        "data-[active=true]:after:right-0",
-                        "data-[active=true]:after:h-[2px]",
-                        "data-[active=true]:after:rounded-[2px]",
-                        "data-[active=true]:after:bg-primary",
+                        // "data-[active=true]:after:content-['']",
+                        // "data-[active=true]:after:absolute",
+                        // "data-[active=true]:after:bottom-0",
+                        // "data-[active=true]:after:left-0",
+                        // "data-[active=true]:after:right-0",
+                        // "data-[active=true]:after:h-[2px]",
+                        // "data-[active=true]:after:rounded-[2px]",
+                        // "data-[active=true]:after:bg-primary",
                     ],
                 }}
                 isBordered={true}
@@ -89,10 +90,17 @@ export default function Header({ token }: { token: string }) {
                                             as={Link}
                                             color="primary"
                                             className={pathname === item.link ? "text-primary" : "text"}
-                                            variant="flat"
-                                            size="sm"
+                                            variant="light"
+                                            size="lg"
+                                            isIconOnly
+                                            isDisabled={pathname === item.link ? true : false}
                                         >
-                                            {item.title}
+                                            <Image 
+                                                src={item.icon}
+                                                alt={item.title}
+                                                width={50}
+                                                height={50}
+                                            />
                                         </Button>
                                     </NavbarItem>
                                 );
@@ -108,10 +116,17 @@ export default function Header({ token }: { token: string }) {
                                             as={Link}
                                             color="primary"
                                             className={pathname === item.link ? "text-primary" : "text"}
-                                            variant="flat"
-                                            size="sm"
+                                            variant="light"
+                                            size="lg"
+                                            isIconOnly
+                                            isDisabled={pathname === item.link ? true : false}
                                         >
-                                            {item.title}
+                                            <Image 
+                                                src={item.icon}
+                                                alt={item.title}
+                                                width={50}
+                                                height={50}
+                                            />
                                         </Button>
                                     </NavbarItem>
                                 );
