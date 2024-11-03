@@ -2,7 +2,6 @@ import { createAppSlice } from "@lib/createAppSlice";
 import type { AppThunk } from "@lib/store";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { BoundingBox, loadPictureRequests, selectLimit, selectOffset } from "@lib/features/map/mapSlice";
-import { useAppSelector, useAppStore } from "@hook/redux";
 
 const latitudeInitialWidth = 0.0064373;
 const longitudeInitialWidth = 0.00786198;

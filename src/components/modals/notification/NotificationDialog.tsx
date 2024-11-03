@@ -21,10 +21,10 @@ export default function NotificationDialog() {
     }, [notificationState]);
 
     return (
-        <Modal 
-            isOpen={isOpen} 
-            onOpenChange={onOpenChange} 
-            isDismissable={true} 
+        <Modal
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+            isDismissable={true}
             hideCloseButton={false}
             onClose={() => {
                 onOpenChange();
@@ -38,17 +38,34 @@ export default function NotificationDialog() {
                         "flex justify-center"
                     }>{notificationState.message}</h1>
                 </ModalBody>
-                <ModalFooter>
-                    {notificationState.action ? (
-                    <ButtonGroup>
-                        <Button 
-                            onClick={() => {
-                                notificationState.action.onClick();
-                            }}>
-                            {notificationState.action.label}
-                        </Button>
-                    </ButtonGroup>
+                <ModalFooter
+                    className="flex justify-between"
+                >
+                    {notificationState.denyAction ? (
+                        <ButtonGroup
+                            className="flex justify-start"
+                        >
+                            <Button
+                                onClick={() => {
+                                    notificationState.denyAction.onClick();
+                                }}>
+                                {notificationState.denyAction.label}
+                            </Button>
+                        </ButtonGroup>
                     ) : <></>}
+                    {notificationState.confirmAction ? (
+                        <ButtonGroup
+                            className="flex justify-end"
+                        >
+                            <Button
+                                onClick={() => {
+                                    notificationState.confirmAction.onClick();
+                                }}>
+                                {notificationState.confirmAction.label}
+                            </Button>
+                        </ButtonGroup>
+                    ) : <></>}
+
                 </ModalFooter>
             </ModalContent>
         </Modal >

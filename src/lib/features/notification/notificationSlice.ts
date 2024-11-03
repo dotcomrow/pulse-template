@@ -1,6 +1,5 @@
 import { createAppSlice } from "@lib/createAppSlice";
 import type { AppThunk } from "@lib/store";
-import type { WritableDraft } from "immer";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { ReactNode } from "react";
 
@@ -9,7 +8,8 @@ export interface NotificationDTO {
     message: ReactNode | null;
     severity: "info" | "warning" | "error" | "success" | null;
     icon: "info" | "warning" | "error" | "success" | null;
-    action: any | null;
+    confirmAction: any | null;
+    denyAction: any | null;
     show: boolean;
 }
 
@@ -18,7 +18,8 @@ const initialState: NotificationDTO = {
     message: null,
     severity: null,
     icon: null,
-    action: null,
+    confirmAction: null,
+    denyAction: null,
     show: false,
 };
 
@@ -33,7 +34,8 @@ export const notificationSlice = createAppSlice({
             state.message = action.payload.message;
             state.severity = action.payload.severity;
             state.icon = action.payload.icon;
-            state.action = action.payload.action;
+            state.confirmAction = action.payload.confirmAction;
+            state.denyAction = action.payload.denyAction;
             state.show = action.payload.show;
         }),
     }),

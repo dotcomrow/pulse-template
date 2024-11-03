@@ -31,6 +31,7 @@ export default async function Header({ headersList, token }: { headersList: any,
         navigator.permissions.query({ name: 'geolocation' }).then((e) => {
             if (e.state === 'granted') {
                 // we are allowed to get device location
+                alert("granted");
                 navigator.geolocation.getCurrentPosition((position) => {
                     store.dispatch(setInitialLocation({
                         latitude: position.coords.latitude,
@@ -71,7 +72,20 @@ export default async function Header({ headersList, token }: { headersList: any,
                     severity: "info",
                     icon: "info",
                     show: true,
-                    action: {
+                    denyAction: {
+                        label: "Deny",
+                        onClick: () => {
+                            store.dispatch(setInitialLocation({
+                                latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
+                                longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
+                                deviceLocation: false,
+                                locationPermissionsAllowed: false,
+                                locationLoaded: true
+                            }));
+                            store.dispatch(clearNotification());
+                        }
+                    },
+                    confirmAction: {
                         label: "Allow",
                         onClick: () => {
                             navigator.geolocation.getCurrentPosition((position) => {
@@ -90,7 +104,13 @@ export default async function Header({ headersList, token }: { headersList: any,
                                     severity: "error",
                                     icon: "error",
                                     show: true,
-                                    action: {
+                                    denyAction: {
+                                        label: "Dismiss",
+                                        onClick: () => {
+                                            store.dispatch(clearNotification());
+                                        }
+                                    },
+                                    confirmAction: {
                                         label: "Dismiss",
                                         onClick: () => {
                                             store.dispatch(clearNotification());
