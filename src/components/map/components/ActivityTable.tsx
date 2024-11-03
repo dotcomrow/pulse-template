@@ -21,22 +21,10 @@ export default function ActivityTable({
     const initialLocationState: any = useAppSelector(selectInitialLocation);
     const limitSelect: number = useAppSelector(selectLimit);
     const offsetSelect: number = useAppSelector(selectOffset);
-    const latitudeInitialWidth = 0.0064373;
-    const longitudeInitialWidth = 0.00786198;
 
     useEffect(() => {
 
     }, [pictureRequestsState, pictureRequestStatus, limitSelect, offsetSelect]);
-
-    // useEffect(() => {
-    //     const bbox: BoundingBox = {
-    //         min_latitude: initialLocationState.longitude - (latitudeInitialWidth / 2),
-    //         min_longitude: initialLocationState.latitude - (longitudeInitialWidth / 2),
-    //         max_latitude: initialLocationState.longitude + (latitudeInitialWidth / 2),
-    //         max_longitude: initialLocationState.latitude + (longitudeInitialWidth / 2),
-    //     };
-    //     store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
-    // }, []);
 
     const ListboxWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
         <div className="w-full border-small border-default-200 dark:border-default-100">

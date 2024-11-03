@@ -32,8 +32,7 @@ import GeolocationControl from "@component/map/widgets/GeolocationControl";
 import { Control, defaults as defaultControls } from 'ol/control';
 import RequestModeControl from "@component/map/widgets/RequestModeControl";
 import LocationSearchControl from "@component/map/widgets/LocationSearchControl";
-import { selectInitialLocation } from "@lib/features/location/locationSlice";
-import {Spinner} from "@nextui-org/spinner";
+import { selectInitialLocation, updateLocation } from "@lib/features/location/locationSlice";
 
 export default function MapCard({
     token,
@@ -55,7 +54,6 @@ export default function MapCard({
     const geojson = new GeoJSON();
     const pictureRequestBtn = "pictureRequestBtn" + mapTarget;
     const popupContainerId = "popup-container" + mapTarget;
-    const [mapLoaded, setMapLoaded] = React.useState(false);
 
     const mapClickHandler = (e: any, overlay: any, vectorLayer: any) => {
         if (document.getElementById(pictureRequestBtn)?.classList.contains("requestModeDisabled")) {
@@ -215,13 +213,26 @@ export default function MapCard({
                 map.getTargetElement().classList.add('spinner');
                 const mapSize = map?.getSize();
                 const extent = map?.getView().calculateExtent(mapSize);
-                const bbox: BoundingBox = {
-                    min_latitude: extent[0],
-                    min_longitude: extent[1],
-                    max_latitude: extent[2],
-                    max_longitude: extent[3],
-                };
-                store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
+                if (extent) {
+                    const bbox: BoundingBox = {
+                        min_latitude: extent[0],
+                        min_longitude: extent[1],
+                        max_latitude: extent[2],
+                        max_longitude: extent[3],
+                    };
+                    console.log("loading picture requests for bbox: ", bbox);
+                    store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
+                    var centerLat = (extent[0] + extent[2]) / 2;
+                    var centerLon = (extent[1] + extent[3]) / 2;
+                    console.log("centering map to: ", centerLat, centerLon);
+                    store.dispatch(updateLocation({
+                        latitude: centerLat,
+                        longitude: centerLon,
+                        deviceLocation: initialLocationState.deviceLocation,
+                        locationPermissionsAllowed: initialLocationState.locationPermissionsAllowed,
+                        locationLoaded: true
+                    }));
+                }
             }, 500));
             map.on('click', (e) => {
                 mapClickHandler(e, overlay, vectorLayer);
@@ -243,32 +254,20 @@ export default function MapCard({
             const mapSize = map?.getSize();
             if (mapSize) {
                 centerMap({ coords: { latitude: initialLocationState.latitude, longitude: initialLocationState.longitude } });
-                // setMapLoaded(true);
             }
         }
-    }, [mounted, initialLocationState]);
+    }, [mounted]);
 
     useEffect(() => {
         useGeographic();
-        setMounted(true);
-    }, []);
+        if (initialLocationState.locationLoaded) {
+            setMounted(true);
+        }
+    }, [initialLocationState]);
 
     return (
         <div className="bg-white p-dynamic h-full w-full">
-            <div id={mapTarget} className="h-full w-full spinner">
-                {/* {!mapLoaded ? (
-                    <Spinner 
-                        size="lg"
-                        color="primary"
-                        label="Loading..."
-                        style={{
-                            position: "absolute", 
-                            top: "50%", 
-                            left: "50%"
-                        }}
-                    />
-                ) : null} */}
-            </div>
+            <div id={mapTarget} className="h-full w-full spinner"></div>
             <div id={popupContainerId}>
                 <MapRequestPopup
                     closePopup={(e: any) => {

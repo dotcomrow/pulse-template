@@ -15,6 +15,8 @@ export default function NotificationDialog() {
     useEffect(() => {
         if (notificationState.show) {
             onOpen();
+        } else if (isOpen) {
+            onOpenChange();
         }
     }, [notificationState]);
 

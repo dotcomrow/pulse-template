@@ -36,6 +36,13 @@ export const locationSlice = createAppSlice({
             state.locationPermissionsAllowed = action.payload.locationPermissionsAllowed;
             state.locationLoaded = action.payload.locationLoaded;
         }),
+        updateLocation: create.reducer((state, action: PayloadAction<LocationDTO>) => {
+            state.latitude = action.payload.latitude;
+            state.longitude = action.payload.longitude;
+            state.deviceLocation = action.payload.deviceLocation;
+            state.locationPermissionsAllowed = action.payload.locationPermissionsAllowed;
+            state.locationLoaded = action.payload.locationLoaded;
+        }),
     }),
     selectors: {
         selectInitialLocation: (state) => state
@@ -49,10 +56,15 @@ export const {
 export const setInitialLocation = (location: LocationDTO): AppThunk => async (dispatch) => {
     dispatch(locationSlice.actions.setInitialLocation(location));
     const bbox: BoundingBox = {
-        min_latitude: location.longitude - (latitudeInitialWidth / 2),
-        min_longitude: location.latitude - (longitudeInitialWidth / 2),
-        max_latitude: location.longitude + (latitudeInitialWidth / 2),
-        max_longitude: location.latitude + (longitudeInitialWidth / 2),
+        min_latitude: location.latitude - (latitudeInitialWidth / 2),
+        min_longitude: location.longitude - (longitudeInitialWidth / 2),
+        max_latitude: location.latitude + (latitudeInitialWidth / 2),
+        max_longitude: location.longitude + (longitudeInitialWidth / 2),
     };
     dispatch(loadPictureRequests(bbox, 10, 0));
+}
+
+export const updateLocation = (location: LocationDTO): AppThunk => async (dispatch) => {
+    console.log("Updating location ", location);
+    dispatch(locationSlice.actions.updateLocation(location));
 }
