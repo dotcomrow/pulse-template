@@ -30,12 +30,6 @@ export default async function Home() {
           <Card className="py-2 mb-auto flex h-full w-full">
             <CardBody className="overflow-visible flex w-full">
               <MapCard
-                initialPosition={{
-                  coords: {
-                    latitude: parseFloat(headersList.get('x-vercel-ip-latitude') ?? '0'),
-                    longitude: parseFloat(headersList.get('x-vercel-ip-longitude') ?? '0'),
-                  }
-                }}
                 token={cookieStore.get('token')?.value || ''}
                 mapTarget="mapDesktop"
               />
@@ -44,12 +38,7 @@ export default async function Home() {
         </div>
         <div className="w-1/3 flex flex-col gap-3">
           <div>
-            <ActivityNearYouCard initialPosition={{
-              coords: {
-                latitude: parseFloat(headersList.get('x-vercel-ip-latitude') ?? '0'),
-                longitude: parseFloat(headersList.get('x-vercel-ip-longitude') ?? '0'),
-              }
-            }} token={cookieStore.get('token')?.value || ''}
+            <ActivityNearYouCard token={cookieStore.get('token')?.value || ''}
             />
           </div>
           <div>
@@ -69,12 +58,6 @@ export default async function Home() {
       {/* // <!-- Mobile view --> */}
       <div className="h-full md:hidden flex mb-auto">
         <MapCard
-          initialPosition={{
-            coords: {
-              latitude: parseFloat(headersList.get('x-vercel-ip-latitude') ?? '0'),
-              longitude: parseFloat(headersList.get('x-vercel-ip-longitude') ?? '0'),
-            }
-          }}
           token={cookieStore.get('token')?.value || ''}
           mapTarget="mapMobile"
         />

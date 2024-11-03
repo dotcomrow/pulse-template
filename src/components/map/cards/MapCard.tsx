@@ -32,13 +32,12 @@ import GeolocationControl from "@component/map/widgets/GeolocationControl";
 import { Control, defaults as defaultControls } from 'ol/control';
 import RequestModeControl from "@component/map/widgets/RequestModeControl";
 import LocationSearchControl from "@component/map/widgets/LocationSearchControl";
+import { selectInitialLocation } from "@lib/features/initialLocation/initialLocationSlice";
 
 export default function MapCard({
-    initialPosition,
     token,
     mapTarget
 }: {
-    initialPosition: { coords: { latitude: number, longitude: number } },
     token: string,
     mapTarget: string
 }) {
@@ -47,6 +46,7 @@ export default function MapCard({
     const [mounted, setMounted] = React.useState(false);
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: any = useAppSelector(selectPictureRequestStatus);
+    const initialLocationState: any = useAppSelector(selectInitialLocation);
     const limitSelect: number = useAppSelector(selectLimit);
     const offsetSelect: number = useAppSelector(selectOffset);
     const [vectorLayer, setVectorLayer] = React.useState<VectorLayer>();
@@ -240,10 +240,10 @@ export default function MapCard({
         if (map) {
             const mapSize = map?.getSize();
             if (mapSize) {
-                map?.getView().centerOn([initialPosition.coords.longitude, initialPosition.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+                map?.getView().centerOn([initialLocationState.longitude, initialLocationState.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
             }
         }
-    }, [mounted]);
+    }, [mounted, initialLocationState]);
 
     useEffect(() => {
         useGeographic();

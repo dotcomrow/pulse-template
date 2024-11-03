@@ -15,10 +15,8 @@ import Geometry from 'ol/geom/Geometry';
 import ActivityTable from "@component/map/components/ActivityTable";
 
 export default function ActivityNearYouCard({
-    initialPosition,
     token
 }: {
-    initialPosition: { coords: { latitude: number, longitude: number } },
     token: string
 }) {
     return (
@@ -31,7 +29,6 @@ export default function ActivityNearYouCard({
             <CardBody className="overflow-visible py-2">
                 <div>
                     <ActivityTable 
-                        initialPosition={initialPosition}
                         token={token}
                     />
                 </div>

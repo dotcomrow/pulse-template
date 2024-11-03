@@ -11,12 +11,6 @@ export default async function Settings() {
                 
             </div>
             <ActivityTable 
-                initialPosition={{
-                    coords: {
-                      latitude: parseFloat(headersList.get('x-vercel-ip-latitude') ?? '0'),
-                      longitude: parseFloat(headersList.get('x-vercel-ip-longitude') ?? '0'),
-                    }
-                  }}
                   token={cookieStore.get('token')?.value || ''}
             />
         </div>

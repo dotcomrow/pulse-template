@@ -39,7 +39,12 @@ export default async function Header({ headersList, token }: { headersList: any,
                         locationPermissionsAllowed: true
                     }));
                 }, (error) => {
-
+                    store.dispatch(setInitialLocation({
+                        latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
+                        longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
+                        deviceLocation: false,
+                        locationPermissionsAllowed: false
+                    }));
                 },
                     {
                         enableHighAccuracy: false,
@@ -88,6 +93,12 @@ export default async function Header({ headersList, token }: { headersList: any,
                                         }
                                     }
                                 }));
+                                store.dispatch(setInitialLocation({
+                                    latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
+                                    longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
+                                    deviceLocation: false,
+                                    locationPermissionsAllowed: false
+                                }));
                             },
                                 {
                                     enableHighAccuracy: false,
@@ -100,8 +111,8 @@ export default async function Header({ headersList, token }: { headersList: any,
             } else if (e.state === 'denied') {
                 // user said no so we can ONLY use what cloudflare detects
                 store.dispatch(setInitialLocation({
-                    latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude').value),
-                    longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude').value),
+                    latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
+                    longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
                     deviceLocation: false,
                     locationPermissionsAllowed: false
                 }));

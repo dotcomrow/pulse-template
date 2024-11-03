@@ -14,7 +14,6 @@ export default function NotificationDialog() {
 
     useEffect(() => {
         if (notificationState.show) {
-            console.log("NotificationDialog useEffect");
             onOpen();
         }
     }, [notificationState]);

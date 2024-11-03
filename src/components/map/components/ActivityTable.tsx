@@ -6,13 +6,11 @@ import React, { useEffect } from "react";
 import { Listbox, ListboxSection, ListboxItem } from "@nextui-org/listbox";
 import { Image } from "@nextui-org/image";
 import Feature from "ol/Feature";
-import Geometry from "ol/geom/Geometry";
+import { selectInitialLocation } from "@lib/features/initialLocation/initialLocationSlice";
 
 export default function ActivityTable({
-    initialPosition,
     token
 }: {
-    initialPosition: { coords: { latitude: number, longitude: number } },
     token: string
 }) {
 
@@ -20,6 +18,7 @@ export default function ActivityTable({
     const [page, setPage] = React.useState(1);
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: any = useAppSelector(selectPictureRequestStatus);
+    const initialLocationState: any = useAppSelector(selectInitialLocation);
     const limitSelect: number = useAppSelector(selectLimit);
     const offsetSelect: number = useAppSelector(selectOffset);
     const latitudeInitialWidth = 0.0064373;
@@ -31,10 +30,10 @@ export default function ActivityTable({
 
     useEffect(() => {
         const bbox: BoundingBox = {
-            min_latitude: initialPosition.coords.longitude - (latitudeInitialWidth / 2),
-            min_longitude: initialPosition.coords.latitude - (longitudeInitialWidth / 2),
-            max_latitude: initialPosition.coords.longitude + (latitudeInitialWidth / 2),
-            max_longitude: initialPosition.coords.latitude + (longitudeInitialWidth / 2),
+            min_latitude: initialLocationState.longitude - (latitudeInitialWidth / 2),
+            min_longitude: initialLocationState.latitude - (longitudeInitialWidth / 2),
+            max_latitude: initialLocationState.longitude + (latitudeInitialWidth / 2),
+            max_longitude: initialLocationState.latitude + (longitudeInitialWidth / 2),
         };
         store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
     }, []);
