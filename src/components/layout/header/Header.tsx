@@ -31,7 +31,6 @@ export default async function Header({ headersList, token }: { headersList: any,
         navigator.permissions.query({ name: 'geolocation' }).then((e) => {
             if (e.state === 'granted') {
                 // we are allowed to get device location
-                alert("granted");
                 navigator.geolocation.getCurrentPosition((position) => {
                     store.dispatch(setInitialLocation({
                         latitude: position.coords.latitude,

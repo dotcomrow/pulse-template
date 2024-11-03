@@ -9,9 +9,9 @@ import Feature from "ol/Feature";
 import { selectInitialLocation } from "@lib/features/location/locationSlice";
 
 export default function ActivityTable({
-    token
+    
 }: {
-    token: string
+    
 }) {
 
     const store = useAppStore();

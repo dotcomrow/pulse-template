@@ -15,9 +15,9 @@ import Geometry from 'ol/geom/Geometry';
 import ActivityTable from "@component/map/components/ActivityTable";
 
 export default function ActivityNearYouCard({
-    token
+    
 }: {
-    token: string
+    
 }) {
     return (
         <Card className="py-4 w-full">
@@ -28,9 +28,7 @@ export default function ActivityNearYouCard({
             </CardHeader>
             <CardBody className="overflow-visible py-2">
                 <div>
-                    <ActivityTable 
-                        token={token}
-                    />
+                    <ActivityTable />
                 </div>
             </CardBody>
         </Card>

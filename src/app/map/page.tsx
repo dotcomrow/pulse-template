@@ -20,7 +20,6 @@ export default async function Home() {
   //   }
   // ]);
 
-  const headersList = await headers();
   const cookieStore = await cookies();
   return (
     <>
@@ -38,8 +37,7 @@ export default async function Home() {
         </div>
         <div className="w-1/3 flex flex-col gap-3">
           <div>
-            <ActivityNearYouCard token={cookieStore.get('token')?.value || ''}
-            />
+            <ActivityNearYouCard />
           </div>
           <div>
             <Card className="py-4 w-full">
