@@ -17,7 +17,7 @@ import { default as Constants } from "@utils/constants";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { Image } from "@nextui-org/image";
 import { useAppStore } from "@hook/redux";
-import { setInitialLocation } from "@lib/features/initialLocation/initialLocationSlice";
+import { setInitialLocation } from "@lib/features/location/locationSlice";
 import { clearNotification, setNotification } from "@lib/features/notification/notificationSlice";
 
 
@@ -36,14 +36,16 @@ export default async function Header({ headersList, token }: { headersList: any,
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude,
                         deviceLocation: true,
-                        locationPermissionsAllowed: true
+                        locationPermissionsAllowed: true,
+                        locationLoaded: true
                     }));
                 }, (error) => {
                     store.dispatch(setInitialLocation({
                         latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
                         longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
                         deviceLocation: false,
-                        locationPermissionsAllowed: false
+                        locationPermissionsAllowed: false,
+                        locationLoaded: true
                     }));
                 },
                     {
@@ -77,8 +79,10 @@ export default async function Header({ headersList, token }: { headersList: any,
                                     latitude: position.coords.latitude,
                                     longitude: position.coords.longitude,
                                     deviceLocation: true,
-                                    locationPermissionsAllowed: true
+                                    locationPermissionsAllowed: true,
+                                    locationLoaded: true
                                 }));
+                                store.dispatch(clearNotification());
                             }, (error) => {
                                 store.dispatch(setNotification({
                                     title: "Geolocation error",
@@ -97,8 +101,10 @@ export default async function Header({ headersList, token }: { headersList: any,
                                     latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
                                     longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
                                     deviceLocation: false,
-                                    locationPermissionsAllowed: false
+                                    locationPermissionsAllowed: false,
+                                    locationLoaded: true
                                 }));
+                                store.dispatch(clearNotification());
                             },
                                 {
                                     enableHighAccuracy: false,
@@ -114,7 +120,8 @@ export default async function Header({ headersList, token }: { headersList: any,
                     latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
                     longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
                     deviceLocation: false,
-                    locationPermissionsAllowed: false
+                    locationPermissionsAllowed: false,
+                    locationLoaded: true
                 }));
             }
         });

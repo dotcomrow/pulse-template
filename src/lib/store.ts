@@ -4,7 +4,7 @@ import { userSlice } from "@lib/features/user/userSlice";
 import { mapSlice } from "./features/map/mapSlice";
 import { errorSlice } from "./features/error/errorSlice";
 import { notificationSlice } from "./features/notification/notificationSlice";
-import { initialLocationSlice } from "./features/initialLocation/initialLocationSlice";
+import { locationSlice } from "./features/location/locationSlice";
 // import { counterSlice } from "./features/counter/counterSlice";
 // import { quotesApiSlice } from "./features/quotes/quotesApiSlice";
 
@@ -17,7 +17,7 @@ const rootReducer = combineSlices(
   mapSlice,
   errorSlice,
   notificationSlice,
-  initialLocationSlice
+  locationSlice
 );
 
 // Infer the `RootState` type from the root reducer

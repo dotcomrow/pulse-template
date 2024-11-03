@@ -32,7 +32,8 @@ import GeolocationControl from "@component/map/widgets/GeolocationControl";
 import { Control, defaults as defaultControls } from 'ol/control';
 import RequestModeControl from "@component/map/widgets/RequestModeControl";
 import LocationSearchControl from "@component/map/widgets/LocationSearchControl";
-import { selectInitialLocation } from "@lib/features/initialLocation/initialLocationSlice";
+import { selectInitialLocation } from "@lib/features/location/locationSlice";
+import {Spinner} from "@nextui-org/spinner";
 
 export default function MapCard({
     token,
@@ -54,6 +55,7 @@ export default function MapCard({
     const geojson = new GeoJSON();
     const pictureRequestBtn = "pictureRequestBtn" + mapTarget;
     const popupContainerId = "popup-container" + mapTarget;
+    const [mapLoaded, setMapLoaded] = React.useState(false);
 
     const mapClickHandler = (e: any, overlay: any, vectorLayer: any) => {
         if (document.getElementById(pictureRequestBtn)?.classList.contains("requestModeDisabled")) {
@@ -237,10 +239,11 @@ export default function MapCard({
     }, [pictureRequestsState]);
 
     useEffect(() => {
-        if (map) {
+        if (map && initialLocationState.locationLoaded) {
             const mapSize = map?.getSize();
             if (mapSize) {
-                map?.getView().centerOn([initialLocationState.longitude, initialLocationState.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+                centerMap({ coords: { latitude: initialLocationState.latitude, longitude: initialLocationState.longitude } });
+                // setMapLoaded(true);
             }
         }
     }, [mounted, initialLocationState]);
@@ -252,7 +255,20 @@ export default function MapCard({
 
     return (
         <div className="bg-white p-dynamic h-full w-full">
-            <div id={mapTarget} className="h-full w-full"></div>
+            <div id={mapTarget} className="h-full w-full spinner">
+                {/* {!mapLoaded ? (
+                    <Spinner 
+                        size="lg"
+                        color="primary"
+                        label="Loading..."
+                        style={{
+                            position: "absolute", 
+                            top: "50%", 
+                            left: "50%"
+                        }}
+                    />
+                ) : null} */}
+            </div>
             <div id={popupContainerId}>
                 <MapRequestPopup
                     closePopup={(e: any) => {

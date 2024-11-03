@@ -6,7 +6,7 @@ import React, { useEffect } from "react";
 import { Listbox, ListboxSection, ListboxItem } from "@nextui-org/listbox";
 import { Image } from "@nextui-org/image";
 import Feature from "ol/Feature";
-import { selectInitialLocation } from "@lib/features/initialLocation/initialLocationSlice";
+import { selectInitialLocation } from "@lib/features/location/locationSlice";
 
 export default function ActivityTable({
     token
@@ -28,15 +28,15 @@ export default function ActivityTable({
 
     }, [pictureRequestsState, pictureRequestStatus, limitSelect, offsetSelect]);
 
-    useEffect(() => {
-        const bbox: BoundingBox = {
-            min_latitude: initialLocationState.longitude - (latitudeInitialWidth / 2),
-            min_longitude: initialLocationState.latitude - (longitudeInitialWidth / 2),
-            max_latitude: initialLocationState.longitude + (latitudeInitialWidth / 2),
-            max_longitude: initialLocationState.latitude + (longitudeInitialWidth / 2),
-        };
-        store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
-    }, []);
+    // useEffect(() => {
+    //     const bbox: BoundingBox = {
+    //         min_latitude: initialLocationState.longitude - (latitudeInitialWidth / 2),
+    //         min_longitude: initialLocationState.latitude - (longitudeInitialWidth / 2),
+    //         max_latitude: initialLocationState.longitude + (latitudeInitialWidth / 2),
+    //         max_longitude: initialLocationState.latitude + (longitudeInitialWidth / 2),
+    //     };
+    //     store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
+    // }, []);
 
     const ListboxWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
         <div className="w-full border-small border-default-200 dark:border-default-100">
