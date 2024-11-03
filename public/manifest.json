@@ -9,7 +9,7 @@
         "standalone"
     ],
     "scope": "/",
-    "start_url": "/home",
+    "start_url": "/",
     "screenshots": [
         {
             "src": "screenshot-wide.png",
