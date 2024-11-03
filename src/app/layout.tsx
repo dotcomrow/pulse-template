@@ -1,13 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import 'tailwindcss/tailwind.css';
 import { Providers } from "./Providers";
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import Header from "@component/layout/header/Header";
 import Footer from "@component/layout/footer/Footer";
 import "ol/ol.css";
 import { GoogleAnalytics } from '@next/third-parties/google'
 import Script from "next/script";
 import ErrorDialog from "@component/modals/error/ErrorDialog";
+import NotificationDialog from "@component/modals/notification/NotificationDialog";
 
 export const runtime = 'edge';
 
@@ -45,16 +46,18 @@ export default async function RootLayout({
 }) {
   const cookieStore = await cookies();
   var token = cookieStore.get('token')?.value || '';
+
   return (
     <html lang="en">
       <body>
         <Providers token={token}>
-          <Header token={token}/>
+          <Header headersList={await headers()} token={token}/>
           <main className="text-foreground bg-background h-screen w-full">
             {children}
           </main>
           <Footer />
           <ErrorDialog />
+          <NotificationDialog />
         </Providers>
       </body>
       <GoogleAnalytics gaId="G-8MHBD6Z0FG" />

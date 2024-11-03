@@ -3,6 +3,8 @@ import { combineSlices, configureStore } from "@reduxjs/toolkit";
 import { userSlice } from "@lib/features/user/userSlice";
 import { mapSlice } from "./features/map/mapSlice";
 import { errorSlice } from "./features/error/errorSlice";
+import { notificationSlice } from "./features/notification/notificationSlice";
+import { initialLocationSlice } from "./features/initialLocation/initialLocationSlice";
 // import { counterSlice } from "./features/counter/counterSlice";
 // import { quotesApiSlice } from "./features/quotes/quotesApiSlice";
 
@@ -13,7 +15,9 @@ import { errorSlice } from "./features/error/errorSlice";
 const rootReducer = combineSlices(
   userSlice, 
   mapSlice,
-  errorSlice
+  errorSlice,
+  notificationSlice,
+  initialLocationSlice
 );
 
 // Infer the `RootState` type from the root reducer
