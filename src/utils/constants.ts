@@ -20,6 +20,7 @@ const mobileLoggedInLinks = [
 
 const mobileLoggedOutLinks = [
   { title: "Requests", link: "/requests", secure: false, icon: "/assets/images/icons/layout-list.svg" },
+  { title: "Map", link: "/map", secure: false, icon: "/assets/images/icons/map.svg" },
 ];
 
 var securePaths: string[] = [];
