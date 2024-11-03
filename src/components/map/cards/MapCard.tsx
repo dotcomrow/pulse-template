@@ -214,17 +214,17 @@ export default function MapCard({
                 const mapSize = map?.getSize();
                 const extent = map?.getView().calculateExtent(mapSize);
                 if (extent) {
+                    // bbox coordinates are reversed here because google maps uses lat, lon and openlayers uses lon, lat
                     const bbox: BoundingBox = {
                         min_latitude: extent[0],
                         min_longitude: extent[1],
                         max_latitude: extent[2],
                         max_longitude: extent[3],
                     };
-                    console.log("loading picture requests for bbox: ", bbox);
+                    // do not reference this anywhere related to openlayers, this is for google bigquery
                     store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
-                    var centerLat = (extent[0] + extent[2]) / 2;
-                    var centerLon = (extent[1] + extent[3]) / 2;
-                    console.log("centering map to: ", centerLat, centerLon);
+                    var centerLat = (extent[1] + extent[3]) / 2;
+                    var centerLon = (extent[0] + extent[2]) / 2;
                     store.dispatch(updateLocation({
                         latitude: centerLat,
                         longitude: centerLon,

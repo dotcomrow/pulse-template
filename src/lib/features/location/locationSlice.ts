@@ -65,6 +65,5 @@ export const setInitialLocation = (location: LocationDTO): AppThunk => async (di
 }
 
 export const updateLocation = (location: LocationDTO): AppThunk => async (dispatch) => {
-    console.log("Updating location ", location);
     dispatch(locationSlice.actions.updateLocation(location));
 }

@@ -86,7 +86,7 @@ export default async function Header({ headersList, token }: { headersList: any,
                             }, (error) => {
                                 store.dispatch(setNotification({
                                     title: "Geolocation error",
-                                    message: "An error occured while trying to get your location. Please ensure you have location services enabled on your device and allow this site permission to read device location.  Error message: " + error.message,
+                                    message: "An error occurred while trying to get your location. Please ensure you have location services enabled on your device and allow this site permission to read device location.  Error message: " + error.message,
                                     severity: "error",
                                     icon: "error",
                                     show: true,
