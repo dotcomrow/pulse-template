@@ -101,6 +101,7 @@ export const {
 
 export const loadPictureRequests = (bbox: BoundingBox, limit: number, offset: number): AppThunk => async (dispatch) => {
     try {
+        dispatch(mapSlice.actions.setPictureRequestStatus("loading"));
         fetchPictureRequests(bbox, limit, offset).then((pictureRequests) => {
             dispatch(mapSlice.actions.initPictureRequests(pictureRequests.data.fetchPictureRequestsByBoundingBox));
         });
