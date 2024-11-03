@@ -123,6 +123,7 @@ export default function RequestSubmit({ vectorLayer, token, popupClose, mapTarge
                     <Tabs aria-label="Options">
                         <Tab key="details" title="Details">
                             <Checkbox
+                                name="compassDirection"
                                 isSelected={compassDirectionEnabled}
                                 onValueChange={(e) => {
                                     setCompassDirectionEnabled(e);

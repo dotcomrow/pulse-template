@@ -52,7 +52,6 @@ export default function LocationSearchWidget(centerMap: any) {
                     setSearchDisabled(true);
                 }
             }}
-            id="search"
             onKeyDown={(e) => {
                 if (e.key === "Enter") {
                     searchHandler(e);

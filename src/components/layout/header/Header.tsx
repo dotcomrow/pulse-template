@@ -48,9 +48,19 @@ export default async function Header({ headersList, token }: { headersList: any,
                     });
             } else if (e.state === 'prompt') {
                 // We can tell the user what cloudflare detected but we can ask to use device location
+                const detectedLocation = <><br/>
+                    <p>Detected location:</p>
+                    <p>{decodeURI((headersList.filter((item: any) => item.name == 'x-vercel-ip-city'))[0].value)},
+                        {decodeURI((headersList.filter((item: any) => item.name == 'x-vercel-ip-country-region'))[0].value)} {decodeURI((headersList.filter((item: any) => item.name == 'x-vercel-ip-country'))[0].value)}</p>
+                <br/></>;
                 store.dispatch(setNotification({
                     title: "Location Permissions",
-                    message: "SnapSpot would like to use your device location to provide a better experience.  Would you like to allow SnapSpot to use your device location?",
+                    message:
+                        <div>
+                            <p>SnapSpot would like to use your device location to provide a better experience.</p>
+                            <p>{detectedLocation}</p>
+                            <p>Would you like to allow SnapSpot to use your device location?</p>
+                        </div>,
                     severity: "info",
                     icon: "info",
                     show: true,
@@ -90,8 +100,8 @@ export default async function Header({ headersList, token }: { headersList: any,
             } else if (e.state === 'denied') {
                 // user said no so we can ONLY use what cloudflare detects
                 store.dispatch(setInitialLocation({
-                    latitude: parseFloat(headersList.get('x-vercel-ip-latitude') ?? '0'),
-                    longitude: parseFloat(headersList.get('x-vercel-ip-longitude') ?? '0'),
+                    latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude').value),
+                    longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude').value),
                     deviceLocation: false,
                     locationPermissionsAllowed: false
                 }));

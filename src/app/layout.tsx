@@ -45,13 +45,20 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const cookieStore = await cookies();
+  const headerList = await headers();
   var token = cookieStore.get('token')?.value || '';
-
+  var locationHeaders = [
+    { name: 'x-vercel-ip-city', value: headerList.get('x-vercel-ip-city') || '' },
+    { name: 'x-vercel-ip-country', value: headerList.get('x-vercel-ip-country') || '' },
+    { name: 'x-vercel-ip-latitude', value: headerList.get('x-vercel-ip-latitude') || '' },
+    { name: 'x-vercel-ip-longitude', value: headerList.get('x-vercel-ip-longitude') || '' },
+    { name: 'x-vercel-ip-country-region', value: headerList.get('x-vercel-ip-country-region') || '' },
+  ];
   return (
     <html lang="en">
       <body>
         <Providers token={token}>
-          <Header headersList={await headers()} token={token}/>
+          <Header headersList={locationHeaders} token={token}/>
           <main className="text-foreground bg-background h-screen w-full">
             {children}
           </main>
