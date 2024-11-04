@@ -9,17 +9,6 @@ export const runtime = 'edge';
 
 export default async function Home() {
 
-  // await LogUtility.logEntry(await LogUtility.buildLogContext(), [
-  //   {
-  //     severity: "INFO",
-  //     jsonPayload: {
-  //       message: "App Request",
-  //       // context: getRequestContext(),
-  //       headers: await headers(),
-  //     },
-  //   }
-  // ]);
-
   const cookieStore = await cookies();
   return (
     <>

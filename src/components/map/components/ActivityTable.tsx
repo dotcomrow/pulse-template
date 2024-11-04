@@ -47,7 +47,7 @@ export default function ActivityTable({
     return (
         <ListboxWrapper>
             <Listbox variant="flat" aria-label="Listbox menu with sections">
-                <ListboxSection title="Requests Nearby" showDivider>
+                <ListboxSection>
                     {pictureRequestsState.map((request: Feature) => (
                         <ListboxItem
                             key={request.getId() ?? "0"}
