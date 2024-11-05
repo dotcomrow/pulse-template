@@ -164,14 +164,18 @@ export default function MapCard({
                 const root = createRoot(displayLocationElement);
                 root.render(addressContent);
             }
-            map?.getTargetElement().classList.add('fetchRequests');
+            setTimeout(() => {
+                map?.getTargetElement().classList.add('fetchRequests');
+            }, 1000);
         }).catch((error) => {
             const displayLocationElement = document.getElementById(displayLocation);
             if (displayLocationElement) {
                 const root = createRoot(displayLocationElement);
                 root.render(JSON.stringify(error));
             }
-            map?.getTargetElement().classList.add('fetchRequests');
+            setTimeout(() => {
+                map?.getTargetElement().classList.add('fetchRequests');
+            }, 1000);
         });
 
         const popoverContent = <>
@@ -189,7 +193,7 @@ export default function MapCard({
                     onBlur: () => {
                         document.getElementById(featureInfoPopupId)?.classList.add('hidden');
                     },
-                    placement: 'bottom',
+                    placement: 'left',
                     children: [
                         // createElement(Popover.Trigger, null, createElement(Button, { auto: true, onClick: togglePopover }, 'Open Popover')),
                         createElement(PopoverContent, null, createElement('p', {
@@ -296,10 +300,14 @@ export default function MapCard({
                 ]),
             });
             map.on('loadstart', function () {
-                map.getTargetElement().classList.add('spinner');
+                if (map?.getTargetElement().classList.contains('fetchRequests')) {
+                    map.getTargetElement().classList.add('spinner');
+                }
             });
             map.on('loadend', function () {
-                map.getTargetElement().classList.remove('spinner');
+                if (map?.getTargetElement().classList.contains('fetchRequests')) {
+                    map.getTargetElement().classList.remove('spinner');
+                }
             });
             map.on('pointermove', function (e) {
                 const pixel = map.getEventPixel(e.originalEvent);
@@ -307,16 +315,17 @@ export default function MapCard({
                 map.getTargetElement().style.cursor = hit ? 'pointer' : '';
             });
             map.on('moveend', debounce(() => {
-                map.getTargetElement().classList.add('spinner');
+                // map.getTargetElement().classList.add('spinner');
                 if (!map.getTargetElement().classList.contains('firstRender')) {
                     if (map.getTargetElement().classList.toggle('firstRender')) {
                         const features = pictureRequestsState;
                         vectorLayer?.getSource()?.addFeatures(features);
-                        map?.getTargetElement().classList.remove('spinner');
+                        // map?.getTargetElement().classList.remove('spinner');
                         return;
                     }
                 }
                 if (map?.getTargetElement().classList.contains('fetchRequests')) {
+                    map.getTargetElement().classList.add('spinner');
                     const mapSize = map?.getSize();
                     const extent = map?.getView().calculateExtent(mapSize);
                     if (extent) {
