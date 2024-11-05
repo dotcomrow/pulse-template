@@ -91,7 +91,7 @@ const ProfileAvatar = () => {
                 description={state.user.email}
                 className="cursor-pointer"
                 classNames={{
-                  wrapper: "max-sm:hidden"
+                  wrapper: "max-lg:hidden"
                 }}
                 avatarProps={{
                   src: state.user.picture
@@ -103,7 +103,7 @@ const ProfileAvatar = () => {
                 <p className="font-semibold">Signed in as</p>
                 <p className="font-semibold">{state.user.email}</p>
               </DropdownItem>
-              <DropdownSection className="min-md:flex max-md:hidden">
+              <DropdownSection className="min-lg:flex max-lg:hidden">
                 {
                   Constants.profileNavLinks.map((item, index) => {
                     return (
@@ -152,7 +152,7 @@ const ProfileAvatar = () => {
       );
     } else {
       setProfileAvatar(
-        <div className="md:w-3/5 flex justify-end">
+        <div className="lg:w-3/5 flex justify-end">
           <div>
             <Skeleton className="flex rounded-full w-10 h-10" />
           </div>
