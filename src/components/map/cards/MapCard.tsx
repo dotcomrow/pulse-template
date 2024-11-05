@@ -150,12 +150,12 @@ export default function MapCard({
             const addressContent = 
             <>
                 <h2>Request Title: {feature.get('request_title')}</h2>
-                <br/>
                 {feature.get('request_description') ? 
                 <>
                     <h2>Request Description:</h2>
                     <p>{feature.get('request_description')}</p>
                 </> : <></>}
+                <h2>Request Date/Time: {new Date(feature.get('capture_timestamp')).toLocaleDateString(navigator.language) + " " + new Date(feature.get('capture_timestamp')).toLocaleTimeString(navigator.language)}</h2>
                 <h2>Location:</h2><br/>
                 <p>{address.display_name}</p>
             </>;
@@ -194,7 +194,7 @@ export default function MapCard({
                             style: {
                                 padding: ".5em",
                             },
-                            className: "lg:w-96 max-lg:w-96",
+                            className: "lg:w-96 max-lg:w-52",
                         }, popoverContent))
                     ]
                 }
