@@ -32,8 +32,9 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
             } else if (e.state === 'prompt') {
                 // We can tell the user what cloudflare detected but we can ask to use device location
                 const detectedLocation =
-                    React.createElement('div',
+                    React.createElement('div', null,
                         React.createElement('p', null, "SnapSpot would like to use your device location to provide a better experience."),
+                        React.createElement('br', null),
                         React.createElement(
                             'p',
                             null,
