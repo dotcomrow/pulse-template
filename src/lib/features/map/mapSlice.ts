@@ -3,7 +3,7 @@ import type { AppThunk } from "@lib/store";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import fetchPictureRequests from "@services/map/FetchPictureRequests";
 import CircleStyle from 'ol/style/Circle';
-import { Fill, Stroke, Style } from 'ol/style';
+import { Fill, Icon, Stroke, Style } from 'ol/style';
 import WKT from 'ol/format/WKT';
 import Feature from 'ol/Feature';
 import Geometry from 'ol/geom/Geometry';
@@ -63,15 +63,10 @@ export const mapSlice = createAppSlice({
                     return state.pictureRequests.map((request) => {
                         var retFeature = wktRead.readFeature(request.location);
                         retFeature.setStyle(new Style({
-                            image: new CircleStyle({
-                                radius: 10,
-                                fill: new Fill({
-                                    color: 'rgba(0, 0, 255, 0.1)',
-                                }),
-                                stroke: new Stroke({
-                                    color: 'rgba(0, 0, 255, 0.3)',
-                                    width: 1,
-                                }),
+                            image: new Icon({
+                                opacity: 1,
+                                src: "/assets/images/icons/camera.svg",
+                                scale: 1.3
                             }),
                         }));
                         retFeature.setProperties({
@@ -92,8 +87,8 @@ export const mapSlice = createAppSlice({
     },
 });
 
-export const { 
-    selectPictureRequests, 
+export const {
+    selectPictureRequests,
     selectPictureRequestStatus,
     selectLimit,
     selectOffset

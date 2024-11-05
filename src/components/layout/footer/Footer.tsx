@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
-import { Button, ButtonGroup } from "@nextui-org/button";
 
 export default function Footer() {
 

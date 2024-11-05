@@ -88,7 +88,6 @@ export default function LocationSearchWidget(centerMap: any) {
                                 />
                             </Tooltip>
                         </div>
-
                     </PopoverTrigger>
                     <PopoverContent>
                         {items.map((item) => (

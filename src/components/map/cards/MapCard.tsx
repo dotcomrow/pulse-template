@@ -10,7 +10,7 @@ import Map from "ol/Map";
 import TileLayer from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
-import React, { useEffect, useMemo } from "react";
+import React, { createElement, useEffect, useMemo } from "react";
 import { useGeographic } from "ol/proj.js";
 import "@styles/map/spinner.css"
 import { BoundingBox, loadPictureRequests } from "@lib/features/map/mapSlice";
@@ -21,9 +21,9 @@ import {
     selectOffset
 } from "@lib/features/map/mapSlice";
 import { useAppSelector, useAppStore, useAppDispatch } from "@hook/redux";
-import { debounce } from 'lodash';
-import { Fill, Stroke, Style } from 'ol/style';
-import Feature from 'ol/Feature';
+import { add, debounce, set } from 'lodash';
+import { Fill, Icon, Stroke, Style } from 'ol/style';
+import Feature, { FeatureLike } from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import CircleStyle from 'ol/style/Circle';
 import DragPan from 'ol/interaction/DragPan';
@@ -33,6 +33,10 @@ import { Control, defaults as defaultControls } from 'ol/control';
 import RequestModeControl from "@component/map/widgets/RequestModeControl";
 import LocationSearchControl from "@component/map/widgets/LocationSearchControl";
 import { selectInitialLocation, updateLocation } from "@lib/features/location/locationSlice";
+import { Popover, PopoverContent, Spinner } from "@nextui-org/react";
+import { createRoot } from "react-dom/client";
+import Geometry from "ol/geom/Geometry";
+import { getClosestAddress } from "@services/map/getClosestAddress";
 
 export default function MapCard({
     token,
@@ -51,9 +55,12 @@ export default function MapCard({
     const offsetSelect: number = useAppSelector(selectOffset);
     const [vectorLayer, setVectorLayer] = React.useState<VectorLayer>();
     const [overlay, setOverlay] = React.useState<Overlay>();
+    const [featureOverlay, setFeatureOverlay] = React.useState<Overlay>();
+    const [featurePopoverOpen, setIsFeaturePopoverOpen] = React.useState(false);
     const geojson = new GeoJSON();
     const pictureRequestBtn = "pictureRequestBtn" + mapTarget;
     const popupContainerId = "popup-container" + mapTarget;
+    const featureInfoPopupId = "featureInfoPopup" + mapTarget;
 
     const mapClickHandler = (e: any, overlay: any, vectorLayer: any) => {
         if (document.getElementById(pictureRequestBtn)?.classList.contains("requestModeDisabled")) {
@@ -68,20 +75,14 @@ export default function MapCard({
         if (!requestFeature) {
             var feat = new Feature(new Point(coordinate));
             feat.setStyle(new Style({
-                image: new CircleStyle({
-                    radius: 10,
-                    fill: new Fill({
-                        color: 'rgba(0, 0, 255, 0.1)',
-                    }),
-                    stroke: new Stroke({
-                        color: 'rgba(0, 0, 255, 0.3)',
-                        width: 1,
-                    }),
-                })
+                image: new Icon({
+                    opacity: 1,
+                    src: "/assets/images/icons/camera.svg",
+                    scale: 1.3
+                }),
             }));
             feat.setId("request");
             vectorLayer?.getSource()?.addFeature(feat);
-
         } else {
             vectorLayer?.getSource()?.getFeatureById("request").getGeometry().setCoordinates(coordinate);
         }
@@ -140,9 +141,73 @@ export default function MapCard({
         }
     };
 
+    const featurePopover = async (feature: FeatureLike) => {
+        document.getElementById(featureInfoPopupId)?.classList.remove('hidden');
+        getClosestAddress({
+            lat: (feature.getGeometry() as Point)?.getCoordinates()[1],
+            lon: (feature.getGeometry() as Point)?.getCoordinates()[0]
+        }).then((address: any) => {
+            const addressContent = 
+            <>
+                <h2>Request Title: {feature.get('request_title')}</h2>
+                <br/>
+                {feature.get('request_description') ? 
+                <>
+                    <h2>Request Description:</h2>
+                    <p>{feature.get('request_description')}</p>
+                </> : <></>}
+                <h2>Location:</h2><br/>
+                <p>{address.display_name}</p>
+            </>;
+            const displayLocationElement = document.getElementById("displayLocation");
+            if (displayLocationElement) {
+                const root = createRoot(displayLocationElement);
+                root.render(addressContent);
+            }
+        }).catch((error) => {
+            const displayLocationElement = document.getElementById("displayLocation");
+            if (displayLocationElement) {
+                const root = createRoot(displayLocationElement);
+                root.render(JSON.stringify(error));
+            }
+        });
+
+        const popoverContent = <>
+            <div id="displayLocation">
+                <Spinner size="md" />
+            </div>
+        </>
+
+        return React.createElement(
+            'div',
+            { style: { padding: '.5em' } },
+            createElement(
+                Popover,
+                {
+                    onBlur: () => {
+                        document.getElementById(featureInfoPopupId)?.classList.add('hidden');
+                    },
+                    placement: 'bottom',
+                    children: [
+                        // createElement(Popover.Trigger, null, createElement(Button, { auto: true, onClick: togglePopover }, 'Open Popover')),
+                        createElement(PopoverContent, null, createElement('p', {
+                            style: {
+                                padding: ".5em",
+                            },
+                            className: "lg:w-96 max-lg:w-96",
+                        }, popoverContent))
+                    ]
+                }
+            )
+        );
+    }
+
+
     const map = useMemo(() => {
         if (mounted) {
             const container = document.getElementById(popupContainerId);
+            const featurePopup = document.getElementById(featureInfoPopupId);
+
             const overlay = container ? new Overlay({
                 element: container,
                 autoPan: {
@@ -152,6 +217,18 @@ export default function MapCard({
                 },
             }) : new Overlay({});
             setOverlay(overlay);
+
+            const popup = featurePopup ? new Overlay({
+                element: featurePopup,
+                positioning: 'bottom-center',
+                autoPan: {
+                    animation: {
+                        duration: 250,
+                    },
+                },
+            }) : new Overlay({});
+            setFeatureOverlay(popup);
+
             const vectorLayer = new VectorLayer({
                 source: new VectorSource({
                     features: geojson.readFeatures({
@@ -195,7 +272,8 @@ export default function MapCard({
                     constrainResolution: true,
                 }),
                 overlays: [
-                    overlay
+                    overlay,
+                    popup
                 ],
                 controls: defaultControls().extend([
                     new GeolocationControl(centerMap),
@@ -208,6 +286,11 @@ export default function MapCard({
             });
             map.on('loadend', function () {
                 map.getTargetElement().classList.remove('spinner');
+            });
+            map.on('pointermove', function (e) {
+                const pixel = map.getEventPixel(e.originalEvent);
+                const hit = map.hasFeatureAtPixel(pixel);
+                map.getTargetElement().style.cursor = hit ? 'pointer' : '';
             });
             map.on('moveend', debounce(() => {
                 map.getTargetElement().classList.add('spinner');
@@ -243,7 +326,18 @@ export default function MapCard({
                 }
             }, 500));
             map.on('click', (e) => {
-                mapClickHandler(e, overlay, vectorLayer);
+                const feature = map.forEachFeatureAtPixel(e.pixel, function (feature) {
+                    return feature;
+                });
+                if (!feature) {
+                    mapClickHandler(e, overlay, vectorLayer);
+                } else {
+                    popup.setPosition(e.coordinate);
+                    if (featurePopup) {
+                        const root = createRoot(featurePopup);
+                        root.render(featurePopover(feature));
+                    }
+                }
             });
             return map;
         }
@@ -275,7 +369,9 @@ export default function MapCard({
 
     return (
         <div className="bg-white p-dynamic w-full h-full">
-            <div id={mapTarget} className="h-full w-full spinner"></div>
+            <div id={mapTarget} className="h-full w-full spinner">
+                <div id={featureInfoPopupId}></div>
+            </div>
             <div id={popupContainerId}>
                 <MapRequestPopup
                     closePopup={(e: any) => {
