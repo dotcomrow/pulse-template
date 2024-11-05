@@ -58,7 +58,9 @@ export default async function RootLayout({
     <html lang="en" className="h-screen w-full">
       <body className="h-full w-full">
         <Providers token={token}>
-          <Header headersList={locationHeaders} token={token}/>
+          <div className="max-lg:top-[calc(100% - 4rem)]">
+            <Header headersList={locationHeaders} token={token} />
+          </div>
           <main className="text-foreground bg-background lg:h-dvh max-lg:h-[calc(100vh-4rem)]">
             {children}
           </main>

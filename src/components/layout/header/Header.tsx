@@ -79,10 +79,6 @@ export default async function Header({ headersList, token }: { headersList: any,
                 }}
                 isBordered={true}
                 maxWidth="full"
-                style={{
-                    top: "calc(100% - 4rem)",
-                    position: "fixed"
-                }}
             >
                 <NavbarContent
                     className="w-full gap-8"

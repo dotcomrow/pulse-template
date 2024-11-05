@@ -9,10 +9,10 @@ import Feature from "ol/Feature";
 import { selectInitialLocation } from "@lib/features/location/locationSlice";
 
 export default function ActivityTable({
-    
+
 }: {
-    
-}) {
+
+    }) {
 
     const store = useAppStore();
     const [page, setPage] = React.useState(1);
@@ -27,20 +27,29 @@ export default function ActivityTable({
     }, [pictureRequestsState, pictureRequestStatus, limitSelect, offsetSelect]);
 
     const ListboxWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-        <div className="w-full border-small border-default-200 dark:border-default-100">
+        <div className="w-full">
             {children}
         </div>
     );
 
     const requestDescription = (request: Feature) => {
         return (
-            <div>
-                <h3>{request.getProperties().request_description}</h3>
-                <p>{request.getProperties().capture_timestamp}</p>
-                <p>{request.getProperties().bid_type}</p>
-                <p>{request.getProperties().direction}</p>
-                <p>Distance: </p>
-            </div>
+            <>
+                <div className="flex max-lg:hidden">
+                    <h3>{request.getProperties().request_description}</h3>
+                    <p>{request.getProperties().capture_timestamp}</p>
+                    <p>{request.getProperties().bid_type}</p>
+                    <p>{request.getProperties().direction}</p>
+                    <p>Distance: </p>
+                </div>
+                <div className="hidden max-lg:flex">
+                    <h3>{request.getProperties().request_description}</h3>
+                    <p>{request.getProperties().capture_timestamp}</p>
+                    <p>{request.getProperties().bid_type}</p>
+                    <p>{request.getProperties().direction}</p>
+                    <p>Distance: </p>
+                </div>
+            </>
         );
     }
 
@@ -55,12 +64,24 @@ export default function ActivityTable({
                             description={requestDescription(request)}
                             textValue={request.getProperties().request_title}
                             startContent={
-                                <Image
-                                    src="/assets/images/icons/camera.svg"
-                                    alt="Camera Icon"
-                                    width={50}
-                                    height={50}
-                                />
+                                <>
+                                    <div className="max-lg:hidden">
+                                        <Image
+                                            src="/assets/images/icons/camera.svg"
+                                            alt="Camera Icon"
+                                            width={50}
+                                            height={50}
+                                        />
+                                    </div>
+                                    <div className="hidden max-lg:flex">
+                                        <Image
+                                            src="/assets/images/icons/camera.svg"
+                                            alt="Camera Icon"
+                                            width={25}
+                                            height={25}
+                                        />
+                                    </div>
+                                </>
                             }
                         >
                             {request.getProperties().request_title}
