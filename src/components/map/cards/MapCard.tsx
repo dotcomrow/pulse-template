@@ -261,7 +261,7 @@ export default function MapCard({
     useEffect(() => {
         useGeographic();
         if (initialLocationState.locationLoaded) {
-            setMounted(true);
+            // setMounted(true);
         }
     }, [initialLocationState]);
 
