@@ -274,7 +274,7 @@ export default function MapCard({
     }, [initialLocationState]);
 
     return (
-        <div className="bg-white p-dynamic h-full w-full">
+        <div className="bg-white p-dynamic h-[calc(100%-4rem)] w-full">
             <div id={mapTarget} className="h-full w-full spinner"></div>
             <div id={popupContainerId}>
                 <MapRequestPopup
