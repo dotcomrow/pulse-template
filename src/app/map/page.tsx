@@ -13,7 +13,7 @@ export default async function Home() {
   return (
     <>
       {/* // <!-- Desktop view --> */}
-      <div className="px-3 pt-3 columns-2 gap-2 h-full flex max-md:hidden">
+      <div className="px-3 pt-3 columns-2 gap-2 h-full flex max-lg:hidden">
         <div className="w-2/3 flex h-full">
           <Card className="py-2 mb-auto flex h-full w-full">
             <CardBody className="overflow-visible flex w-full">
@@ -43,7 +43,7 @@ export default async function Home() {
         </div>
       </div>
       {/* // <!-- Mobile view --> */}
-      <div className="h-full md:hidden flex mb-auto">
+      <div className="h-full lg:hidden flex mb-auto">
         <MapCard
           token={cookieStore.get('token')?.value || ''}
           mapTarget="mapMobile"
