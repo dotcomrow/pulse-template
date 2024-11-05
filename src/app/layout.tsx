@@ -64,7 +64,7 @@ export default async function RootLayout({
           <main className="text-foreground bg-background lg:h-dvh max-lg:h-[calc(100vh-4rem)]">
             {children}
           </main>
-          <div className="lg:hidden">
+          <div className="lg:hidden h-16">
             <Header headersList={locationHeaders} token={token} />
           </div>
           <div className="max-lg:hidden">
