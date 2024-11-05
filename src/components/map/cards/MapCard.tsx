@@ -211,6 +211,14 @@ export default function MapCard({
             });
             map.on('moveend', debounce(() => {
                 map.getTargetElement().classList.add('spinner');
+                if (!map.getTargetElement().classList.contains('firstRender')) {
+                    if (map.getTargetElement().classList.toggle('firstRender')) {
+                        const features = pictureRequestsState;
+                        vectorLayer?.getSource()?.addFeatures(features);
+                        map?.getTargetElement().classList.remove('spinner');
+                        return;
+                    }
+                }
                 const mapSize = map?.getSize();
                 const extent = map?.getView().calculateExtent(mapSize);
                 if (extent) {
@@ -260,8 +268,8 @@ export default function MapCard({
 
     useEffect(() => {
         useGeographic();
-        if (initialLocationState.locationLoaded) {
-            // setMounted(true);
+        if (initialLocationState.locationLoaded && !mounted) {
+            setMounted(true);
         }
     }, [initialLocationState]);
 
