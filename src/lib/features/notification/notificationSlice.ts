@@ -1,11 +1,10 @@
 import { createAppSlice } from "@lib/createAppSlice";
 import type { AppThunk } from "@lib/store";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { ReactNode } from "react";
 
 export interface NotificationDTO {
     title: string | null;
-    message: ReactNode | null;
+    message: JSX.Element | null;
     severity: "info" | "warning" | "error" | "success" | null;
     icon: "info" | "warning" | "error" | "success" | null;
     confirmAction: any | null;
