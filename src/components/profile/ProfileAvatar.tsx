@@ -99,7 +99,7 @@ const ProfileAvatar = () => {
               />
             </DropdownTrigger>
             <DropdownMenu aria-label="Profile Actions" variant="flat">
-              <DropdownItem key="profile" className="h-14 gap-2 min-md:flex max-md:hidden" isReadOnly textValue="Sign in details">
+              <DropdownItem key="profile" className="h-14 gap-2 min-lg:flex max-lg:hidden" isReadOnly textValue="Sign in details">
                 <p className="font-semibold">Signed in as</p>
                 <p className="font-semibold">{state.user.email}</p>
               </DropdownItem>
