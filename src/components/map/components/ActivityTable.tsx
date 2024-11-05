@@ -65,7 +65,7 @@ export default function ActivityTable({
                             textValue={request.getProperties().request_title}
                             startContent={
                                 <>
-                                    <div className="max-lg:hidden">
+                                    <div className="lg:hidden max-lg:flex">
                                         <Image
                                             src="/assets/images/icons/camera.svg"
                                             alt="Camera Icon"
@@ -73,7 +73,7 @@ export default function ActivityTable({
                                             height={50}
                                         />
                                     </div>
-                                    <div className="hidden max-lg:flex">
+                                    <div className="max-lg:hidden lg:flex">
                                         <Image
                                             src="/assets/images/icons/camera.svg"
                                             alt="Camera Icon"
