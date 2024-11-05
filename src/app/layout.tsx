@@ -56,7 +56,7 @@ export default async function RootLayout({
   ];
   return (
     <html lang="en">
-      <body>
+      <body className="overflow-hidden lg:overflow-auto">
         <Providers token={token}>
           <Header headersList={locationHeaders} token={token}/>
           <main className="text-foreground bg-background h-screen w-full">
