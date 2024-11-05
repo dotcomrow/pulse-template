@@ -56,11 +56,11 @@ export default function MapCard({
     const [vectorLayer, setVectorLayer] = React.useState<VectorLayer>();
     const [overlay, setOverlay] = React.useState<Overlay>();
     const [featureOverlay, setFeatureOverlay] = React.useState<Overlay>();
-    const [featurePopoverOpen, setIsFeaturePopoverOpen] = React.useState(false);
     const geojson = new GeoJSON();
     const pictureRequestBtn = "pictureRequestBtn" + mapTarget;
     const popupContainerId = "popup-container" + mapTarget;
     const featureInfoPopupId = "featureInfoPopup" + mapTarget;
+    const displayLocation = "displayLocation" + mapTarget;
 
     const mapClickHandler = (e: any, overlay: any, vectorLayer: any) => {
         if (document.getElementById(pictureRequestBtn)?.classList.contains("requestModeDisabled")) {
@@ -147,33 +147,35 @@ export default function MapCard({
             lat: (feature.getGeometry() as Point)?.getCoordinates()[1],
             lon: (feature.getGeometry() as Point)?.getCoordinates()[0]
         }).then((address: any) => {
-            const addressContent = 
-            <>
-                <h2>Request Title: {feature.get('request_title')}</h2>
-                {feature.get('request_description') ? 
+            const addressContent =
                 <>
-                    <h2>Request Description:</h2>
-                    <p>{feature.get('request_description')}</p>
-                </> : <></>}
-                <h2>Request Date/Time: {new Date(feature.get('capture_timestamp')).toLocaleDateString(navigator.language) + " " + new Date(feature.get('capture_timestamp')).toLocaleTimeString(navigator.language)}</h2>
-                <h2>Location:</h2><br/>
-                <p>{address.display_name}</p>
-            </>;
-            const displayLocationElement = document.getElementById("displayLocation");
+                    <h2>Request Title: {feature.get('request_title')}</h2>
+                    {feature.get('request_description') ?
+                        <>
+                            <h2>Request Description:</h2>
+                            <p>{feature.get('request_description')}</p>
+                        </> : <></>}
+                    <h2>Request Date/Time: {new Date(feature.get('capture_timestamp')).toLocaleDateString(navigator.language) + " " + new Date(feature.get('capture_timestamp')).toLocaleTimeString(navigator.language)}</h2>
+                    <h2>Location:</h2><br />
+                    <p>{address.display_name}</p>
+                </>;
+            const displayLocationElement = document.getElementById(displayLocation);
             if (displayLocationElement) {
                 const root = createRoot(displayLocationElement);
                 root.render(addressContent);
             }
+            map?.getTargetElement().classList.add('fetchRequests');
         }).catch((error) => {
-            const displayLocationElement = document.getElementById("displayLocation");
+            const displayLocationElement = document.getElementById(displayLocation);
             if (displayLocationElement) {
                 const root = createRoot(displayLocationElement);
                 root.render(JSON.stringify(error));
             }
+            map?.getTargetElement().classList.add('fetchRequests');
         });
 
         const popoverContent = <>
-            <div id="displayLocation">
+            <div id={displayLocation}>
                 <Spinner size="md" />
             </div>
         </>
@@ -202,6 +204,19 @@ export default function MapCard({
         );
     }
 
+    const openFeaturePopover = (e: any, featureOverlay: any, feature: FeatureLike) => {
+        e.preventDefault();
+        e.stopPropagation();
+        map?.getTargetElement().classList.remove('fetchRequests');
+        featureOverlay?.setPosition(e.coordinate);
+        centerMap({ coords: { latitude: (feature.getGeometry() as Point)?.getCoordinates()[1], longitude: (feature.getGeometry() as Point)?.getCoordinates()[0] } });
+        const featurePopup = document.getElementById(featureInfoPopupId);
+
+        if (featurePopup) {
+            const root = createRoot(featurePopup);
+            root.render(featurePopover(feature));
+        }
+    };
 
     const map = useMemo(() => {
         if (mounted) {
@@ -220,7 +235,6 @@ export default function MapCard({
 
             const popup = featurePopup ? new Overlay({
                 element: featurePopup,
-                positioning: 'bottom-center',
                 autoPan: {
                     animation: {
                         duration: 250,
@@ -302,27 +316,29 @@ export default function MapCard({
                         return;
                     }
                 }
-                const mapSize = map?.getSize();
-                const extent = map?.getView().calculateExtent(mapSize);
-                if (extent) {
-                    // bbox coordinates are reversed here because google maps uses lat, lon and openlayers uses lon, lat
-                    const bbox: BoundingBox = {
-                        min_latitude: extent[0],
-                        min_longitude: extent[1],
-                        max_latitude: extent[2],
-                        max_longitude: extent[3],
-                    };
-                    // do not reference this anywhere related to openlayers, this is for google bigquery
-                    store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
-                    var centerLat = (extent[1] + extent[3]) / 2;
-                    var centerLon = (extent[0] + extent[2]) / 2;
-                    store.dispatch(updateLocation({
-                        latitude: centerLat,
-                        longitude: centerLon,
-                        deviceLocation: initialLocationState.deviceLocation,
-                        locationPermissionsAllowed: initialLocationState.locationPermissionsAllowed,
-                        locationLoaded: true
-                    }));
+                if (map?.getTargetElement().classList.contains('fetchRequests')) {
+                    const mapSize = map?.getSize();
+                    const extent = map?.getView().calculateExtent(mapSize);
+                    if (extent) {
+                        // bbox coordinates are reversed here because google maps uses lat, lon and openlayers uses lon, lat
+                        const bbox: BoundingBox = {
+                            min_latitude: extent[0],
+                            min_longitude: extent[1],
+                            max_latitude: extent[2],
+                            max_longitude: extent[3],
+                        };
+                        // do not reference this anywhere related to openlayers, this is for google bigquery
+                        store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
+                        var centerLat = (extent[1] + extent[3]) / 2;
+                        var centerLon = (extent[0] + extent[2]) / 2;
+                        store.dispatch(updateLocation({
+                            latitude: centerLat,
+                            longitude: centerLon,
+                            deviceLocation: initialLocationState.deviceLocation,
+                            locationPermissionsAllowed: initialLocationState.locationPermissionsAllowed,
+                            locationLoaded: true
+                        }));
+                    }
                 }
             }, 500));
             map.on('click', (e) => {
@@ -332,11 +348,7 @@ export default function MapCard({
                 if (!feature) {
                     mapClickHandler(e, overlay, vectorLayer);
                 } else {
-                    popup.setPosition(e.coordinate);
-                    if (featurePopup) {
-                        const root = createRoot(featurePopup);
-                        root.render(featurePopover(feature));
-                    }
+                    openFeaturePopover(e, popup, feature);
                 }
             });
             return map;
@@ -369,7 +381,7 @@ export default function MapCard({
 
     return (
         <div className="bg-white p-dynamic w-full h-full">
-            <div id={mapTarget} className="h-full w-full spinner">
+            <div id={mapTarget} className="h-full w-full spinner fetchRequests">
                 <div id={featureInfoPopupId}></div>
             </div>
             <div id={popupContainerId}>
