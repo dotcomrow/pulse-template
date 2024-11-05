@@ -29,8 +29,20 @@ export default class GeolocationControl extends Control {
     }
 
     geolocatePosition(centerMap: any) {
+        const map = this.getMap();
+        if (map) {
+            if (map.getTargetElement().classList.contains('spinner')) {
+                return;
+            } else {
+                map.getTargetElement().classList.add('spinner');
+            }
+        }
+
         navigator.geolocation.getCurrentPosition((position) => {
             centerMap(position);
+            if (map) {
+                map.getTargetElement().classList.remove('spinner');
+            }
         }, (error) => {
             const errorMsg = "An error occured while trying to get your location. Please ensure you have location services enabled on your device and allow this site permission to read device location.  Error message: " + error.message;
             this.store.dispatch(setError({
@@ -41,6 +53,9 @@ export default class GeolocationControl extends Control {
                 errorIcon: "error",
                 errorTextStyle: "text-danger"
             }));
+            if (map) {
+                map.getTargetElement().classList.remove('spinner');
+            }
         },
             {
                 enableHighAccuracy: false,

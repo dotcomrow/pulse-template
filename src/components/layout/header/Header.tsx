@@ -37,7 +37,7 @@ export default async function Header({ headersList, token }: { headersList: any,
                 maxWidth="full"
                 isMenuOpen={isMenuOpen}
                 onMenuOpenChange={setIsMenuOpen}
-                className="min-lg:flex max-lg:hidden"
+                className="lg:flex max-lg:hidden"
             >
                 <NavbarBrand>
                     <h1 className="text-2xl font-bold">SnapSpot</h1>
