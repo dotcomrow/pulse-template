@@ -7,6 +7,8 @@ import { Listbox, ListboxSection, ListboxItem } from "@nextui-org/listbox";
 import { Image } from "@nextui-org/image";
 import Feature from "ol/Feature";
 import { selectInitialLocation } from "@lib/features/location/locationSlice";
+import Point from "ol/geom/Point";
+import { selectDeviceLocation } from "@lib/features/location/deviceLocationSlice";
 
 export default function ActivityTable({
 
@@ -18,9 +20,25 @@ export default function ActivityTable({
     const [page, setPage] = React.useState(1);
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: any = useAppSelector(selectPictureRequestStatus);
-    const initialLocationState: any = useAppSelector(selectInitialLocation);
+    const deviceLocationState: any = useAppSelector(selectDeviceLocation);
     const limitSelect: number = useAppSelector(selectLimit);
     const offsetSelect: number = useAppSelector(selectOffset);
+
+    function getDistanceFromLatLonInMiles(lat1: number, lon1: number, lat2: number, lon2: number) {
+        const R = 3958.8; // Radius of the Earth in miles
+        const dLat = deg2rad(lat2 - lat1);
+        const dLon = deg2rad(lon2 - lon1);
+        const a = 
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+    
+    function deg2rad(deg: number) {
+        return deg * (Math.PI / 180);
+    }
 
     useEffect(() => {
 
@@ -35,19 +53,16 @@ export default function ActivityTable({
     const requestDescription = (request: Feature) => {
         return (
             <>
-                <div className="flex max-lg:hidden">
+                <div className="w-full">
                     <h3>{request.getProperties().request_description}</h3>
-                    <p>{request.getProperties().capture_timestamp}</p>
-                    <p>{request.getProperties().bid_type}</p>
-                    <p>{request.getProperties().direction}</p>
-                    <p>Distance: </p>
-                </div>
-                <div className="hidden max-lg:flex">
-                    <h3>{request.getProperties().request_description}</h3>
-                    <p>{request.getProperties().capture_timestamp}</p>
-                    <p>{request.getProperties().bid_type}</p>
-                    <p>{request.getProperties().direction}</p>
-                    <p>Distance: </p>
+                    <p className="w-full">Request Date/Time: {new Date(request.getProperties().capture_timestamp).toLocaleDateString(navigator.language) + " " + new Date(request.getProperties().capture_timestamp).toLocaleTimeString(navigator.language)}</p>
+                    <p className="w-full">Request Bid: {request.getProperties().bid_type}</p>
+                    <p className="w-full">Distance: {getDistanceFromLatLonInMiles(
+                        deviceLocationState.latitude, 
+                        deviceLocationState.longitude, 
+                        (request.getGeometry() as Point)?.getCoordinates()[1],
+                        (request.getGeometry() as Point)?.getCoordinates()[0]
+                        ).toFixed(4)} miles</p>
                 </div>
             </>
         );

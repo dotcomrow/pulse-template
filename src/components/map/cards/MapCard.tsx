@@ -37,6 +37,7 @@ import { Popover, PopoverContent, Spinner } from "@nextui-org/react";
 import { createRoot } from "react-dom/client";
 import Geometry from "ol/geom/Geometry";
 import { getClosestAddress } from "@services/map/getClosestAddress";
+import { selectDeviceLocation } from "@lib/features/location/deviceLocationSlice";
 
 export default function MapCard({
     token,
@@ -51,6 +52,7 @@ export default function MapCard({
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: any = useAppSelector(selectPictureRequestStatus);
     const initialLocationState: any = useAppSelector(selectInitialLocation);
+    const deviceLocationState: any = useAppSelector(selectDeviceLocation);
     const limitSelect: number = useAppSelector(selectLimit);
     const offsetSelect: number = useAppSelector(selectOffset);
     const [vectorLayer, setVectorLayer] = React.useState<VectorLayer>();
@@ -360,6 +362,16 @@ export default function MapCard({
                     openFeaturePopover(e, popup, feature);
                 }
             });
+            var feat = new Feature(new Point([deviceLocationState.longitude, deviceLocationState.latitude]));
+            feat.setStyle(new Style({
+                image: new Icon({
+                    opacity: 1,
+                    src: "/assets/images/icons/map-pin_filled.svg",
+                    scale: 1.3
+                }),
+            }));
+            feat.setId("device-location");
+            vectorLayer?.getSource()?.addFeature(feat);
             return map;
         }
     }, [mounted]);

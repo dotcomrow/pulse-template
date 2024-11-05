@@ -1,6 +1,7 @@
 import React from "react";
 import { setInitialLocation } from "@lib/features/location/locationSlice";
 import { clearNotification, setNotification } from "@lib/features/notification/notificationSlice";
+import { setDeviceLocation } from "@lib/features/location/deviceLocationSlice";
 
 export default function LocationOnLoad({ headersList, store }: { headersList: any, store: any }) {
     if ("geolocation" in navigator) {
@@ -15,8 +16,22 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                         locationPermissionsAllowed: true,
                         locationLoaded: true
                     }));
+                    store.dispatch(setDeviceLocation({
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        deviceLocation: true,
+                        locationPermissionsAllowed: true,
+                        locationLoaded: true
+                    }));
                 }, (error) => {
                     store.dispatch(setInitialLocation({
+                        latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
+                        longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
+                        deviceLocation: false,
+                        locationPermissionsAllowed: false,
+                        locationLoaded: true
+                    }));
+                    store.dispatch(setDeviceLocation({
                         latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
                         longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
                         deviceLocation: false,
@@ -70,6 +85,13 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                                     locationPermissionsAllowed: false,
                                     locationLoaded: true
                                 }));
+                                store.dispatch(setDeviceLocation({
+                                    latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
+                                    longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
+                                    deviceLocation: false,
+                                    locationPermissionsAllowed: false,
+                                    locationLoaded: true
+                                }));
                                 store.dispatch(clearNotification());
                             }
                         },
@@ -78,6 +100,13 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                             onClick: () => {
                                 navigator.geolocation.getCurrentPosition((position) => {
                                     store.dispatch(setInitialLocation({
+                                        latitude: position.coords.latitude,
+                                        longitude: position.coords.longitude,
+                                        deviceLocation: true,
+                                        locationPermissionsAllowed: true,
+                                        locationLoaded: true
+                                    }));
+                                    store.dispatch(setDeviceLocation({
                                         latitude: position.coords.latitude,
                                         longitude: position.coords.longitude,
                                         deviceLocation: true,
@@ -108,6 +137,13 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                                         locationPermissionsAllowed: false,
                                         locationLoaded: true
                                     }));
+                                    store.dispatch(setDeviceLocation({
+                                        latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
+                                        longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
+                                        deviceLocation: false,
+                                        locationPermissionsAllowed: false,
+                                        locationLoaded: true
+                                    }));
                                     store.dispatch(clearNotification());
                                 },
                                     {
@@ -128,10 +164,24 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                     locationPermissionsAllowed: false,
                     locationLoaded: true
                 }));
+                store.dispatch(setDeviceLocation({
+                    latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
+                    longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
+                    deviceLocation: false,
+                    locationPermissionsAllowed: false,
+                    locationLoaded: true
+                }));
             }
         });
     } else {
         store.dispatch(setInitialLocation({
+            latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
+            longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
+            deviceLocation: false,
+            locationPermissionsAllowed: false,
+            locationLoaded: true
+        }));
+        store.dispatch(setDeviceLocation({
             latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
             longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
             deviceLocation: false,
