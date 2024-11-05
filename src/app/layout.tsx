@@ -55,8 +55,8 @@ export default async function RootLayout({
     { name: 'x-vercel-ip-country-region', value: headerList.get('x-vercel-ip-country-region') || '' },
   ];
   return (
-    <html lang="en" className="h-screen w-full">
-      <body className="h-full w-full">
+    <html lang="en" className="h-screen w-full max-lg:overflow-hidden">
+      <body className="h-svh w-full">
         <Providers token={token}>
           <div className="max-lg:hidden">
             <Header headersList={locationHeaders} token={token} />
