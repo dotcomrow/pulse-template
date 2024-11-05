@@ -10,6 +10,7 @@ export interface NotificationDTO {
     confirmAction: any | null;
     denyAction: any | null;
     show: boolean;
+    dissmissable: boolean;
 }
 
 const initialState: NotificationDTO = {
@@ -20,6 +21,7 @@ const initialState: NotificationDTO = {
     confirmAction: null,
     denyAction: null,
     show: false,
+    dissmissable: true
 };
 
 export const notificationSlice = createAppSlice({
@@ -36,6 +38,7 @@ export const notificationSlice = createAppSlice({
             state.confirmAction = action.payload.confirmAction;
             state.denyAction = action.payload.denyAction;
             state.show = action.payload.show;
+            state.dissmissable = action.payload.dissmissable
         }),
     }),
     selectors: {

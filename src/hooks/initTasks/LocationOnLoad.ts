@@ -6,7 +6,6 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
     if ("geolocation" in navigator) {
         navigator.permissions.query({ name: 'geolocation' }).then((e) => {
             if (e.state === 'granted') {
-                localStorage.setItem('locationPermissionGranted', 'true');
                 // we are allowed to get device location
                 navigator.geolocation.getCurrentPosition((position) => {
                     store.dispatch(setInitialLocation({
@@ -33,11 +32,8 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
             } else if (e.state === 'prompt') {
                 // We can tell the user what cloudflare detected but we can ask to use device location
                 const detectedLocation =
-
                     React.createElement('div',
                         React.createElement('p', null, "SnapSpot would like to use your device location to provide a better experience."),
-
-
                         React.createElement(
                             'p',
                             null,
@@ -55,8 +51,6 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                         React.createElement('br', null),
                         React.createElement('p', null, 'Would you like to allow SnapSpot to use your device location?'));
 
-
-
                 store.dispatch(setNotification(
                     {
                         title: "Location Permissions",
@@ -64,6 +58,7 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                         severity: "info",
                         icon: "info",
                         show: true,
+                        dissmissable: false,
                         denyAction: {
                             label: "Deny",
                             onClick: () => {
@@ -96,12 +91,8 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                                         severity: "error",
                                         icon: "error",
                                         show: true,
-                                        denyAction: {
-                                            label: "Dismiss",
-                                            onClick: () => {
-                                                store.dispatch(clearNotification());
-                                            }
-                                        },
+                                        dissmissable: false,
+                                        denyAction: null,
                                         confirmAction: {
                                             label: "Dismiss",
                                             onClick: () => {

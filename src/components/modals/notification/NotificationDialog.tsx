@@ -24,8 +24,8 @@ export default function NotificationDialog() {
         <Modal
             isOpen={isOpen}
             onOpenChange={onOpenChange}
-            isDismissable={true}
-            hideCloseButton={false}
+            isDismissable={notificationState.dissmissable}
+            hideCloseButton={!notificationState.dissmissable}
             onClose={() => {
                 onOpenChange();
                 store.dispatch(clearNotification());

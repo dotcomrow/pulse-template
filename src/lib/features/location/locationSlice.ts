@@ -62,7 +62,6 @@ export const setInitialLocation = (location: LocationDTO): AppThunk => async (di
         max_longitude: location.latitude + (latitudeInitialWidth / 2),
     };
     // do not reference this working with openlayers
-    console.log(bbox);
     dispatch(loadPictureRequests(bbox, 10, 0));
 }
 
