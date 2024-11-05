@@ -30,6 +30,17 @@ export default async function Header({ headersList, token }: { headersList: any,
         AppOnloadTasks({ headersList, store }).executeOnloadTasks();
     }, []);
 
+    useEffect(() => {
+        const onScroll = (e: any) => {
+            e.preventDefault();
+            window.scrollTo(0, 0);
+        };
+
+        window.addEventListener("scroll", onScroll);
+
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
+
     return (
         <>
             {/* <!-- Desktop Navbar --> */}
