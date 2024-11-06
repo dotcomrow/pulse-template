@@ -6,16 +6,12 @@ export interface LocationDTO {
     latitude: number;
     longitude: number;
     deviceLocation: boolean;
-    locationPermissionsAllowed: boolean;
-    locationLoaded: boolean;
 }
 
 const initialState: LocationDTO = {
     latitude: -1,
     longitude: -1,
     deviceLocation: false,
-    locationPermissionsAllowed: false,
-    locationLoaded: false
 };
 
 export const deviceLocationSlice = createAppSlice({
@@ -28,8 +24,6 @@ export const deviceLocationSlice = createAppSlice({
             state.latitude = action.payload.latitude;
             state.longitude = action.payload.longitude;
             state.deviceLocation = action.payload.deviceLocation;
-            state.locationPermissionsAllowed = action.payload.locationPermissionsAllowed;
-            state.locationLoaded = action.payload.locationLoaded;
         }),
     }),
     selectors: {

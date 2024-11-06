@@ -4,7 +4,7 @@ import { userSlice } from "@lib/features/user/userSlice";
 import { mapSlice } from "./features/map/mapSlice";
 import { errorSlice } from "./features/error/errorSlice";
 import { notificationSlice } from "./features/notification/notificationSlice";
-import { locationSlice } from "./features/location/locationSlice";
+import { mapLocationSlice } from "./features/location/mapLocationSlice";
 import { deviceLocationSlice } from "./features/location/deviceLocationSlice";
 // import { counterSlice } from "./features/counter/counterSlice";
 // import { quotesApiSlice } from "./features/quotes/quotesApiSlice";
@@ -18,7 +18,7 @@ const rootReducer = combineSlices(
   mapSlice,
   errorSlice,
   notificationSlice,
-  locationSlice,
+  mapLocationSlice,
   deviceLocationSlice
 );
 

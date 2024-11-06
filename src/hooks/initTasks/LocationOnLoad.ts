@@ -1,5 +1,4 @@
 import React from "react";
-import { setInitialLocation } from "@lib/features/location/locationSlice";
 import { clearNotification, setNotification } from "@lib/features/notification/notificationSlice";
 import { setDeviceLocation } from "@lib/features/location/deviceLocationSlice";
 
@@ -8,42 +7,27 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
         navigator.permissions.query({ name: 'geolocation' }).then((e) => {
             if (e.state === 'granted') {
                 // we are allowed to get device location
-                navigator.geolocation.getCurrentPosition((position) => {
-                    store.dispatch(setInitialLocation({
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude,
-                        deviceLocation: true,
-                        locationPermissionsAllowed: true,
-                        locationLoaded: true
+                store.dispatch(setDeviceLocation({
+                    latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
+                    longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
+                    deviceLocation: false,
                     }));
+                navigator.geolocation.watchPosition((position) => {
                     store.dispatch(setDeviceLocation({
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude,
                         deviceLocation: true,
-                        locationPermissionsAllowed: true,
-                        locationLoaded: true
                     }));
                 }, (error) => {
-                    store.dispatch(setInitialLocation({
-                        latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
-                        longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
-                        deviceLocation: false,
-                        locationPermissionsAllowed: false,
-                        locationLoaded: true
-                    }));
                     store.dispatch(setDeviceLocation({
                         latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
                         longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
                         deviceLocation: false,
-                        locationPermissionsAllowed: false,
-                        locationLoaded: true
-                    }));
-                },
-                    {
-                        enableHighAccuracy: false,
-                        timeout: 3000,
-                        maximumAge: 0,
-                    });
+                        }))
+                    }, {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        });
             } else if (e.state === 'prompt') {
                 // We can tell the user what cloudflare detected but we can ask to use device location
                 const detectedLocation =
@@ -78,19 +62,10 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                         denyAction: {
                             label: "Deny",
                             onClick: () => {
-                                store.dispatch(setInitialLocation({
-                                    latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
-                                    longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
-                                    deviceLocation: false,
-                                    locationPermissionsAllowed: false,
-                                    locationLoaded: true
-                                }));
                                 store.dispatch(setDeviceLocation({
                                     latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
                                     longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
                                     deviceLocation: false,
-                                    locationPermissionsAllowed: false,
-                                    locationLoaded: true
                                 }));
                                 store.dispatch(clearNotification());
                             }
@@ -98,95 +73,45 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                         confirmAction: {
                             label: "Allow",
                             onClick: () => {
-                                navigator.geolocation.getCurrentPosition((position) => {
-                                    store.dispatch(setInitialLocation({
-                                        latitude: position.coords.latitude,
-                                        longitude: position.coords.longitude,
-                                        deviceLocation: true,
-                                        locationPermissionsAllowed: true,
-                                        locationLoaded: true
+                                store.dispatch(setDeviceLocation({
+                                    latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
+                                    longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
+                                    deviceLocation: false,
                                     }));
+                                navigator.geolocation.watchPosition((position) => {
                                     store.dispatch(setDeviceLocation({
                                         latitude: position.coords.latitude,
                                         longitude: position.coords.longitude,
                                         deviceLocation: true,
-                                        locationPermissionsAllowed: true,
-                                        locationLoaded: true
                                     }));
-                                    store.dispatch(clearNotification());
                                 }, (error) => {
-                                    store.dispatch(setNotification({
-                                        title: "Geolocation error",
-                                        message: React.createElement("p", "An error occurred while trying to get your location. Please ensure you have location services enabled on your device and allow this site permission to read device location.  Error message: " + error.message),
-                                        severity: "error",
-                                        icon: "error",
-                                        show: true,
-                                        dissmissable: false,
-                                        denyAction: null,
-                                        confirmAction: {
-                                            label: "Dismiss",
-                                            onClick: () => {
-                                                store.dispatch(clearNotification());
-                                            }
-                                        }
-                                    }));
-                                    store.dispatch(setInitialLocation({
-                                        latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
-                                        longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
-                                        deviceLocation: false,
-                                        locationPermissionsAllowed: false,
-                                        locationLoaded: true
-                                    }));
                                     store.dispatch(setDeviceLocation({
                                         latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
                                         longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
                                         deviceLocation: false,
-                                        locationPermissionsAllowed: false,
-                                        locationLoaded: true
-                                    }));
-                                    store.dispatch(clearNotification());
-                                },
-                                    {
-                                        enableHighAccuracy: false,
-                                        timeout: 3000,
-                                        maximumAge: 0,
-                                    });
+                                        }))
+                                    }, {
+                                        enableHighAccuracy: true,
+                                        timeout: 5000,
+                                        });
                             }
                         }
                     }
                 ));
             } else if (e.state === 'denied') {
                 // user said no so we can ONLY use what cloudflare detects
-                store.dispatch(setInitialLocation({
-                    latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
-                    longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
-                    deviceLocation: false,
-                    locationPermissionsAllowed: false,
-                    locationLoaded: true
-                }));
                 store.dispatch(setDeviceLocation({
                     latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
                     longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
                     deviceLocation: false,
-                    locationPermissionsAllowed: false,
-                    locationLoaded: true
                 }));
             }
         });
     } else {
-        store.dispatch(setInitialLocation({
-            latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
-            longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
-            deviceLocation: false,
-            locationPermissionsAllowed: false,
-            locationLoaded: true
-        }));
         store.dispatch(setDeviceLocation({
             latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
             longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
             deviceLocation: false,
-            locationPermissionsAllowed: false,
-            locationLoaded: true
         }));
     }
 }
