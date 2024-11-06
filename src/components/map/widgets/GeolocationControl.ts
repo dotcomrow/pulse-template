@@ -1,7 +1,5 @@
 import { Control, defaults as defaultControls } from 'ol/control';
 import "@styles/map/geolocation-control.css";
-import { useAppSelector, useAppStore, useAppDispatch } from "@hook/redux";
-import { selectDeviceLocation } from "@lib/features/location/deviceLocationSlice";
 
 export default class GeolocationControl extends Control {
 

@@ -11,7 +11,7 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                     latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
                     longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
                     deviceLocation: false,
-                    }));
+                }));
                 navigator.geolocation.watchPosition((position) => {
                     store.dispatch(setDeviceLocation({
                         latitude: position.coords.latitude,
@@ -23,11 +23,11 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                         latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
                         longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
                         deviceLocation: false,
-                        }))
-                    }, {
-                        enableHighAccuracy: true,
-                        timeout: 5000,
-                        });
+                    }))
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                });
             } else if (e.state === 'prompt') {
                 // We can tell the user what cloudflare detected but we can ask to use device location
                 const detectedLocation =
@@ -77,7 +77,7 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                                     latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
                                     longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
                                     deviceLocation: false,
-                                    }));
+                                }));
                                 navigator.geolocation.watchPosition((position) => {
                                     store.dispatch(setDeviceLocation({
                                         latitude: position.coords.latitude,
@@ -89,11 +89,12 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                                         latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
                                         longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
                                         deviceLocation: false,
-                                        }))
-                                    }, {
-                                        enableHighAccuracy: true,
-                                        timeout: 5000,
-                                        });
+                                    }))
+                                }, {
+                                    enableHighAccuracy: true,
+                                    timeout: 5000,
+                                });
+                                store.dispatch(clearNotification());
                             }
                         }
                     }
@@ -105,6 +106,7 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                     longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
                     deviceLocation: false,
                 }));
+                store.dispatch(clearNotification());
             }
         });
     } else {
@@ -113,5 +115,6 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
             longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
             deviceLocation: false,
         }));
+        store.dispatch(clearNotification());
     }
 }

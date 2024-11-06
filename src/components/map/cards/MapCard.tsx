@@ -378,6 +378,7 @@ export default function MapCard({
     }, [pictureRequestsState]);
 
     useEffect(() => {
+        console.log(deviceLocationState);
         for (var layerIndex in map?.getLayers().getArray()) {
             const index = Number(layerIndex);
             const layer = map?.getLayers().getArray()[index] as VectorLayer;
