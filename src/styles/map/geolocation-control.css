@@ -1,12 +1,14 @@
 .geolocate {
     top: 65px;
     left: .5em;
+    position: absolute;
 }
 
 .ol-touch .geolocate {
     top: 80px;
     width: 40px;
     height: 40px;
+    position: absolute;
 }
 
 .geolocate-icon {

@@ -16,7 +16,7 @@ export default class GeolocationControl extends Control {
         image.id = pictureRequestBtn;
 
         const element = document.createElement('div');
-        element.className = 'capture-request ol-unselectable ol-control' + (token.length > 0 ? '' : ' hidden');
+        element.className = 'capture-request ol-unselectable' + (token.length > 0 ? '' : ' hidden');
         element.appendChild(image);
 
         super({

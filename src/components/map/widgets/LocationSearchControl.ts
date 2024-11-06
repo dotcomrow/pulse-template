@@ -9,7 +9,7 @@ export default class LocationSearchControl extends Control {
 
     constructor(centerMap: any) {
         const element = document.createElement('div');
-        element.className = 'location-search ol-unselectable ol-control w-9/12';
+        element.className = 'location-search ol-unselectable w-9/12';
         const root = createRoot(element);
         root.render(React.createElement(LocationSearchWidget, { centerMap }));
         

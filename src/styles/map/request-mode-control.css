@@ -1,12 +1,14 @@
 .capture-request {
   top: 100px;
   left: .5em;
+  position: absolute;
 }
 
 .ol-touch .capture-request {
   top: 130px;
   width: 40px;
   height: 40px;
+  position: absolute;
 }
 
 .capture-request-icon {

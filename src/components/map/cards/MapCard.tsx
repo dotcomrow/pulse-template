@@ -293,7 +293,7 @@ export default function MapCard({
                     popup
                 ],
                 controls: defaultControls().extend([
-                    new GeolocationControl(centerMap),
+                    new GeolocationControl(centerMap, deviceLocationState),
                     new RequestModeControl(pictureRequestMode, token, pictureRequestBtn),
                     new LocationSearchControl(centerMap)
                 ]),
