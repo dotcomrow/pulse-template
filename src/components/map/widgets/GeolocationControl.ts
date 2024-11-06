@@ -34,7 +34,7 @@ export default class GeolocationControl extends Control {
                 map.getTargetElement().classList.add('spinner');
             }
         }
-        console.log(deviceLocationState);
+        
         centerMap({ coords: { latitude: deviceLocationState.latitude, longitude: deviceLocationState.longitude } });
         if (map) {
             map.getTargetElement().classList.remove('spinner');

@@ -378,7 +378,10 @@ export default function MapCard({
     }, [pictureRequestsState]);
 
     useEffect(() => {
-        console.log(deviceLocationState);
+        const center = map?.getView()?.getCenter();
+        if (center && center[0] == -1 && center[1] == -1) {
+            map?.getView().setCenter([deviceLocationState.longitude, deviceLocationState.latitude]);
+        }
         for (var layerIndex in map?.getLayers().getArray()) {
             const index = Number(layerIndex);
             const layer = map?.getLayers().getArray()[index] as VectorLayer;
