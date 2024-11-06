@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { Tooltip } from "@nextui-org/tooltip";
 import { Link } from "@nextui-org/link";
@@ -6,12 +8,12 @@ import { Image } from "@nextui-org/image";
 
 export default function MapRequestPopup({
     closePopup,
-    vectorLayer,
+    map,
     token,
     mapTarget
 }: {
     closePopup: any,
-    vectorLayer: any,
+    map: any,
     token: string,
     mapTarget: string
 }) {    
@@ -35,7 +37,7 @@ export default function MapRequestPopup({
             <CardBody>
                 <div id="popup-content">
                     <RequestSubmit 
-                        vectorLayer={vectorLayer}
+                        map={map}
                         token={token} 
                         popupClose={closePopup} 
                         mapTarget={mapTarget}

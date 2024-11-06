@@ -1,17 +1,5 @@
 import React from "react";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
-
-import { Spinner } from "@nextui-org/spinner";
-import { Pagination, PaginationItem, PaginationCursor } from "@nextui-org/pagination";
-import {
-    selectPictureRequests,
-    selectPictureRequestStatus,
-    selectLimit,
-    selectOffset
-} from "@lib/features/map/mapSlice";
-import { useAppSelector, useAppStore, useAppDispatch } from "@hook/redux";
-import Feature from 'ol/Feature';
-import Geometry from 'ol/geom/Geometry';
 import ActivityTable from "@component/map/components/ActivityTable";
 
 export default function ActivityNearYouCard({

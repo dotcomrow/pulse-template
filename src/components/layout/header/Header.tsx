@@ -16,19 +16,11 @@ import React, { useEffect } from "react";
 import { default as Constants } from "@utils/constants";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { Image } from "@nextui-org/image";
-import AppOnloadTasks from "@hook/AppOnloadTasks";
-import { useAppStore } from "@hook/redux";
 
-export default async function Header({ headersList, token }: { headersList: any, token: string }) {
+export default async function Header({ token }: { token: string }) {
 
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const pathname = usePathname();
-    const store = useAppStore();
-
-    useEffect(() => {
-        // perform app onload actions here
-        AppOnloadTasks({ headersList, store }).executeOnloadTasks();
-    }, []);
 
     return (
         <>

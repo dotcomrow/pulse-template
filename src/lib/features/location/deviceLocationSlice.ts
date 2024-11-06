@@ -19,7 +19,7 @@ const initialState: LocationDTO = {
 };
 
 export const deviceLocationSlice = createAppSlice({
-    name: "initialLocation",
+    name: "deviceLocation",
     // `createSlice` will infer the state type from the `initialState` argument
     initialState,
     // The `reducers` field lets us define reducers and generate associated actions

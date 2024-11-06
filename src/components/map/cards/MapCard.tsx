@@ -32,10 +32,9 @@ import GeolocationControl from "@component/map/widgets/GeolocationControl";
 import { Control, defaults as defaultControls } from 'ol/control';
 import RequestModeControl from "@component/map/widgets/RequestModeControl";
 import LocationSearchControl from "@component/map/widgets/LocationSearchControl";
-import { selectInitialLocation, updateLocation } from "@lib/features/location/locationSlice";
+import { selectLocation, updateLocation } from "@lib/features/location/locationSlice";
 import { Popover, PopoverContent, Spinner } from "@nextui-org/react";
 import { createRoot } from "react-dom/client";
-import Geometry from "ol/geom/Geometry";
 import { getClosestAddress } from "@services/map/getClosestAddress";
 import { selectDeviceLocation } from "@lib/features/location/deviceLocationSlice";
 
@@ -51,26 +50,24 @@ export default function MapCard({
     const [mounted, setMounted] = React.useState(false);
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: any = useAppSelector(selectPictureRequestStatus);
-    const initialLocationState: any = useAppSelector(selectInitialLocation);
+    const initialLocationState: any = useAppSelector(selectLocation);
     const deviceLocationState: any = useAppSelector(selectDeviceLocation);
     const limitSelect: number = useAppSelector(selectLimit);
     const offsetSelect: number = useAppSelector(selectOffset);
-    const [vectorLayer, setVectorLayer] = React.useState<VectorLayer>();
-    const [overlay, setOverlay] = React.useState<Overlay>();
-    const [featureOverlay, setFeatureOverlay] = React.useState<Overlay>();
-    const geojson = new GeoJSON();
+
     const pictureRequestBtn = "pictureRequestBtn" + mapTarget;
     const popupContainerId = "popup-container" + mapTarget;
     const featureInfoPopupId = "featureInfoPopup" + mapTarget;
     const displayLocation = "displayLocation" + mapTarget;
 
-    const mapClickHandler = (e: any, overlay: any, vectorLayer: any) => {
+    const mapClickHandler = (e: any) => {
         if (document.getElementById(pictureRequestBtn)?.classList.contains("requestModeDisabled")) {
             return;
         }
         e.preventDefault();
         e.stopPropagation();
         const coordinate = e.coordinate;
+        const vectorLayer = map?.getLayers().getArray()[1] as VectorLayer;
         const source = vectorLayer.getSource();
         const features = pictureRequestsState;
         const requestFeature = vectorLayer?.getSource()?.getFeatureById("request");
@@ -90,8 +87,9 @@ export default function MapCard({
         }
         vectorLayer?.setVisible(false);
         vectorLayer?.setVisible(true);
-        source.addFeatures(features);
-        overlay.setPosition(coordinate);
+        source?.addFeatures(features);
+        const overlay = map?.getOverlayById("requestSubmit");
+        overlay?.setPosition(coordinate);
     };
 
     const clearRequest = () => {
@@ -101,8 +99,8 @@ export default function MapCard({
             if (layer.getSource() instanceof VectorSource) {
                 if (layer.getSource()?.getFeatureById("request")) {
                     layer.getSource()?.getFeatureById("request").getGeometry().setCoordinates([0, 0]);
-                    vectorLayer?.setVisible(false);
-                    vectorLayer?.setVisible(true);
+                    layer?.setVisible(false);
+                    layer?.setVisible(true);
                 }
             }
         }
@@ -230,6 +228,7 @@ export default function MapCard({
             const featurePopup = document.getElementById(featureInfoPopupId);
 
             const overlay = container ? new Overlay({
+                id: "requestSubmit",
                 element: container,
                 autoPan: {
                     animation: {
@@ -237,9 +236,9 @@ export default function MapCard({
                     },
                 },
             }) : new Overlay({});
-            setOverlay(overlay);
 
             const popup = featurePopup ? new Overlay({
+                id: "featureInfo",
                 element: featurePopup,
                 autoPan: {
                     animation: {
@@ -247,30 +246,35 @@ export default function MapCard({
                     },
                 },
             }) : new Overlay({});
-            setFeatureOverlay(popup);
 
             const vectorLayer = new VectorLayer({
                 source: new VectorSource({
-                    features: geojson.readFeatures({
-                        type: "FeatureCollection",
-                        features: []
-                    }),
+                    loader: function (extent, resolution, projection) {
+                        if (map) {
+                            if (map.getTargetElement().classList.contains('firstLoad')) {
+                                map.getTargetElement().classList.remove('firstLoad');
+                                return;
+                            }
+                            map.getTargetElement().classList.add('spinner');
+                            // bbox coordinates are reversed here because google maps uses lat, lon and openlayers uses lon, lat
+                            const bbox: BoundingBox = {
+                                min_latitude: extent[0],
+                                min_longitude: extent[1],
+                                max_latitude: extent[2],
+                                max_longitude: extent[3],
+                            };
+                            // do not reference this anywhere related to openlayers, this is for google bigquery
+                            store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
+                        }
+                    },
                     strategy: bbox,
                     overlaps: false,
                     wrapX: false,
                 }),
-                style: new Style({
-                    fill: new Fill({
-                        color: "rgba(255,255,255,0.2)",
-                    }),
-                    stroke: new Stroke({
-                        color: "rgba(0,0,255,0.3)",
-                    }),
-                }),
                 maxZoom: 18,
                 minZoom: 16,
             });
-            setVectorLayer(vectorLayer);
+
             var map = new Map({
                 // the map will be created using the 'map-root' ref
                 target: mapTarget,
@@ -302,64 +306,39 @@ export default function MapCard({
                 ]),
             });
             map.on('loadstart', function () {
-                if (map?.getTargetElement().classList.contains('fetchRequests')) {
-                    map.getTargetElement().classList.add('spinner');
-                }
+                map.getTargetElement().classList.add('spinner');
             });
             map.on('loadend', function () {
-                if (map?.getTargetElement().classList.contains('fetchRequests')) {
-                    map.getTargetElement().classList.remove('spinner');
-                }
+                map.getTargetElement().classList.remove('spinner');
             });
             map.on('pointermove', function (e) {
                 const pixel = map.getEventPixel(e.originalEvent);
                 const hit = map.hasFeatureAtPixel(pixel);
                 map.getTargetElement().style.cursor = hit ? 'pointer' : '';
             });
-            map.on('moveend', debounce(() => {
-                // map.getTargetElement().classList.add('spinner');
-                if (!map.getTargetElement().classList.contains('firstRender')) {
-                    if (map.getTargetElement().classList.toggle('firstRender')) {
-                        const features = pictureRequestsState;
-                        vectorLayer?.getSource()?.addFeatures(features);
-                        // map?.getTargetElement().classList.remove('spinner');
-                        return;
-                    }
-                }
-                if (map?.getTargetElement().classList.contains('fetchRequests')) {
-                    map.getTargetElement().classList.add('spinner');
-                    const mapSize = map?.getSize();
-                    const extent = map?.getView().calculateExtent(mapSize);
-                    if (extent) {
-                        // bbox coordinates are reversed here because google maps uses lat, lon and openlayers uses lon, lat
-                        const bbox: BoundingBox = {
-                            min_latitude: extent[0],
-                            min_longitude: extent[1],
-                            max_latitude: extent[2],
-                            max_longitude: extent[3],
-                        };
-                        // do not reference this anywhere related to openlayers, this is for google bigquery
-                        store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
-                        var centerLat = (extent[1] + extent[3]) / 2;
-                        var centerLon = (extent[0] + extent[2]) / 2;
-                        store.dispatch(updateLocation({
-                            latitude: centerLat,
-                            longitude: centerLon,
-                            deviceLocation: initialLocationState.deviceLocation,
-                            locationPermissionsAllowed: initialLocationState.locationPermissionsAllowed,
-                            locationLoaded: true
-                        }));
-                    }
-                }
-            }, 500));
+            map.on('moveend', function () {
+                const mapSize = map?.getSize();
+                const extent = map?.getView().calculateExtent(mapSize);
+                var centerLat = (extent[1] + extent[3]) / 2;
+                var centerLon = (extent[0] + extent[2]) / 2;
+                store.dispatch(updateLocation({
+                    latitude: centerLat,
+                    longitude: centerLon,
+                    deviceLocation: initialLocationState.deviceLocation,
+                    locationPermissionsAllowed: initialLocationState.locationPermissionsAllowed,
+                    locationLoaded: true
+                }));
+            });
             map.on('click', (e) => {
                 const feature = map.forEachFeatureAtPixel(e.pixel, function (feature) {
                     return feature;
                 });
                 if (!feature) {
-                    mapClickHandler(e, overlay, vectorLayer);
+                    mapClickHandler(e);
                 } else {
-                    openFeaturePopover(e, popup, feature);
+                    if (feature.getId() != "device-location") {
+                        openFeaturePopover(e, popup, feature);
+                    }
                 }
             });
             var feat = new Feature(new Point([deviceLocationState.longitude, deviceLocationState.latitude]));
@@ -378,9 +357,11 @@ export default function MapCard({
 
     useEffect(() => {
         if (pictureRequestStatus === "complete") {
-            const features = pictureRequestsState;
-            vectorLayer?.getSource()?.addFeatures(features);
-            map?.getTargetElement().classList.remove('spinner');
+            const vectorLayer = map?.getLayers().getArray()[1] as VectorLayer;
+            if (vectorLayer) {
+                vectorLayer.getSource()?.addFeatures(pictureRequestsState);
+                map?.getTargetElement().classList.remove('spinner');
+            }
         }
     }, [pictureRequestsState]);
 
@@ -389,6 +370,13 @@ export default function MapCard({
             const mapSize = map?.getSize();
             if (mapSize) {
                 centerMap({ coords: { latitude: initialLocationState.latitude, longitude: initialLocationState.longitude } });
+                if (pictureRequestStatus === "complete") {
+                    const vectorLayer = map?.getLayers().getArray()[1] as VectorLayer;
+                    if (vectorLayer) {
+                        vectorLayer.getSource()?.addFeatures(pictureRequestsState);
+                        map?.getTargetElement().classList.remove('spinner');
+                    }
+                }
             }
         }
     }, [mounted]);
@@ -402,7 +390,7 @@ export default function MapCard({
 
     return (
         <div className="bg-white p-dynamic w-full h-full">
-            <div id={mapTarget} className="h-full w-full spinner fetchRequests">
+            <div id={mapTarget} className="h-full w-full spinner firstLoad">
                 <div id={featureInfoPopupId}></div>
             </div>
             <div id={popupContainerId}>
@@ -423,10 +411,10 @@ export default function MapCard({
                                 store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
                             }
                         }
-                        overlay?.setPosition(undefined);
+                        map?.getOverlayById("requestSubmit")?.setPosition(undefined);
                         clearRequest();
                     }}
-                    vectorLayer={vectorLayer}
+                    map={map}
                     token={token}
                     mapTarget={mapTarget}
                 />

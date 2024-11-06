@@ -6,7 +6,6 @@ import React, { useEffect } from "react";
 import { Listbox, ListboxSection, ListboxItem } from "@nextui-org/listbox";
 import { Image } from "@nextui-org/image";
 import Feature from "ol/Feature";
-import { selectInitialLocation } from "@lib/features/location/locationSlice";
 import Point from "ol/geom/Point";
 import { selectDeviceLocation } from "@lib/features/location/deviceLocationSlice";
 

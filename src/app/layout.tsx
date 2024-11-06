@@ -57,15 +57,15 @@ export default async function RootLayout({
   return (
     <html lang="en" className="h-svh w-full max-lg:overflow-hidden max-lg:fixed">
       <body className="h-svh w-full">
-        <Providers token={token}>
+        <Providers token={token} headersList={locationHeaders}>
           <div className="max-lg:hidden">
-            <Header headersList={locationHeaders} token={token} />
+            <Header token={token} />
           </div>
           <main className="text-foreground bg-background lg:h-dvh max-lg:h-[calc(100svh-4rem)]">
             {children}
           </main>
           <div className="lg:hidden h-16">
-            <Header headersList={locationHeaders} token={token} />
+            <Header token={token} />
           </div>
           <div className="max-lg:hidden">
             <Footer />
