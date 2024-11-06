@@ -26,18 +26,6 @@ export default class GeolocationControl extends Control {
     }
 
     geolocatePosition(centerMap: any, deviceLocationState: any) {
-        const map = this.getMap();
-        if (map) {
-            if (map.getTargetElement().classList.contains('spinner')) {
-                return;
-            } else {
-                map.getTargetElement().classList.add('spinner');
-            }
-        }
-        
         centerMap({ coords: { latitude: deviceLocationState.latitude, longitude: deviceLocationState.longitude } });
-        if (map) {
-            map.getTargetElement().classList.remove('spinner');
-        }
     }
 }

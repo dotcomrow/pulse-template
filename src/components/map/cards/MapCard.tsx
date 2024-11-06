@@ -379,6 +379,7 @@ export default function MapCard({
 
     useEffect(() => {
         const center = map?.getView()?.getCenter();
+        console.log(center);
         if (center && center[0] == -1 && center[1] == -1) {
             map?.getView().setCenter([deviceLocationState.longitude, deviceLocationState.latitude]);
         }
