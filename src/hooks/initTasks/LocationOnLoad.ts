@@ -106,7 +106,6 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                     longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
                     deviceLocation: false,
                 }));
-                store.dispatch(clearNotification());
             }
         });
     } else {
@@ -115,6 +114,5 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
             longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
             deviceLocation: false,
         }));
-        store.dispatch(clearNotification());
     }
 }
