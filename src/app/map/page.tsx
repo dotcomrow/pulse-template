@@ -7,7 +7,7 @@ import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, Navba
 
 export const runtime = 'edge';
 
-export default async function Home() {
+export default async function Map() {
 
   const cookieStore = await cookies();
   return (

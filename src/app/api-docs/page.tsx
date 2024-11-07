@@ -1,5 +1,5 @@
 
-export default function HelpFeedback() {
+export default function ApiDocs() {
     return (
         <div>
             test
