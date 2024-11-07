@@ -103,10 +103,20 @@ export default function MapCard({
         }
     };
 
-    const centerMap = (position: { coords: { latitude: number, longitude: number } }) => {
+    window.addEventListener('message', (e) => {
+        if (e.data.type === 'geolocate') {
+            centerMap(null);
+        }
+    });
+
+    const centerMap = (position: { coords: { latitude: number, longitude: number } } | null) => { 
         const mapSize = map?.getSize();
         if (mapSize) {
-            map?.getView().centerOn([position.coords.longitude, position.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+            if (position == null) {
+                map?.getView().centerOn([deviceLocationState.longitude, deviceLocationState.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+            } else {
+                map?.getView().centerOn([position.coords.longitude, position.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+            }
         }
     };
 
@@ -293,7 +303,7 @@ export default function MapCard({
                     popup
                 ],
                 controls: defaultControls().extend([
-                    new GeolocationControl(centerMap, deviceLocationState),
+                    new GeolocationControl(centerMap),
                     new RequestModeControl(pictureRequestMode, token, pictureRequestBtn),
                     new LocationSearchControl(centerMap)
                 ]),
@@ -345,7 +355,7 @@ export default function MapCard({
             } else if (deviceLocationState.latitude != -1 && deviceLocationState.longitude != -1) {
                 map.getView().setCenter([deviceLocationState.longitude, deviceLocationState.latitude]);
             } else {
-                map.getView().setCenter([1,1]);
+                map.getView().setCenter([-1,-1]);
             }
             return map;
         }
@@ -379,9 +389,9 @@ export default function MapCard({
 
     useEffect(() => {
         const center = map?.getView()?.getCenter();
-        console.log(center);
-        if (center && center[0] <= 1 && center[1] <= 1) {
-            map?.getView().setCenter([deviceLocationState.longitude, deviceLocationState.latitude]);
+        if (center && center[0] == -1 && center[1] == -1) {
+            console.log("centering on device location", deviceLocationState);
+            centerMap({ coords: { latitude: deviceLocationState.latitude, longitude: deviceLocationState.longitude } });
         }
         for (var layerIndex in map?.getLayers().getArray()) {
             const index = Number(layerIndex);

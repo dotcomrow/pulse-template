@@ -7,11 +7,6 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
         navigator.permissions.query({ name: 'geolocation' }).then((e) => {
             if (e.state === 'granted') {
                 // we are allowed to get device location
-                store.dispatch(setDeviceLocation({
-                    latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
-                    longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
-                    deviceLocation: false,
-                }));
                 navigator.geolocation.watchPosition((position) => {
                     store.dispatch(setDeviceLocation({
                         latitude: position.coords.latitude,
@@ -73,11 +68,6 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                         confirmAction: {
                             label: "Allow",
                             onClick: () => {
-                                store.dispatch(setDeviceLocation({
-                                    latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
-                                    longitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-longitude')[0].value),
-                                    deviceLocation: false,
-                                }));
                                 navigator.geolocation.watchPosition((position) => {
                                     store.dispatch(setDeviceLocation({
                                         latitude: position.coords.latitude,

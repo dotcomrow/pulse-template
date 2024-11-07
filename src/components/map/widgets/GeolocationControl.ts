@@ -2,11 +2,11 @@ import { Control, defaults as defaultControls } from 'ol/control';
 import "@styles/map/geolocation-control.css";
 
 export default class GeolocationControl extends Control {
-
+    
     /**
      * @param {Object} [opt_options] Control options.
      */
-    constructor(centerMap: any, deviceLocationState: any) {
+    constructor(centerMap: any) {
         const image = document.createElement('img');
         image.src = "/assets/images/icons/location.svg";
         image.alt = "Click this icon to geolocate your device position";
@@ -20,12 +20,11 @@ export default class GeolocationControl extends Control {
         super({
             element: element,
         });
-
-        image.addEventListener('click', this.geolocatePosition.bind(this, centerMap, deviceLocationState), false);
+        image.addEventListener('click', this.geolocatePosition.bind(this, centerMap), false);
 
     }
 
-    geolocatePosition(centerMap: any, deviceLocationState: any) {
-        centerMap({ coords: { latitude: deviceLocationState.latitude, longitude: deviceLocationState.longitude } });
+    geolocatePosition(centerMap: any) {
+        window.postMessage({ type: 'geolocate' }, '*');
     }
 }
