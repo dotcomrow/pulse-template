@@ -15,8 +15,7 @@ export default function ActivityTable({
 
     }) {
 
-    const store = useAppStore();
-    const [page, setPage] = React.useState(1);
+    
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: any = useAppSelector(selectPictureRequestStatus);
     const deviceLocationState: any = useAppSelector(selectDeviceLocation);
