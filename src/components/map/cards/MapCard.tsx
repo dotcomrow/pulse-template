@@ -390,7 +390,6 @@ export default function MapCard({
     useEffect(() => {
         const center = map?.getView()?.getCenter();
         if (center && center[0] == -1 && center[1] == -1) {
-            console.log("centering on device location", deviceLocationState);
             centerMap({ coords: { latitude: deviceLocationState.latitude, longitude: deviceLocationState.longitude } });
         }
         for (var layerIndex in map?.getLayers().getArray()) {
