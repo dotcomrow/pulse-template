@@ -20,29 +20,7 @@ export default function ActivityTable({
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: string = useAppSelector(selectPictureRequestStatus);
     const [listItems, setListItems] = React.useState<Feature<Geometry>[]>([]);
-    const deviceLocationState: any = useAppSelector(selectDeviceLocation);
-    const changeList: Feature<Geometry>[] = useCallback((): Feature<Geometry>[] => {
-        const items = listItems;
-        var changed = false;
-        pictureRequestsState.map((request: Feature<Geometry>) => {
-            var found = false;
-            items.map((item: Feature<Geometry>) => {
-                if (request.getId() == item.getId()) {
-                    found = true;
-                }
-            });
-            if (!found) {
-                items.push(request);
-                changed = true;
-            }
-        });
-        if (changed) {
-            setListItems(items);
-        }
-        return pictureRequestsState;
-    }, [pictureRequestsState])();
-
-    
+    const deviceLocationState: any = useAppSelector(selectDeviceLocation);    
 
     function getDistanceFromLatLonInMiles(lat1: number, lon1: number, lat2: number, lon2: number) {
         const R = 3958.8; // Radius of the Earth in miles
@@ -62,6 +40,26 @@ export default function ActivityTable({
 
     useEffect(() => {
 
+    }, [pictureRequestsState]);
+
+    useEffect(() => {
+        const items = listItems;
+        var changed = false;
+        pictureRequestsState.map((request: Feature<Geometry>) => {
+            var found = false;
+            items.map((item: Feature<Geometry>) => {
+                if (request.getId() == item.getId()) {
+                    found = true;
+                }
+            });
+            if (!found) {
+                items.push(request);
+                changed = true;
+            }
+        });
+        if (changed) {
+            setListItems(items);
+        }
     }, [pictureRequestsState]);
 
     const ListboxWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
