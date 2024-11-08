@@ -20,11 +20,26 @@ export default function ActivityTable({
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: string = useAppSelector(selectPictureRequestStatus);
     // const deviceLocationState: any = useAppSelector(selectDeviceLocation);
-    const listItems: Feature<Geometry>[] = useCallback((): Feature<Geometry>[] => {
+    const changeList: Feature<Geometry>[] = useCallback((): Feature<Geometry>[] => {
         console.log("detected changes");
         console.log(pictureRequestsState);
+        const items = listItems;
+        var changed = false;
+        pictureRequestsState.map((request: Feature<Geometry>) => {
+            items.map((item: Feature<Geometry>) => {
+                if (request.getId() == item.getId()) {
+                    items.push(request);
+                    changed = true;
+                }
+            });
+        });
+        if (changed) {
+            setListItems(items);
+        }
         return pictureRequestsState;
     }, [pictureRequestsState])();
+
+    const [listItems, setListItems] = React.useState<Feature<Geometry>[]>(changeList);
 
     function getDistanceFromLatLonInMiles(lat1: number, lon1: number, lat2: number, lon2: number) {
         const R = 3958.8; // Radius of the Earth in miles
