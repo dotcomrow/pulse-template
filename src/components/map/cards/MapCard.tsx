@@ -33,6 +33,7 @@ import { Popover, PopoverContent, Spinner } from "@nextui-org/react";
 import { createRoot } from "react-dom/client";
 import { getClosestAddress } from "@services/map/getClosestAddress";
 import { selectDeviceLocation } from "@lib/features/location/deviceLocationSlice";
+import Constants from "@utils/constants";
 
 export default function MapCard({
     token,
@@ -201,7 +202,7 @@ export default function MapCard({
         e.stopPropagation();
         map?.getTargetElement().classList.remove('fetchRequests');
         featureOverlay?.setPosition(e.coordinate);
-        centerMap({ coords: { latitude: (feature.getGeometry() as Point)?.getCoordinates()[1], longitude: (feature.getGeometry() as Point)?.getCoordinates()[0] } });
+        centerMap({ coords: { latitude: (feature.getGeometry() as Point)?.getCoordinates()[1], longitude: (feature.getGeometry() as Point)?.getCoordinates()[0] + Constants.MapConstants.longitudeOffsetFeatureWindow } });
         const featurePopup = document.getElementById(featureInfoPopupId);
 
         if (featurePopup) {

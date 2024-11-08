@@ -32,10 +32,17 @@ for (const link of [
   }
 }
 
+const MapConstants = {
+  latitudeInitialWidth: 0.0064373,
+  longitudeInitialWidth: 0.00786198,
+  longitudeOffsetFeatureWindow: 0.0003,  
+}
+
 export default {
   navLinks,
   profileNavLinks,
   securePaths,
   mobileLoggedInLinks,
-  mobileLoggedOutLinks
+  mobileLoggedOutLinks,
+  MapConstants
 };
