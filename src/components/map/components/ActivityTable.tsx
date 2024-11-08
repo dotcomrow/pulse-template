@@ -46,20 +46,15 @@ export default function ActivityTable({
         </div>
     );
 
-    const requestDescription = (request: Feature) => {
+    const getDistance = (request: Feature) => {
         return (
             <>
-                <div className="w-full">
-                    <h3>{request.getProperties().request_description}</h3>
-                    <p className="w-full">Request Date/Time: {new Date(request.getProperties().capture_timestamp).toLocaleDateString(navigator.language) + " " + new Date(request.getProperties().capture_timestamp).toLocaleTimeString(navigator.language)}</p>
-                    <p className="w-full">Request Bid: {request.getProperties().bid_type}</p>
-                    <p className="w-full">Distance: {getDistanceFromLatLonInMiles(
-                        deviceLocationState.latitude,
-                        deviceLocationState.longitude,
-                        (request.getGeometry() as Point)?.getCoordinates()[1],
-                        (request.getGeometry() as Point)?.getCoordinates()[0]
-                    ).toFixed(4)} miles</p>
-                </div>
+                {getDistanceFromLatLonInMiles(
+                    deviceLocationState.latitude,
+                    deviceLocationState.longitude,
+                    (request.getGeometry() as Point)?.getCoordinates()[1],
+                    (request.getGeometry() as Point)?.getCoordinates()[0]
+                ).toFixed(4)}
             </>
         );
     }
@@ -80,7 +75,14 @@ export default function ActivityTable({
                             <ListboxItem
                                 key={request.getId() ?? "0"}
                                 title={request.getProperties().request_title}
-                                description={requestDescription(request)}
+                                description={
+                                    <div className="w-full">
+                                        <h3>{request.getProperties().request_description}</h3>
+                                        <p className="w-full">Request Date/Time: {new Date(request.getProperties().capture_timestamp).toLocaleDateString(navigator.language) + " " + new Date(request.getProperties().capture_timestamp).toLocaleTimeString(navigator.language)}</p>
+                                        <p className="w-full">Request Bid: {request.getProperties().bid_type}</p>
+                                        <p className="w-full">Distance:  miles</p>
+                                    </div>
+                                }
                                 textValue={request.getProperties().request_title}
                                 startContent={
                                     <>
