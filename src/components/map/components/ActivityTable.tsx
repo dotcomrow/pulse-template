@@ -43,21 +43,26 @@ export default function ActivityTable({
     }, [pictureRequestsState]);
 
     useEffect(() => {
+        console.log("Detected change in pictureRequestsState");
         const items = listItems;
         var changed = false;
         pictureRequestsState.map((request: Feature<Geometry>) => {
+            console.log("Checking request: " + request.getId());
             var found = false;
             items.map((item: Feature<Geometry>) => {
                 if (request.getId() == item.getId()) {
+                    console.log("Request already in list");
                     found = true;
                 }
             });
             if (!found) {
+                console.log("Adding request to list");
                 items.push(request);
                 changed = true;
             }
         });
         if (changed) {
+            console.log("Setting new list");
             setListItems(items);
         }
     }, [pictureRequestsState]);
