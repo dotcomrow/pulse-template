@@ -168,7 +168,7 @@ export default function MapCard({
         });
 
         const popoverContent = <>
-            <div id={displayLocation}>
+            <div id={displayLocation} className="ml-20">
                 <Spinner size="md" />
             </div>
         </>
@@ -184,7 +184,6 @@ export default function MapCard({
                     },
                     placement: 'left',
                     children: [
-                        // createElement(Popover.Trigger, null, createElement(Button, { auto: true, onClick: togglePopover }, 'Open Popover')),
                         createElement(PopoverContent, null, createElement('p', {
                             style: {
                                 padding: ".5em",
