@@ -69,46 +69,48 @@ export default function ActivityTable({
             </div>
         ) : (
             <ListboxWrapper>
-                <Listbox variant="flat" aria-label="Listbox menu with sections">
-                    <ListboxSection>
-                        {pictureRequestsState.map((request: Feature) => (
-                            <ListboxItem
-                                key={request.getId() ?? "0"}
-                                title={request.getProperties().request_title}
-                                description={
-                                    <div className="w-full">
-                                        <h3>{request.getProperties().request_description}</h3>
-                                        <p className="w-full">Request Date/Time: {new Date(request.getProperties().capture_timestamp).toLocaleDateString(navigator.language) + " " + new Date(request.getProperties().capture_timestamp).toLocaleTimeString(navigator.language)}</p>
-                                        <p className="w-full">Request Bid: {request.getProperties().bid_type}</p>
-                                        <p className="w-full">Distance:  miles</p>
+                <Listbox 
+                    variant="flat" 
+                    aria-label="Listbox menu with sections"
+                    items={pictureRequestsState}
+                >
+                    {(request: any) => (
+                        <ListboxItem
+                            key={request.id ?? "0"}
+                            title={request.request_title}
+                            description={
+                                <div className="w-full">
+                                    <h3>{request.request_description}</h3>
+                                    <p className="w-full">Request Date/Time: {new Date(request.capture_timestamp).toLocaleDateString(navigator.language) + " " + new Date(request.capture_timestamp).toLocaleTimeString(navigator.language)}</p>
+                                    <p className="w-full">Request Bid: {request.bid_type}</p>
+                                    <p className="w-full">Distance: {getDistance(request)} miles</p>
+                                </div>
+                            }
+                            textValue={request.request_title}
+                            startContent={
+                                <>
+                                    <div className="lg:hidden max-lg:flex">
+                                        <Image
+                                            src="/assets/images/icons/camera.svg"
+                                            alt="Camera Icon"
+                                            width={50}
+                                            height={50}
+                                        />
                                     </div>
-                                }
-                                textValue={request.getProperties().request_title}
-                                startContent={
-                                    <>
-                                        <div className="lg:hidden max-lg:flex">
-                                            <Image
-                                                src="/assets/images/icons/camera.svg"
-                                                alt="Camera Icon"
-                                                width={50}
-                                                height={50}
-                                            />
-                                        </div>
-                                        <div className="max-lg:hidden lg:flex">
-                                            <Image
-                                                src="/assets/images/icons/camera.svg"
-                                                alt="Camera Icon"
-                                                width={25}
-                                                height={25}
-                                            />
-                                        </div>
-                                    </>
-                                }
-                            >
-                                {request.getProperties().request_title}
-                            </ListboxItem>
-                        ))}
-                    </ListboxSection>
+                                    <div className="max-lg:hidden lg:flex">
+                                        <Image
+                                            src="/assets/images/icons/camera.svg"
+                                            alt="Camera Icon"
+                                            width={25}
+                                            height={25}
+                                        />
+                                    </div>
+                                </>
+                            }
+                        >
+                            {request.request_title}
+                        </ListboxItem>
+                    )}
                 </Listbox>
             </ListboxWrapper>
         )
