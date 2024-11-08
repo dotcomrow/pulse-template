@@ -101,17 +101,6 @@ export default function MapCard({
         }
     };
 
-    const centerMap = (arg: any) => {
-        const mapSize = map?.getSize();
-        if (mapSize) {
-            if (arg instanceof Event) {
-                map?.getView().centerOn([deviceLocationState.longitude, deviceLocationState.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
-            } else {
-                map?.getView().centerOn([arg.coords.longitude, arg.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
-            }
-        }
-    };
-
     const pictureRequestMode = (e: any) => {
         e.preventDefault();
         e.stopPropagation();
@@ -229,6 +218,17 @@ export default function MapCard({
         }
     };
 
+    const centerMap = (arg: any) => {
+        const mapSize = map?.getSize();
+        if (mapSize) {
+            if (arg instanceof Event) {
+                map?.getView().centerOn([deviceLocationState.longitude, deviceLocationState.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+            } else {
+                map?.getView().centerOn([arg.coords.longitude, arg.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+            }
+        }
+    };
+
     const map = useMemo(() => {
         if (mounted) {
             const container = document.getElementById(popupContainerId);
@@ -305,7 +305,7 @@ export default function MapCard({
                     popup
                 ],
                 controls: defaultControls().extend([
-                    new GeolocationControl(centerMap),
+                    new GeolocationControl(),
                     new RequestModeControl(pictureRequestMode, token, pictureRequestBtn),
                     new LocationSearchControl(centerMap)
                 ]),
@@ -367,9 +367,22 @@ export default function MapCard({
             feat.setId("device-location");
             (map.getLayers().item(1) as VectorLayer).getSource()?.addFeature(feat);
             window.addEventListener('message', centerMap);
+            map.getView().setCenter([getInitialCenter()[0], getInitialCenter()[1]]);
             return map;
         }
     }, [mounted]);
+
+    useEffect(() => {
+        if (map) {
+            if ((map.getLayers().item(1) as VectorLayer).getSource()) {
+                pictureRequestsState.forEach((feature: any) => {
+                    (map.getLayers().item(1) as VectorLayer).getSource()?.addFeature(feature);
+                });
+                (map.getLayers().item(1) as VectorLayer).setVisible(false);
+                (map.getLayers().item(1) as VectorLayer).setVisible(true);
+            }
+        }
+    }, [pictureRequestsState]);
 
     useEffect(() => {
         if (map) {
@@ -383,9 +396,7 @@ export default function MapCard({
 
     useEffect(() => {
         useGeographic();
-        if (getInitialCenter()[0] != 0 && getInitialCenter()[1] != 0) {
-            setMounted(true);
-        }
+        setMounted(true);
     }, []);
 
     return (
