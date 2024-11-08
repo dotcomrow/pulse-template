@@ -19,7 +19,7 @@ export default function ActivityTable({
 
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: string = useAppSelector(selectPictureRequestStatus);
-    const deviceLocationState: any = useAppSelector(selectDeviceLocation);
+    // const deviceLocationState: any = useAppSelector(selectDeviceLocation);
     const listItems: Feature<Geometry>[] = useCallback((): Feature<Geometry>[] => {
         return pictureRequestsState;
     }, [pictureRequestsState])();
@@ -53,12 +53,12 @@ export default function ActivityTable({
     const getDistance = (request: Feature) => {
         return (
             <>
-                {getDistanceFromLatLonInMiles(
+                {/* {getDistanceFromLatLonInMiles(
                     deviceLocationState.latitude,
                     deviceLocationState.longitude,
                     (request.getGeometry() as Point)?.getCoordinates()[1],
                     (request.getGeometry() as Point)?.getCoordinates()[0]
-                ).toFixed(4)}
+                ).toFixed(4)} */}
             </>
         );
     }
