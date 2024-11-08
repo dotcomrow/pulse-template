@@ -37,7 +37,8 @@ export const {
 } = mapLocationSlice.selectors;
 
 export const setMapLocation = (location: LocationDTO): AppThunk => async (dispatch) => {
-    if (location.latitude != -1 && location.longitude != -1) {
+    const currentLocation = selectMapLocation({ location: initialState });
+    if (currentLocation.latitude != -1 && location.longitude != -1) {
         return;
     }
     dispatch(mapLocationSlice.actions.setLocation(location));
