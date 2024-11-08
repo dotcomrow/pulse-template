@@ -21,6 +21,8 @@ export default function ActivityTable({
     const pictureRequestStatus: string = useAppSelector(selectPictureRequestStatus);
     // const deviceLocationState: any = useAppSelector(selectDeviceLocation);
     const listItems: Feature<Geometry>[] = useCallback((): Feature<Geometry>[] => {
+        console.log("detected changes");
+        console.log(pictureRequestsState);
         return pictureRequestsState;
     }, [pictureRequestsState])();
 
