@@ -35,6 +35,7 @@ export default function ActivityTable({
             });
         });
         if (changed) {
+            console.log("changed");
             setListItems(items);
         }
         return pictureRequestsState;
