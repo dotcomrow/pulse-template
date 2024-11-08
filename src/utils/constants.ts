@@ -35,7 +35,7 @@ for (const link of [
 const MapConstants = {
   latitudeInitialWidth: 0.0064373,
   longitudeInitialWidth: 0.00786198,
-  longitudeOffsetFeatureWindow: 0.0003,  
+  longitudeOffsetFeatureWindow: 0.0005,  
 }
 
 export default {
