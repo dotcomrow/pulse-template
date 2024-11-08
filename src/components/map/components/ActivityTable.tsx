@@ -20,22 +20,25 @@ export default function ActivityTable({
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: string = useAppSelector(selectPictureRequestStatus);
     const [listItems, setListItems] = React.useState<Feature<Geometry>[]>([]);
-    // const deviceLocationState: any = useAppSelector(selectDeviceLocation);
+    const deviceLocationState: any = useAppSelector(selectDeviceLocation);
     const changeList: Feature<Geometry>[] = useCallback((): Feature<Geometry>[] => {
-        console.log("detected changes");
-        console.log(pictureRequestsState);
         const items = listItems;
         var changed = false;
         pictureRequestsState.map((request: Feature<Geometry>) => {
+            var found = false;
             items.map((item: Feature<Geometry>) => {
                 if (request.getId() == item.getId()) {
-                    items.push(request);
-                    changed = true;
+                    found = true;
                 }
             });
+            if (!found) {
+                items.push(request);
+                changed = true;
+            }
         });
+        console.log(items);
+        console.log(changed);
         if (changed) {
-            console.log("changed");
             setListItems(items);
         }
         return pictureRequestsState;
@@ -72,12 +75,12 @@ export default function ActivityTable({
     const getDistance = (request: Feature) => {
         return (
             <>
-                {/* {getDistanceFromLatLonInMiles(
+                {getDistanceFromLatLonInMiles(
                     deviceLocationState.latitude,
                     deviceLocationState.longitude,
                     (request.getGeometry() as Point)?.getCoordinates()[1],
                     (request.getGeometry() as Point)?.getCoordinates()[0]
-                ).toFixed(4)} */}
+                ).toFixed(4)}
             </>
         );
     }
