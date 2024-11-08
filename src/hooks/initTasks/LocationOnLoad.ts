@@ -1,7 +1,6 @@
 import React from "react";
 import { clearNotification, setNotification } from "@lib/features/notification/notificationSlice";
 import { LocationDTO, setDeviceLocation } from "@lib/features/location/deviceLocationSlice";
-import { setMapLocation } from "@lib/features/location/mapLocationSlice";
 
 export default function LocationOnLoad({ headersList, store }: { headersList: any, store: any }) {
     var initialLocation: LocationDTO = {

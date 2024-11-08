@@ -45,7 +45,6 @@ export default function MapCard({
     const store = useAppStore();
     const [mounted, setMounted] = React.useState(false);
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
-    const pictureRequestStatus: any = useAppSelector(selectPictureRequestStatus);
     const initialMapLocationState: any = useAppSelector(selectMapLocation);
     const deviceLocationState: any = useAppSelector(selectDeviceLocation);
     const limitSelect: number = useAppSelector(selectLimit);
@@ -102,13 +101,13 @@ export default function MapCard({
         }
     };
 
-    const centerMap = (position: { coords: { latitude: number, longitude: number } } | null) => {
+    const centerMap = (arg: any) => {
         const mapSize = map?.getSize();
         if (mapSize) {
-            if (position == null) {
+            if (arg instanceof Event) {
                 map?.getView().centerOn([deviceLocationState.longitude, deviceLocationState.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
             } else {
-                map?.getView().centerOn([position.coords.longitude, position.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+                map?.getView().centerOn([arg.coords.longitude, arg.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
             }
         }
     };
@@ -225,10 +224,8 @@ export default function MapCard({
     const getInitialCenter = () => {
         if (initialMapLocationState.latitude != -1 && initialMapLocationState.longitude != -1) {
             return [initialMapLocationState.longitude, initialMapLocationState.latitude];
-        } else if (deviceLocationState.latitude != -1 && deviceLocationState.longitude != -1) {
-            return [deviceLocationState.longitude, deviceLocationState.latitude];
         } else {
-            return [0, 0];
+            return [deviceLocationState.longitude, deviceLocationState.latitude];
         }
     };
 
@@ -369,44 +366,22 @@ export default function MapCard({
             }));
             feat.setId("device-location");
             (map.getLayers().item(1) as VectorLayer).getSource()?.addFeature(feat);
+            window.addEventListener('message', centerMap);
             return map;
         }
     }, [mounted]);
 
     useEffect(() => {
-        for (var layerIndex in map?.getLayers().getArray()) {
-            const index = Number(layerIndex);
-            const layer = map?.getLayers().getArray()[index] as VectorLayer;
-            if (layer.getSource() instanceof VectorSource) {
-                if (layer.getSource()?.getFeatureById("device-location")) {
-                    layer.getSource()?.getFeatureById("device-location").getGeometry().setCoordinates([deviceLocationState.longitude, deviceLocationState.latitude]);
-                    layer?.setVisible(false);
-                    layer?.setVisible(true);
-                } else {
-                    var feat = new Feature(new Point([deviceLocationState.longitude, deviceLocationState.latitude]));
-                    feat.setStyle(new Style({
-                        image: new Icon({
-                            opacity: 1,
-                            src: "/assets/images/icons/map-pin_filled.svg",
-                            scale: 1.3
-                        }),
-                    }));
-                    feat.setId("device-location");
-                    layer.getSource()?.addFeature(feat);
-                }
-            }
-        }
+        (map?.getLayers().item(1) as VectorLayer).getSource()?.getFeatureById("device-location").getGeometry().setCoordinates([deviceLocationState.longitude, deviceLocationState.latitude]);
+        (map?.getLayers().item(1) as VectorLayer).setVisible(false);
+        (map?.getLayers().item(1) as VectorLayer).setVisible(true);
     }, [deviceLocationState]);
 
     useEffect(() => {
         useGeographic();
-        setMounted(true);
-
-        window.addEventListener('message', (e) => {
-            if (e.data.type === 'geolocate') {
-                centerMap(null);
-            }
-        });
+        if (getInitialCenter()[0] != 0 && getInitialCenter()[1] != 0) {
+            setMounted(true);
+        }
     }, []);
 
     return (
