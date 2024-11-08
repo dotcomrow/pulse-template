@@ -19,8 +19,6 @@ export default function ActivityTable({
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: string = useAppSelector(selectPictureRequestStatus);
     const deviceLocationState: any = useAppSelector(selectDeviceLocation);
-    const limitSelect: number = useAppSelector(selectLimit);
-    const offsetSelect: number = useAppSelector(selectOffset);
 
     function getDistanceFromLatLonInMiles(lat1: number, lon1: number, lat2: number, lon2: number) {
         const R = 3958.8; // Radius of the Earth in miles
@@ -40,7 +38,7 @@ export default function ActivityTable({
 
     useEffect(() => {
 
-    }, [pictureRequestsState, pictureRequestStatus, limitSelect, offsetSelect]);
+    }, [pictureRequestsState]);
 
     const ListboxWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
         <div className="w-full">

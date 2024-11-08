@@ -223,8 +223,6 @@ export default function MapCard({
     };
 
     const getInitialCenter = () => {
-        console.log(initialMapLocationState);
-        console.log(deviceLocationState);
         if (initialMapLocationState.latitude != -1 && initialMapLocationState.longitude != -1) {
             return [initialMapLocationState.longitude, initialMapLocationState.latitude];
         } else if (deviceLocationState.latitude != -1 && deviceLocationState.longitude != -1) {
