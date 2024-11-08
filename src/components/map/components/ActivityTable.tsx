@@ -2,13 +2,14 @@
 
 import { useAppSelector, useAppStore } from "@hook/redux";
 import { BoundingBox, loadPictureRequests, selectLimit, selectOffset, selectPictureRequests, selectPictureRequestStatus } from "@lib/features/map/mapSlice";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Listbox, ListboxSection, ListboxItem } from "@nextui-org/listbox";
 import { Image } from "@nextui-org/image";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import { selectDeviceLocation } from "@lib/features/location/deviceLocationSlice";
 import { Spinner } from "@nextui-org/spinner";
+import Geometry from "ol/geom/Geometry";
 
 export default function ActivityTable({
 
@@ -19,6 +20,9 @@ export default function ActivityTable({
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: string = useAppSelector(selectPictureRequestStatus);
     const deviceLocationState: any = useAppSelector(selectDeviceLocation);
+    const listItems: Feature<Geometry>[] = useCallback((): Feature<Geometry>[] => {
+        return pictureRequestsState;
+    }, [pictureRequestsState])();
 
     function getDistanceFromLatLonInMiles(lat1: number, lon1: number, lat2: number, lon2: number) {
         const R = 3958.8; // Radius of the Earth in miles
@@ -72,7 +76,7 @@ export default function ActivityTable({
                 <Listbox 
                     variant="flat" 
                     aria-label="Listbox menu with sections"
-                    items={pictureRequestsState}
+                    items={listItems}
                 >
                     {(request: Feature) => (
                         <ListboxItem
