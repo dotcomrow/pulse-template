@@ -37,6 +37,9 @@ export const {
 } = mapLocationSlice.selectors;
 
 export const setMapLocation = (location: LocationDTO): AppThunk => async (dispatch) => {
+    if (location.latitude != -1 && location.longitude != -1) {
+        return;
+    }
     dispatch(mapLocationSlice.actions.setLocation(location));
     // lat and lon are reversed here because Google Bigquery uses lon then lat
     const bbox: BoundingBox = {
