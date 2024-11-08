@@ -20,7 +20,7 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                         deviceLocation: true,
                     };
                     store.dispatch(setDeviceLocation(initialLocation));
-                    store.dispatch(setMapLocation(initialLocation));
+                    // store.dispatch(setMapLocation(initialLocation));
                 }, (error) => {
                     initialLocation = {
                         latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
@@ -28,7 +28,7 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                         deviceLocation: false,
                     };
                     store.dispatch(setDeviceLocation(initialLocation));
-                    store.dispatch(setMapLocation(initialLocation));
+                    // store.dispatch(setMapLocation(initialLocation));
                 }, {
                     enableHighAccuracy: true,
                     timeout: 5000,
@@ -73,7 +73,7 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                                     deviceLocation: false,
                                 };
                                 store.dispatch(setDeviceLocation(initialLocation));
-                                store.dispatch(setMapLocation(initialLocation));
+                                // store.dispatch(setMapLocation(initialLocation));
                                 store.dispatch(clearNotification());
                             }
                         },
@@ -87,7 +87,7 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                                         deviceLocation: true,
                                     };
                                     store.dispatch(setDeviceLocation(initialLocation));
-                                    store.dispatch(setMapLocation(initialLocation));
+                                    // store.dispatch(setMapLocation(initialLocation));
                                 }, (error) => {
                                     initialLocation = {
                                         latitude: parseFloat(headersList.filter((item: any) => item.name == 'x-vercel-ip-latitude')[0].value),
@@ -95,7 +95,7 @@ export default function LocationOnLoad({ headersList, store }: { headersList: an
                                         deviceLocation: false,
                                     };
                                     store.dispatch(setDeviceLocation(initialLocation));
-                                    store.dispatch(setMapLocation(initialLocation));
+                                    // store.dispatch(setMapLocation(initialLocation));
                                 }, {
                                     enableHighAccuracy: true,
                                     timeout: 5000,
