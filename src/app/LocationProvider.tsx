@@ -28,7 +28,6 @@ export const LocationProvider = ({ children, headersList }: Props) => {
     useEffect(() => {
         if (deviceLocation.latitude == -1 && deviceLocation.longitude == -1) {
             if (location.latitude != -1 && location.longitude != -1) {
-                console.log("Device location not set, setting to default", location);
                 setDeviceLocation(location);
                 store.dispatch(setMapLocation(location));
             }
