@@ -368,7 +368,6 @@ export default function MapCard({
             feat.setId("device-location");
             (map.getLayers().item(1) as VectorLayer).getSource()?.addFeature(feat);
             window.addEventListener('message', centerMap);
-            map.getView().setCenter([getInitialCenter()[0], getInitialCenter()[1]]);
             return map;
         }
     }, [mounted]);
