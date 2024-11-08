@@ -8,7 +8,7 @@ import View from "ol/View";
 import Map from "ol/Map";
 import TileLayer from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
-import React, { createElement, useEffect, useMemo } from "react";
+import React, { createElement, useCallback, useEffect, useMemo } from "react";
 import { useGeographic } from "ol/proj.js";
 import "@styles/map/spinner.css"
 import { BoundingBox, loadPictureRequests } from "@lib/features/map/mapSlice";
@@ -22,7 +22,6 @@ import { useAppSelector, useAppStore, useAppDispatch } from "@hook/redux";
 import { Fill, Icon, Stroke, Style } from 'ol/style';
 import Feature, { FeatureLike } from 'ol/Feature';
 import Point from 'ol/geom/Point';
-import CircleStyle from 'ol/style/Circle';
 import DragPan from 'ol/interaction/DragPan';
 import MapRequestPopup from "@component/modals/map/MapRequestPopup";
 import GeolocationControl from "@component/map/widgets/GeolocationControl";
@@ -103,13 +102,7 @@ export default function MapCard({
         }
     };
 
-    window.addEventListener('message', (e) => {
-        if (e.data.type === 'geolocate') {
-            centerMap(null);
-        }
-    });
-
-    const centerMap = (position: { coords: { latitude: number, longitude: number } } | null) => { 
+    const centerMap = (position: { coords: { latitude: number, longitude: number } } | null) => {
         const mapSize = map?.getSize();
         if (mapSize) {
             if (position == null) {
@@ -229,6 +222,18 @@ export default function MapCard({
         }
     };
 
+    const getInitialCenter = () => {
+        console.log(initialMapLocationState);
+        console.log(deviceLocationState);
+        if (initialMapLocationState.latitude != -1 && initialMapLocationState.longitude != -1) {
+            return [initialMapLocationState.longitude, initialMapLocationState.latitude];
+        } else if (deviceLocationState.latitude != -1 && deviceLocationState.longitude != -1) {
+            return [deviceLocationState.longitude, deviceLocationState.latitude];
+        } else {
+            return [0, 0];
+        }
+    };
+
     const map = useMemo(() => {
         if (mounted) {
             const container = document.getElementById(popupContainerId);
@@ -256,9 +261,10 @@ export default function MapCard({
 
             const vectorLayer = new VectorLayer({
                 source: new VectorSource({
+                    features: pictureRequestsState,
                     loader: function (extent, resolution, projection) {
                         if (map) {
-                            map.getTargetElement().classList.add('spinner');
+                            // map.getTargetElement().classList.add('spinner');
                             // bbox coordinates are reversed here because google maps uses lat, lon and openlayers uses lon, lat
                             const bbox: BoundingBox = {
                                 min_latitude: extent[0],
@@ -293,6 +299,7 @@ export default function MapCard({
                 ],
                 // the map view will initially show the whole world
                 view: new View({
+                    center: getInitialCenter(),
                     zoom: 17,
                     maxZoom: 18,
                     minZoom: 16,
@@ -328,6 +335,9 @@ export default function MapCard({
                     map.getTargetElement().style.cursor = '';
                 }
             });
+            map.on('movestart', function () {
+                map.getTargetElement().classList.add('spinner');
+            });
             map.on('moveend', function () {
                 const mapSize = map?.getSize();
                 const extent = map?.getView().calculateExtent(mapSize);
@@ -337,6 +347,7 @@ export default function MapCard({
                     latitude: centerLat,
                     longitude: centerLon,
                 }));
+                map.getTargetElement().classList.remove('spinner');
             });
             map.on('click', (e) => {
                 const feature = map.forEachFeatureAtPixel(e.pixel, function (feature) {
@@ -350,48 +361,21 @@ export default function MapCard({
                     }
                 }
             });
-            if (initialMapLocationState.latitude != -1 && initialMapLocationState.longitude != -1) {
-                map.getView().setCenter([initialMapLocationState.longitude, initialMapLocationState.latitude]);
-            } else if (deviceLocationState.latitude != -1 && deviceLocationState.longitude != -1) {
-                map.getView().setCenter([deviceLocationState.longitude, deviceLocationState.latitude]);
-            } else {
-                map.getView().setCenter([-1,-1]);
-            }
+            var feat = new Feature(new Point([deviceLocationState.longitude, deviceLocationState.latitude]));
+            feat.setStyle(new Style({
+                image: new Icon({
+                    opacity: 1,
+                    src: "/assets/images/icons/map-pin_filled.svg",
+                    scale: 1.3
+                }),
+            }));
+            feat.setId("device-location");
+            (map.getLayers().item(1) as VectorLayer).getSource()?.addFeature(feat);
             return map;
         }
     }, [mounted]);
 
     useEffect(() => {
-        if (pictureRequestStatus === "complete") {
-            const vectorLayer = map?.getLayers().getArray()[1] as VectorLayer;
-            if (vectorLayer) {
-                if (vectorLayer.getSource()?.getFeatureById("device-location")) {
-                    vectorLayer.getSource()?.getFeatureById("device-location").getGeometry().setCoordinates([deviceLocationState.longitude, deviceLocationState.latitude]);
-                    vectorLayer?.setVisible(false);
-                    vectorLayer?.setVisible(true);
-                } else {
-                    var feat = new Feature(new Point([deviceLocationState.longitude, deviceLocationState.latitude]));
-                    feat.setStyle(new Style({
-                        image: new Icon({
-                            opacity: 1,
-                            src: "/assets/images/icons/map-pin_filled.svg",
-                            scale: 1.3
-                        }),
-                    }));
-                    feat.setId("device-location");
-                    vectorLayer.getSource()?.addFeature(feat);
-                }
-                vectorLayer.getSource()?.addFeatures(pictureRequestsState);
-                map?.getTargetElement().classList.remove('spinner');
-            }
-        }
-    }, [pictureRequestsState]);
-
-    useEffect(() => {
-        const center = map?.getView()?.getCenter();
-        if (center && center[0] == -1 && center[1] == -1) {
-            centerMap({ coords: { latitude: deviceLocationState.latitude, longitude: deviceLocationState.longitude } });
-        }
         for (var layerIndex in map?.getLayers().getArray()) {
             const index = Number(layerIndex);
             const layer = map?.getLayers().getArray()[index] as VectorLayer;
@@ -419,6 +403,12 @@ export default function MapCard({
     useEffect(() => {
         useGeographic();
         setMounted(true);
+
+        window.addEventListener('message', (e) => {
+            if (e.data.type === 'geolocate') {
+                centerMap(null);
+            }
+        });
     }, []);
 
     return (

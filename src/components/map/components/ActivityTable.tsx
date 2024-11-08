@@ -8,6 +8,7 @@ import { Image } from "@nextui-org/image";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import { selectDeviceLocation } from "@lib/features/location/deviceLocationSlice";
+import { Spinner } from "@nextui-org/spinner";
 
 export default function ActivityTable({
 
@@ -15,9 +16,8 @@ export default function ActivityTable({
 
     }) {
 
-    
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
-    const pictureRequestStatus: any = useAppSelector(selectPictureRequestStatus);
+    const pictureRequestStatus: string = useAppSelector(selectPictureRequestStatus);
     const deviceLocationState: any = useAppSelector(selectDeviceLocation);
     const limitSelect: number = useAppSelector(selectLimit);
     const offsetSelect: number = useAppSelector(selectOffset);
@@ -67,41 +67,50 @@ export default function ActivityTable({
     }
 
     return (
-        <ListboxWrapper>
-            <Listbox variant="flat" aria-label="Listbox menu with sections">
-                <ListboxSection>
-                    {pictureRequestsState.map((request: Feature) => (
-                        <ListboxItem
-                            key={request.getId() ?? "0"}
-                            title={request.getProperties().request_title}
-                            description={requestDescription(request)}
-                            textValue={request.getProperties().request_title}
-                            startContent={
-                                <>
-                                    <div className="lg:hidden max-lg:flex">
-                                        <Image
-                                            src="/assets/images/icons/camera.svg"
-                                            alt="Camera Icon"
-                                            width={50}
-                                            height={50}
-                                        />
-                                    </div>
-                                    <div className="max-lg:hidden lg:flex">
-                                        <Image
-                                            src="/assets/images/icons/camera.svg"
-                                            alt="Camera Icon"
-                                            width={25}
-                                            height={25}
-                                        />
-                                    </div>
-                                </>
-                            }
-                        >
-                            {request.getProperties().request_title}
-                        </ListboxItem>
-                    ))}
-                </ListboxSection>
-            </Listbox>
-        </ListboxWrapper>
+        pictureRequestStatus == "loading" ? (
+            <div className="w-full flex justify-center items-center">
+                <Spinner
+                    size="lg"
+                    color="primary"
+                />
+            </div>
+        ) : (
+            <ListboxWrapper>
+                <Listbox variant="flat" aria-label="Listbox menu with sections">
+                    <ListboxSection>
+                        {pictureRequestsState.map((request: Feature) => (
+                            <ListboxItem
+                                key={request.getId() ?? "0"}
+                                title={request.getProperties().request_title}
+                                description={requestDescription(request)}
+                                textValue={request.getProperties().request_title}
+                                startContent={
+                                    <>
+                                        <div className="lg:hidden max-lg:flex">
+                                            <Image
+                                                src="/assets/images/icons/camera.svg"
+                                                alt="Camera Icon"
+                                                width={50}
+                                                height={50}
+                                            />
+                                        </div>
+                                        <div className="max-lg:hidden lg:flex">
+                                            <Image
+                                                src="/assets/images/icons/camera.svg"
+                                                alt="Camera Icon"
+                                                width={25}
+                                                height={25}
+                                            />
+                                        </div>
+                                    </>
+                                }
+                            >
+                                {request.getProperties().request_title}
+                            </ListboxItem>
+                        ))}
+                    </ListboxSection>
+                </Listbox>
+            </ListboxWrapper>
+        )
     );
 }
