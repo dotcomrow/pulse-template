@@ -168,8 +168,11 @@ export default function MapCard({
         });
 
         const popoverContent = <>
-            <div id={displayLocation} className="ml-20">
-                <Spinner size="md" />
+            <div id={displayLocation}>
+                <Spinner 
+                    size="md"
+                    className="ml-20"
+                 />
             </div>
         </>
 
