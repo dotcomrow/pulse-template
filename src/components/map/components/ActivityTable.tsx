@@ -36,8 +36,6 @@ export default function ActivityTable({
                 changed = true;
             }
         });
-        console.log(items);
-        console.log(changed);
         if (changed) {
             setListItems(items);
         }
