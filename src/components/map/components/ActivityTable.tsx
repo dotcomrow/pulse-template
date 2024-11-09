@@ -2,7 +2,7 @@
 
 import { useAppSelector } from "@hook/redux";
 import { selectPictureRequests, selectPictureRequestStatus } from "@lib/features/map/mapSlice";
-import React from "react";
+import React, { useMemo } from "react";
 import { Listbox, ListboxItem } from "@nextui-org/listbox";
 import { Image } from "@nextui-org/image";
 import Feature from "ol/Feature";
@@ -18,7 +18,40 @@ export default function ActivityTable({
 
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: string = useAppSelector(selectPictureRequestStatus);
-    const deviceLocationState: any = useAppSelector(selectDeviceLocation);    
+    const deviceLocationState: any = useAppSelector(selectDeviceLocation);   
+    const items: any = [];
+    
+    const getDistance = (item: Feature) => {
+        return (
+            <>
+                {getDistanceFromLatLonInMiles(
+                    deviceLocationState.latitude,
+                    deviceLocationState.longitude,
+                    (item.getGeometry() as Point)?.getCoordinates()[1],
+                    (item.getGeometry() as Point)?.getCoordinates()[0]
+                ).toFixed(4)}
+            </>
+        );
+    }
+    
+    const listItems = useMemo(() => {
+        return pictureRequestsState.map((item: Feature) => ({
+            id: item.getId(),
+            request_title: item.getProperties().request_title,
+            request_description: item.getProperties().request_description,
+            capture_timestamp: item.getProperties().capture_timestamp,
+            bid_type: item.getProperties().bid_type,
+            distance: getDistance(item)
+        }));
+    }, [pictureRequestStatus]);
+
+    const listBoxItems = useMemo(() => {
+        for (var item in listItems) {
+            if (items.filter((i: any) => i.id == listItems[item].id).length == 0) {
+                items.push(listItems[item]);
+            }
+        }
+    }, [listItems]);
 
     function getDistanceFromLatLonInMiles(lat1: number, lon1: number, lat2: number, lon2: number) {
         const R = 3958.8; // Radius of the Earth in miles
@@ -42,19 +75,6 @@ export default function ActivityTable({
         </div>
     );
 
-    const getDistance = (item: Feature) => {
-        return (
-            <>
-                {getDistanceFromLatLonInMiles(
-                    deviceLocationState.latitude,
-                    deviceLocationState.longitude,
-                    (item.getGeometry() as Point)?.getCoordinates()[1],
-                    (item.getGeometry() as Point)?.getCoordinates()[0]
-                ).toFixed(4)}
-            </>
-        );
-    }
-
     return (
         pictureRequestStatus == "loading" ? (
             <div className="w-full flex justify-center items-center">
@@ -68,21 +88,21 @@ export default function ActivityTable({
                 <Listbox 
                     variant="flat" 
                     aria-label="Listbox menu with sections"
-                    items={pictureRequestsState}
+                    items={items}
                 >
-                    {(item: Feature) => (
+                    {(item: any) => (
                         <ListboxItem
-                            key={item.getId() ?? "0"}
-                            title={item.getProperties().request_title}
+                            key={item.id}
+                            title={item.request_title}
                             description={
                                 <div className="w-full">
-                                    <h3>{item.getProperties().request_description}</h3>
-                                    <p className="w-full">Request Date/Time: {new Date(item.getProperties().capture_timestamp).toLocaleDateString(navigator.language) + " " + new Date(item.getProperties().capture_timestamp).toLocaleTimeString(navigator.language)}</p>
-                                    <p className="w-full">Request Bid: {item.getProperties().bid_type}</p>
-                                    <p className="w-full">Distance: {getDistance(item)} miles</p>
+                                    <h3>{item.request_description}</h3>
+                                    <p className="w-full">Request Date/Time: {new Date(item.capture_timestamp).toLocaleDateString(navigator.language) + " " + new Date(item.capture_timestamp).toLocaleTimeString(navigator.language)}</p>
+                                    <p className="w-full">Request Bid: {item.bid_type}</p>
+                                    <p className="w-full">Distance: {item.distance} miles</p>
                                 </div>
                             }
-                            textValue={item.getProperties().request_title}
+                            textValue={item.request_title}
                             startContent={
                                 <>
                                     <div className="lg:hidden max-lg:flex">
@@ -104,7 +124,7 @@ export default function ActivityTable({
                                 </>
                             }
                         >
-                            {item.getProperties().request_title}
+                            {item.request_title}
                         </ListboxItem>
                     )}
                 </Listbox>
