@@ -31,7 +31,7 @@ import { selectMapLocation, updateMapLocation } from "@lib/features/location/map
 import { Popover, PopoverContent, Spinner } from "@nextui-org/react";
 import { createRoot } from "react-dom/client";
 import { getClosestAddress } from "@services/map/getClosestAddress";
-import { selectDeviceLocation } from "@lib/features/location/deviceLocationSlice";
+import { LocationDTO, selectDeviceLocation } from "@lib/features/location/deviceLocationSlice";
 import Constants from "@utils/constants";
 import { useLocationLoaded } from "@app/LocationProvider";
 
@@ -226,6 +226,7 @@ export default function MapCard({
         const mapSize = map?.getSize();
         if (mapSize) {
             if (arg instanceof Event) {
+                console.log("centering on device location", deviceLocationState);
                 map?.getView().centerOn([deviceLocationState.longitude, deviceLocationState.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
             } else {
                 map?.getView().centerOn([arg.coords.longitude, arg.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
@@ -371,7 +372,6 @@ export default function MapCard({
             }));
             feat.setId("device-location");
             (map.getLayers().item(1) as VectorLayer).getSource()?.addFeature(feat);
-            window.addEventListener('message', centerMap);
             return map;
         }
     }, [mounted]);
@@ -400,6 +400,7 @@ export default function MapCard({
 
     useEffect(() => {
         map?.getView().setCenter(getInitialCenter());
+        window.addEventListener('message', centerMap);
     }, [useLocationLoadedContext?.locationLoaded]);
 
     useEffect(() => {
