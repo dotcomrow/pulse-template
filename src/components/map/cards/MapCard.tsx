@@ -399,6 +399,7 @@ export default function MapCard({
     }, [deviceLocationState]);
 
     useEffect(() => {
+        console.log("here")
         map?.getView().setCenter(getInitialCenter());
     }, [useLocationLoadedContext]);
 
