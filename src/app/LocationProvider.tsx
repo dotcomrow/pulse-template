@@ -6,7 +6,7 @@ import AppOnloadTasks from "@hook/AppOnloadTasks";
 import { useAppSelector, useAppStore, useAppDispatch } from "@hook/redux";
 import { selectDeviceLocation } from "@lib/features/location/deviceLocationSlice";
 import React from "react";
-import { setMapLocation } from "@lib/features/location/mapLocationSlice";
+import { LocationDTO, setMapLocation } from "@lib/features/location/mapLocationSlice";
 
 interface Props {
     readonly headersList: any;
@@ -29,7 +29,12 @@ export const LocationProvider = ({ children, headersList }: Props) => {
         if (deviceLocation.latitude == -1 && deviceLocation.longitude == -1) {
             if (location.latitude != -1 && location.longitude != -1) {
                 setDeviceLocation(location);
-                store.dispatch(setMapLocation(location));
+                var loc: LocationDTO = {
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                    zoom: 17
+                }
+                store.dispatch(setMapLocation(loc));
             }
         }
     }, [location]);

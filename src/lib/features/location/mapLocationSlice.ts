@@ -8,11 +8,13 @@ import Constants from "@utils/constants";
 export interface LocationDTO {
     latitude: number;
     longitude: number;
+    zoom: number;
 }
 
 const initialState: LocationDTO = {
     latitude: -1,
     longitude: -1,
+    zoom: 17
 };
 
 export const mapLocationSlice = createAppSlice({
@@ -24,6 +26,7 @@ export const mapLocationSlice = createAppSlice({
         setLocation: create.reducer((state, action: PayloadAction<LocationDTO>) => {
             state.latitude = action.payload.latitude;
             state.longitude = action.payload.longitude;
+            state.zoom = action.payload.zoom;
         }),
     }),
     selectors: {

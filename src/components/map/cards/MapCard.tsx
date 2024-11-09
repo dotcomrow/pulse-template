@@ -14,7 +14,6 @@ import "@styles/map/spinner.css"
 import { BoundingBox, loadPictureRequests } from "@lib/features/map/mapSlice";
 import {
     selectPictureRequests,
-    selectPictureRequestStatus,
     selectLimit,
     selectOffset
 } from "@lib/features/map/mapSlice";
@@ -298,7 +297,7 @@ export default function MapCard({
                 // the map view will initially show the whole world
                 view: new View({
                     center: getInitialCenter(),
-                    zoom: 17,
+                    zoom: initialMapLocationState.zoom,
                     maxZoom: 18,
                     minZoom: 16,
                     constrainResolution: true,
@@ -344,6 +343,7 @@ export default function MapCard({
                 store.dispatch(updateMapLocation({
                     latitude: centerLat,
                     longitude: centerLon,
+                    zoom: map?.getView().getZoom() as number
                 }));
                 map.getTargetElement().classList.remove('spinner');
             });
