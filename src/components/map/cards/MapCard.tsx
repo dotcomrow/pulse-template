@@ -170,10 +170,10 @@ export default function MapCard({
 
         const popoverContent = <>
             <div id={displayLocation}>
-                <Spinner 
+                <Spinner
                     size="md"
                     className="ml-20"
-                 />
+                />
             </div>
         </>
 
@@ -224,7 +224,6 @@ export default function MapCard({
 
     const centerMap = (arg: any) => {
         const mapSize = map?.getSize();
-        console.log("centerMap", arg);
         if (mapSize) {
             if (arg instanceof Event) {
                 if (window.curLocation != undefined) {
@@ -403,8 +402,15 @@ export default function MapCard({
 
     useEffect(() => {
         map?.getView().setCenter(getInitialCenter());
-        window.addEventListener('message', centerMap);
     }, [useLocationLoadedContext?.locationLoaded]);
+
+    useEffect(() => {
+        window.addEventListener('message', centerMap);
+
+        return () => {
+            window.removeEventListener('message', centerMap);
+        }
+    }, [map]);
 
     useEffect(() => {
         useGeographic();
