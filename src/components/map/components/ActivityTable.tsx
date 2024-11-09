@@ -79,7 +79,7 @@ export default function ActivityTable({
                                     <h3>{item.getProperties().request_description}</h3>
                                     <p className="w-full">Request Date/Time: {new Date(item.getProperties().capture_timestamp).toLocaleDateString(navigator.language) + " " + new Date(item.getProperties().capture_timestamp).toLocaleTimeString(navigator.language)}</p>
                                     <p className="w-full">Request Bid: {item.getProperties().bid_type}</p>
-                                    <p className="w-full">Distance: {getDistance(item.getProperties().distance)} miles</p>
+                                    <p className="w-full">Distance: {getDistance(item)} miles</p>
                                 </div>
                             }
                             textValue={item.getProperties().request_title}
