@@ -33,6 +33,7 @@ import { createRoot } from "react-dom/client";
 import { getClosestAddress } from "@services/map/getClosestAddress";
 import { selectDeviceLocation } from "@lib/features/location/deviceLocationSlice";
 import Constants from "@utils/constants";
+import { useLocationLoaded } from "@app/LocationProvider";
 
 export default function MapCard({
     token,
@@ -43,6 +44,7 @@ export default function MapCard({
 }) {
 
     const store = useAppStore();
+    const useLocationLoadedContext = useLocationLoaded();
     const [mounted, setMounted] = React.useState(false);
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const initialMapLocationState: any = useAppSelector(selectMapLocation);
@@ -395,6 +397,10 @@ export default function MapCard({
             }
         }
     }, [deviceLocationState]);
+
+    useEffect(() => {
+        map?.getView().setCenter(getInitialCenter());
+    }, [useLocationLoadedContext]);
 
     useEffect(() => {
         useGeographic();
