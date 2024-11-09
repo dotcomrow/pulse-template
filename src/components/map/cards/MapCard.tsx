@@ -224,6 +224,7 @@ export default function MapCard({
 
     const centerMap = (arg: any) => {
         const mapSize = map?.getSize();
+        console.log("centerMap", arg);
         if (mapSize) {
             if (arg instanceof Event) {
                 if (window.curLocation != undefined) {
