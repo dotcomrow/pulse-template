@@ -389,13 +389,13 @@ export default function MapCard({
     }, [pictureRequestsState]);
 
     useEffect(() => {
-        if (map) {
-            if ((map.getLayers().item(1) as VectorLayer).getSource()) {
-                (map.getLayers().item(1) as VectorLayer).getSource()?.getFeatureById("device-location").getGeometry().setCoordinates([deviceLocationState.longitude, deviceLocationState.latitude]);
-                (map.getLayers().item(1) as VectorLayer).setVisible(false);
-                (map.getLayers().item(1) as VectorLayer).setVisible(true);
-            }
-        }
+        // if (map) {
+        //     if ((map.getLayers().item(1) as VectorLayer).getSource()) {
+        //         (map.getLayers().item(1) as VectorLayer).getSource()?.getFeatureById("device-location").getGeometry().setCoordinates([deviceLocationState.longitude, deviceLocationState.latitude]);
+        //         (map.getLayers().item(1) as VectorLayer).setVisible(false);
+        //         (map.getLayers().item(1) as VectorLayer).setVisible(true);
+        //     }
+        // }
     }, [deviceLocationState]);
 
     useEffect(() => {
