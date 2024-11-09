@@ -31,7 +31,7 @@ import { selectMapLocation, updateMapLocation } from "@lib/features/location/map
 import { Popover, PopoverContent, Spinner } from "@nextui-org/react";
 import { createRoot } from "react-dom/client";
 import { getClosestAddress } from "@services/map/getClosestAddress";
-import { LocationDTO, selectDeviceLocation } from "@lib/features/location/deviceLocationSlice";
+import { selectDeviceLocation } from "@lib/features/location/deviceLocationSlice";
 import Constants from "@utils/constants";
 import { useLocationLoaded } from "@app/LocationProvider";
 
@@ -227,7 +227,6 @@ export default function MapCard({
         if (mapSize) {
             if (arg instanceof Event) {
                 if (window.curLocation != undefined) {
-                    console.log("centering on device location", window.curLocation);
                     map?.getView().centerOn([window.curLocation.longitude, window.curLocation.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
                 }
             } else {
