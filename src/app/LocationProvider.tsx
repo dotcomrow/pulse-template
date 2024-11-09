@@ -55,8 +55,10 @@ export const LocationProvider = ({ children, headersList }: Props) => {
                     longitude: location.longitude,
                     zoom: 17
                 };
-                store.dispatch(setMapLocation(loc));
-                setLocationLoaded({ type: 'setLoaded' });
+                if (locationLoaded.locationLoaded == false) {
+                    store.dispatch(setMapLocation(loc));
+                    setLocationLoaded({ type: 'setLoaded' });
+                }
             }
         }
     }, [location]);
