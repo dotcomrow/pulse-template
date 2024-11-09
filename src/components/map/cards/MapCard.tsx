@@ -226,8 +226,10 @@ export default function MapCard({
         const mapSize = map?.getSize();
         if (mapSize) {
             if (arg instanceof Event) {
-                console.log("centering on device location", deviceLocationState);
-                map?.getView().centerOn([deviceLocationState.longitude, deviceLocationState.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+                if (window.curLocation != undefined) {
+                    console.log("centering on device location", window.curLocation);
+                    map?.getView().centerOn([window.curLocation.longitude, window.curLocation.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+                }
             } else {
                 map?.getView().centerOn([arg.coords.longitude, arg.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
             }
@@ -394,6 +396,7 @@ export default function MapCard({
                 (map.getLayers().item(1) as VectorLayer).getSource()?.getFeatureById("device-location").getGeometry().setCoordinates([deviceLocationState.longitude, deviceLocationState.latitude]);
                 (map.getLayers().item(1) as VectorLayer).setVisible(false);
                 (map.getLayers().item(1) as VectorLayer).setVisible(true);
+                window.curLocation = deviceLocationState;
             }
         }
     }, [deviceLocationState]);
