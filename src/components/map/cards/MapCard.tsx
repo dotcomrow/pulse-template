@@ -401,7 +401,7 @@ export default function MapCard({
     useEffect(() => {
         console.log("here")
         map?.getView().setCenter(getInitialCenter());
-    }, [useLocationLoadedContext]);
+    }, [useLocationLoadedContext?.locationLoaded]);
 
     useEffect(() => {
         useGeographic();
