@@ -38,11 +38,16 @@ const MapConstants = {
   longitudeOffsetFeatureWindow: 0.0005,  
 }
 
+const MapRequestConstants = {
+  itemsPerPage: 6,
+}
+
 export default {
   navLinks,
   profileNavLinks,
   securePaths,
   mobileLoggedInLinks,
   mobileLoggedOutLinks,
-  MapConstants
+  MapConstants,
+  MapRequestConstants
 };

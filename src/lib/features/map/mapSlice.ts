@@ -6,6 +6,7 @@ import { Fill, Icon, Stroke, Style } from 'ol/style';
 import WKT from 'ol/format/WKT';
 import Feature from 'ol/Feature';
 import Geometry from 'ol/geom/Geometry';
+import Constants from "@utils/constants";
 
 const wktRead = new WKT();
 
@@ -19,7 +20,7 @@ export interface MapSliceState {
 const initialState: MapSliceState = {
     pictureRequests: [],
     pictureRequestStatus: "idle",
-    limit: 10,
+    limit: Constants.MapRequestConstants.itemsPerPage,
     offset: 0
 };
 
