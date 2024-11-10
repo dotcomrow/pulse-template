@@ -10,7 +10,7 @@ variable "domain" {
 }
 
 variable "cloudflare_token" {
-  description = "cloudflare token"
+  description = "Cloudflare token"
   type        = string
   nullable    = false
 }
