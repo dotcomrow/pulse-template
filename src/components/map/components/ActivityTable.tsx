@@ -2,7 +2,7 @@
 
 import { useAppSelector } from "@hook/redux";
 import { selectPictureRequests, selectPictureRequestStatus } from "@lib/features/map/mapSlice";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { Listbox, ListboxItem } from "@nextui-org/listbox";
 import { Image } from "@nextui-org/image";
 import Feature from "ol/Feature";
@@ -19,6 +19,9 @@ export default function ActivityTable({
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: string = useAppSelector(selectPictureRequestStatus);
     const deviceLocationState: any = useAppSelector(selectDeviceLocation);   
+
+    let requests: { [key: string]: Feature } = {};
+    let locationRequests: { [key: string]: JSX.Element } = {};
     
     const getDistance = (item: Feature) => {
         return (
@@ -49,6 +52,22 @@ export default function ActivityTable({
         return deg * (Math.PI / 180);
     }
 
+    useEffect(() => {
+        pictureRequestsState.map((item: Feature) => {
+            const itemId = item.getId();
+            if (itemId && requests[itemId] == null) {
+                requests[itemId] = item;
+                locationRequests[itemId] = getDistance(item);
+            }
+        });
+    }, [pictureRequestsState]);
+
+    useEffect(() => {
+        Object.values(locationRequests).map((item: JSX.Element) => {
+            console.log(item);
+        });
+    }, [deviceLocationState]);
+
     const ListboxWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
         <div className="w-full">
             {children}
@@ -68,7 +87,7 @@ export default function ActivityTable({
                 <Listbox 
                     variant="flat" 
                     aria-label="Listbox menu with sections"
-                    items={pictureRequestsState}
+                    items={Object.values(requests)}
                 >
                     {(item: Feature) => (
                         <ListboxItem
@@ -79,7 +98,7 @@ export default function ActivityTable({
                                     <h3>{item.getProperties().request_description}</h3>
                                     <p className="w-full">Request Date/Time: {new Date(item.getProperties().capture_timestamp).toLocaleDateString(navigator.language) + " " + new Date(item.getProperties().capture_timestamp).toLocaleTimeString(navigator.language)}</p>
                                     <p className="w-full">Request Bid: {item.getProperties().bid_type}</p>
-                                    <p className="w-full">Distance: {getDistance(item)} miles</p>
+                                    <p className="w-full" id={"distance-" + item.getId()}>Distance: {locationRequests[item.getId() ?? 'default-key']} miles</p>
                                 </div>
                             }
                             textValue={item.getProperties().request_title}

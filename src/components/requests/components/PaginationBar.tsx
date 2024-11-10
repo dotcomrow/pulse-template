@@ -13,7 +13,6 @@ export default function PaginationBar() {
                 page={page}
                 onChange={(page) => setPage(page)}
                 total={100}
-                // limit={10}
                 size="lg"
             />
         </div>
