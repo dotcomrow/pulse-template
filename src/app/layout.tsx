@@ -56,6 +56,8 @@ export default async function RootLayout({
   ];
   return (
     <html lang="en" className="h-svh w-full max-lg:overflow-hidden max-lg:fixed">
+      <head>
+      </head>
       <body className="h-svh w-full">
         <Providers token={token} headersList={locationHeaders}>
           <div className="max-lg:hidden">

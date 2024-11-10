@@ -4,12 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "npm run compile && wrangler pages dev",
+    "start": "clear && npm run deploy && wrangler pages dev",
     "build": "next build",
     "lint": "next lint",
-    "pwa": "pwa-asset-generator ./public/manifest.json ./public/icons",
-    "deploy": "export NODE_OPTIONS=--max_old_space_size=16384 && npm install && npx @cloudflare/next-on-pages@latest",
-    "compile": "clear && export NODE_OPTIONS=--max_old_space_size=16384 && npm install && npx @cloudflare/next-on-pages@latest"
+    "deploy": "export NODE_OPTIONS=--max_old_space_size=16384 && npm install && npx @cloudflare/next-on-pages@latest"
   },
   "dependencies": {
     "@next/third-parties": "^15.0.1-canary.3",
@@ -57,8 +55,7 @@
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",
     "ts-loader": "^9.5.1",
-    "typescript": "^5.6.3",
-    "pwa-asset-generator": "^6.4.0"
+    "typescript": "^5.6.3"
   },
   "license": "https://themeforest.net/licenses/standard"
 }
