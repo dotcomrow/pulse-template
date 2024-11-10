@@ -8,6 +8,7 @@
     "build": "next build",
     "lint": "next lint",
     "pwa": "pwa-asset-generator ./public/manifest.json ./public/icons",
+    "deploy": "export NODE_OPTIONS=--max_old_space_size=16384 && npm install && npx @cloudflare/next-on-pages@latest",
     "compile": "clear && export NODE_OPTIONS=--max_old_space_size=16384 && npm install && npx @cloudflare/next-on-pages@latest"
   },
   "dependencies": {
