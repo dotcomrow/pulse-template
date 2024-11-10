@@ -80,14 +80,14 @@ export default function ActivityTable({
                                     <h3>{item.getProperties().request_description}</h3>
                                     <p className="w-full">Request Date/Time: {new Date(item.getProperties().capture_timestamp).toLocaleDateString(navigator.language) + " " + new Date(item.getProperties().capture_timestamp).toLocaleTimeString(navigator.language)}</p>
                                     <p className="w-full">Request Bid: {item.getProperties().bid_type}</p>
-                                    <p className="w-full">Distance: <span id={"distance-" + item.getId()}></span> miles</p>
+                                    <p className="w-full">Distance: <span id={"distance-" + item.getId()}>{getDistance(item)}</span> miles</p>
                                 </div>
                             }
                             textValue={item.getProperties().request_title}
                             startContent={
                                 <>
-                                    <div className="icon-background-small max-lg:hidden lg:flex" />
-                                    <div className="icon-background-large lg:hidden max-lg:flex" />
+                                    <div className="icon-background-large max-lg:hidden lg:flex" />
+                                    <div className="icon-background-small lg:hidden max-lg:flex" />
                                 </>
                             }
                         >
