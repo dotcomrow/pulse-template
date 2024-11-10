@@ -2,7 +2,7 @@
 
 import { useAppSelector } from "@hook/redux";
 import { selectPictureRequests, selectPictureRequestStatus } from "@lib/features/map/mapSlice";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Listbox, ListboxItem } from "@nextui-org/listbox";
 import { Image } from "@nextui-org/image";
 import Feature from "ol/Feature";
@@ -49,6 +49,27 @@ export default function ActivityTable({
         return deg * (Math.PI / 180);
     }
 
+    const cameraIcon = useMemo(() => (
+        <>
+            <div className="lg:hidden max-lg:flex">
+                <Image
+                    src="/assets/images/icons/camera.svg"
+                    alt="Camera Icon"
+                    width={50}
+                    height={50}
+                />
+            </div>
+            <div className="max-lg:hidden lg:flex">
+                <Image
+                    src="/assets/images/icons/camera.svg"
+                    alt="Camera Icon"
+                    width={25}
+                    height={25}
+                />
+            </div>
+        </>
+    ), []);
+
     const ListboxWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
         <div className="w-full">
             {children}
@@ -83,26 +104,7 @@ export default function ActivityTable({
                                 </div>
                             }
                             textValue={item.getProperties().request_title}
-                            startContent={
-                                <>
-                                    <div className="lg:hidden max-lg:flex">
-                                        <Image
-                                            src="/assets/images/icons/camera.svg"
-                                            alt="Camera Icon"
-                                            width={50}
-                                            height={50}
-                                        />
-                                    </div>
-                                    <div className="max-lg:hidden lg:flex">
-                                        <Image
-                                            src="/assets/images/icons/camera.svg"
-                                            alt="Camera Icon"
-                                            width={25}
-                                            height={25}
-                                        />
-                                    </div>
-                                </>
-                            }
+                            startContent={cameraIcon}
                         >
                             {item.getProperties().request_title}
                         </ListboxItem>
