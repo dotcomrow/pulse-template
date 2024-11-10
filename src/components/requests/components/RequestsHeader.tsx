@@ -1,10 +1,18 @@
 import { Checkbox } from "@nextui-org/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
 export default function RequestsHeader() {
 
     const [trackLocation, setTrackLocation] = useState(true);
+
+    useEffect(() => {
+        if (trackLocation) {
+            // track location
+        } else {
+            // stop tracking location
+        }
+    }, [trackLocation]);
 
     return (
         <>

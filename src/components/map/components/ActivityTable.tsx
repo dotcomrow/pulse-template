@@ -86,8 +86,8 @@ export default function ActivityTable({
                             textValue={item.getProperties().request_title}
                             startContent={
                                 <>
-                                    <div className="icon-background-large max-lg:hidden lg:flex" />
-                                    <div className="icon-background-small lg:hidden max-lg:flex" />
+                                    <div className="icon-background-small max-lg:hidden lg:flex" />
+                                    <div className="icon-background-large lg:hidden max-lg:flex" />
                                 </>
                             }
                         >
