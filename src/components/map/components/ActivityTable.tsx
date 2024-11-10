@@ -19,6 +19,7 @@ export default function ActivityTable({
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
     const pictureRequestStatus: string = useAppSelector(selectPictureRequestStatus);
     const deviceLocationState: any = useAppSelector(selectDeviceLocation);   
+    const [requestList, setRequestList] = React.useState<Feature[]>([]);
 
     let requests: { [key: string]: Feature } = {};
     let locationRequests: { [key: string]: JSX.Element } = {};
@@ -60,11 +61,23 @@ export default function ActivityTable({
                 locationRequests[itemId] = getDistance(item);
             }
         });
+        setRequestList(Object.values(requests));
+    }, []);
+
+    useEffect(() => {
+        pictureRequestsState.map((item: Feature) => {
+            const itemId = item.getId();
+            if (itemId && requests[itemId] == null) {
+                requests[itemId] = item;
+                locationRequests[itemId] = getDistance(item);
+            }
+        });
+        setRequestList(Object.values(requests));
     }, [pictureRequestsState]);
 
     useEffect(() => {
         Object.values(locationRequests).map((item: JSX.Element) => {
-            console.log(item);
+            // console.log(item);
         });
     }, [deviceLocationState]);
 
@@ -87,7 +100,7 @@ export default function ActivityTable({
                 <Listbox 
                     variant="flat" 
                     aria-label="Listbox menu with sections"
-                    items={Object.values(requests)}
+                    items={requestList}
                 >
                     {(item: Feature) => (
                         <ListboxItem
