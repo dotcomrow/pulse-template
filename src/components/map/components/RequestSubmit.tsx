@@ -12,7 +12,7 @@ import { Button, ButtonGroup } from "@nextui-org/button";
 import savePictureRequests from "@services/map/SavePictureRequest";
 import { Spinner } from "@nextui-org/spinner";
 
-export default function RequestSubmit({ map, token, popupClose, mapTarget }: { map: any, token: string, popupClose: any, mapTarget: string }) {
+export default function RequestSubmit({ vectorLayer, token, popupClose, mapTarget }: { vectorLayer: any, token: string, popupClose: any, mapTarget: string }) {
 
     const [compassDirectionEnabled, setCompassDirectionEnabled] = useState(true);
     const [direction, setDirection] = useState(0);
@@ -93,8 +93,7 @@ export default function RequestSubmit({ map, token, popupClose, mapTarget }: { m
             description: requestDescription,
             date: parseDate.getTime(),
             bidType: bidType,
-            //vectorLayer?.getSource()?.getFeatureById("request")?.getGeometry()?.getCoordinates()
-            geom: JSON.stringify(map.getLayers()[1].getSource()?.getFeatureById("request")?.getGeometry()?.getCoordinates()),
+            geom: JSON.stringify(vectorLayer?.getSource()?.getFeatureById("request")?.getGeometry()?.getCoordinates()),
             direction: direction
         };
 

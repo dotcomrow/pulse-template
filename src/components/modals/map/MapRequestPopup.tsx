@@ -8,12 +8,12 @@ import { Image } from "@nextui-org/image";
 
 export default function MapRequestPopup({
     closePopup,
-    map,
+    vectorLayer,
     token,
     mapTarget
 }: {
     closePopup: any,
-    map: any,
+    vectorLayer: any,
     token: string,
     mapTarget: string
 }) {    
@@ -37,7 +37,7 @@ export default function MapRequestPopup({
             <CardBody>
                 <div id="popup-content">
                     <RequestSubmit 
-                        map={map}
+                        vectorLayer={vectorLayer}
                         token={token} 
                         popupClose={closePopup} 
                         mapTarget={mapTarget}

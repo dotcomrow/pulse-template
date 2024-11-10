@@ -443,7 +443,7 @@ export default function MapCard({
                         map?.getOverlayById("requestSubmit")?.setPosition(undefined);
                         clearRequest();
                     }}
-                    map={map}
+                    vectorLayer={map?.getLayers().getArray()[1] as VectorLayer}
                     token={token}
                     mapTarget={mapTarget}
                 />
