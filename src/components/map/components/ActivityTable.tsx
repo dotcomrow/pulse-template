@@ -72,7 +72,7 @@ export default function ActivityTable({
                 locationRequests[itemId] = getDistance(item);
             }
         });
-        setRequestList(Object.values(requests));
+        // setRequestList(Object.values(requests));
     }, [pictureRequestsState]);
 
     useEffect(() => {
