@@ -33,7 +33,7 @@ resource "cloudflare_pages_project" "app" {
   }
 
   build_config {
-    build_command       = "npm run compile"
+    build_command       = "npm run deploy"
     destination_dir     = ".vercel/output/static"
     build_caching       = true
   }
