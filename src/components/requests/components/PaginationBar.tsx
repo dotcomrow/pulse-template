@@ -24,7 +24,7 @@ export default function PaginationBar() {
     }
 
     return (
-        <div className="w-full pb-5 px-2 flex justify-center">
+        <div className="w-full flex justify-center">
             {getListSize() > 1 && (
                 <Pagination
                     page={page}

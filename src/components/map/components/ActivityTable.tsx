@@ -70,7 +70,6 @@ export default function ActivityTable({
                     variant="flat"
                     aria-label="Listbox menu with sections"
                     items={pictureRequestsState}
-                    className="overflow-y-scroll"
                 >
                     {(item: Feature) => (
                         <ListboxItem

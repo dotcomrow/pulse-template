@@ -14,10 +14,10 @@ export default async function Requests() {
                     <RequestsHeader />
                 </div>
             </div>
-            <div className="h-5/6 pt-2 w-full flex">
+            <div className="h-5/6 pt-1 w-full flex overflow-y-scroll">
                 <ActivityTable />
             </div>
-            <div className="pt-1 w-full flex">
+            <div className="py-1 w-full flex">
                 <PaginationBar />
             </div>
         </div>
