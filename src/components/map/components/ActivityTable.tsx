@@ -49,7 +49,7 @@ export default function ActivityTable({
         return deg * (Math.PI / 180);
     }
 
-    const cameraIcon = useMemo(() => (
+    const ImageIcon = () => (
         <>
             <div className="lg:hidden max-lg:flex">
                 <Image
@@ -68,7 +68,7 @@ export default function ActivityTable({
                 />
             </div>
         </>
-    ), []);
+    );
 
     const ListboxWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
         <div className="w-full">
@@ -92,6 +92,8 @@ export default function ActivityTable({
                     items={pictureRequestsState}
                 >
                     {(item: Feature) => (
+                        <>
+                        <ImageIcon />
                         <ListboxItem
                             key={item.getId() ?? 'default-key'}
                             title={item.getProperties().request_title}
@@ -104,10 +106,13 @@ export default function ActivityTable({
                                 </div>
                             }
                             textValue={item.getProperties().request_title}
-                            startContent={cameraIcon}
+                            startContent={
+                                <div className="image-placeholder" style={{ display: "none" }} /> // Use a placeholder for spacing
+                            }
                         >
                             {item.getProperties().request_title}
                         </ListboxItem>
+                        </>
                     )}
                 </Listbox>
             </ListboxWrapper>
