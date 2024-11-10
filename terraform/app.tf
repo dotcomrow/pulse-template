@@ -2,7 +2,6 @@ resource "cloudflare_pages_domain" "app" {
   account_id   = var.cloudflare_account_id
   project_name = var.project_name
   domain       = "${var.project_name}.${var.domain}"
-
   depends_on = [cloudflare_pages_project.app]
 }
 
