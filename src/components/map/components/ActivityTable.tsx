@@ -49,14 +49,6 @@ export default function ActivityTable({
         return deg * (Math.PI / 180);
     }
 
-    useEffect(() => {
-        
-    }, [pictureRequestsState]);
-
-    useEffect(() => {
-        console.log("deviceLocationState", deviceLocationState);
-    }, [deviceLocationState]);
-
     const ListboxWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
         <div className="w-full">
             {children}
