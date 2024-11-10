@@ -8,8 +8,8 @@
 }
 
 .icon-background-large {
-    width: 25px; /* Adjust size as needed */
-    height: 25px;
+    width: 50px; /* Adjust size as needed */
+    height: 50px;
     background-image: url('/assets/images/icons/camera.svg');
     background-size: contain;
     background-repeat: no-repeat;
