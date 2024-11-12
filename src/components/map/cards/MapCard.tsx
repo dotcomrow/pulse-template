@@ -1,7 +1,6 @@
 "use client";
 
 import VectorSource from "ol/source/Vector";
-import GeoJSON from "ol/format/GeoJSON";
 import { bbox } from "ol/loadingstrategy";
 import VectorLayer from "ol/layer/Vector";
 import Overlay from "ol/Overlay";
@@ -9,107 +8,240 @@ import View from "ol/View";
 import Map from "ol/Map";
 import TileLayer from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
-import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
-import React, { useEffect, useMemo } from "react";
+import React, { createElement, useCallback, useEffect, useMemo } from "react";
 import { useGeographic } from "ol/proj.js";
-import { Image } from "@nextui-org/image";
-import { findAddress } from "@services/map/findAddress";
-import { Input } from "@nextui-org/input";
-import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
-import { Button, ButtonGroup } from "@nextui-org/button";
-import { Link } from "@nextui-org/link";
-import { Tooltip } from "@nextui-org/tooltip";
 import "@styles/map/spinner.css"
 import { BoundingBox, loadPictureRequests } from "@lib/features/map/mapSlice";
-import { 
-    selectPictureRequests, 
-    selectPictureRequestStatus,
+import {
+    selectPictureRequests,
     selectLimit,
     selectOffset
 } from "@lib/features/map/mapSlice";
 import { useAppSelector, useAppStore, useAppDispatch } from "@hook/redux";
-import { debounce } from 'lodash';
-import { Fill, Stroke, Style } from 'ol/style';
-import { Spinner } from "@nextui-org/spinner";
-import Feature from 'ol/Feature';
+import { Fill, Icon, Stroke, Style } from 'ol/style';
+import Feature, { FeatureLike } from 'ol/Feature';
 import Point from 'ol/geom/Point';
-import CircleStyle from 'ol/style/Circle';
 import DragPan from 'ol/interaction/DragPan';
 import MapRequestPopup from "@component/modals/map/MapRequestPopup";
+import GeolocationControl from "@component/map/widgets/GeolocationControl";
+import { Control, defaults as defaultControls } from 'ol/control';
+import RequestModeControl from "@component/map/widgets/RequestModeControl";
+import LocationSearchControl from "@component/map/widgets/LocationSearchControl";
+import { selectMapLocation, updateMapLocation } from "@lib/features/location/mapLocationSlice";
+import { Popover, PopoverContent, Spinner } from "@nextui-org/react";
+import { createRoot } from "react-dom/client";
+import { getClosestAddress } from "@services/map/getClosestAddress";
+import { selectDeviceLocation } from "@lib/features/location/deviceLocationSlice";
+import Constants from "@utils/constants";
+import { useLocationLoaded } from "@app/LocationProvider";
 
 export default function MapCard({
-    initialPosition,
-    token
+    token,
+    mapTarget
 }: {
-    initialPosition: { coords: { latitude: number, longitude: number } },
-    token: string
+    token: string,
+    mapTarget: string
 }) {
 
     const store = useAppStore();
+    const useLocationLoadedContext = useLocationLoaded();
     const [mounted, setMounted] = React.useState(false);
-    const [items, setItems] = React.useState<any[]>([]);
-    const [query, setQuery] = React.useState("");
-    const [open, setOpen] = React.useState(false);
     const pictureRequestsState: any = useAppSelector(selectPictureRequests);
-    const pictureRequestStatus: any = useAppSelector(selectPictureRequestStatus);
+    const initialMapLocationState: any = useAppSelector(selectMapLocation);
+    const deviceLocationState: any = useAppSelector(selectDeviceLocation);
     const limitSelect: number = useAppSelector(selectLimit);
     const offsetSelect: number = useAppSelector(selectOffset);
-    const [searchDisabled, setSearchDisabled] = React.useState(true);
-    const [requestMode, setRequestMode] = React.useState(false);
-    const [searchLoading, setSearchLoading] = React.useState(false);
-    const [vectorLayer, setVectorLayer] = React.useState<VectorLayer>();
-    const [overlay, setOverlay] = React.useState<Overlay>();
-    const geojson = new GeoJSON();
 
-    const mapClickHandler = (e: any, overlay: any, vectorLayer: any) => {
-        if (document.getElementById("pictureRequestBtn")?.classList.contains("requestModeDisabled")) {
+    const pictureRequestBtn = "pictureRequestBtn" + mapTarget;
+    const popupContainerId = "popup-container" + mapTarget;
+    const featureInfoPopupId = "featureInfoPopup" + mapTarget;
+    const displayLocation = "displayLocation" + mapTarget;
+
+    const mapClickHandler = (e: any) => {
+        if (document.getElementById(pictureRequestBtn)?.classList.contains("requestModeDisabled")) {
             return;
         }
         e.preventDefault();
         e.stopPropagation();
         const coordinate = e.coordinate;
+        const vectorLayer = map?.getLayers().getArray()[1] as VectorLayer;
         const source = vectorLayer.getSource();
         const features = pictureRequestsState;
-
         const requestFeature = vectorLayer?.getSource()?.getFeatureById("request");
         if (!requestFeature) {
             var feat = new Feature(new Point(coordinate));
             feat.setStyle(new Style({
-                image: new CircleStyle({
-                    radius: 10,
-                    fill: new Fill({
-                        color: 'rgba(0, 0, 255, 0.1)',
-                    }),
-                    stroke: new Stroke({
-                        color: 'rgba(0, 0, 255, 0.3)',
-                        width: 1,
-                    }),
-                })
+                image: new Icon({
+                    opacity: 1,
+                    src: "/assets/images/icons/camera.svg",
+                    scale: 1.3
+                }),
             }));
             feat.setId("request");
             vectorLayer?.getSource()?.addFeature(feat);
-
         } else {
             vectorLayer?.getSource()?.getFeatureById("request").getGeometry().setCoordinates(coordinate);
         }
         vectorLayer?.setVisible(false);
         vectorLayer?.setVisible(true);
-        source.addFeatures(features);
-        overlay.setPosition(coordinate);
+        source?.addFeatures(features);
+        const overlay = map?.getOverlayById("requestSubmit");
+        overlay?.setPosition(coordinate);
     };
 
     const clearRequest = () => {
-        if (vectorLayer?.getSource()?.getFeatureById("request")) {
-            vectorLayer?.getSource()?.getFeatureById("request").getGeometry().setCoordinates([0, 0]);
-            vectorLayer?.setVisible(false);
-            vectorLayer?.setVisible(true);
+        for (var layerIndex in map?.getLayers().getArray()) {
+            const index = Number(layerIndex);
+            const layer = map?.getLayers().getArray()[index] as VectorLayer;
+            if (layer.getSource() instanceof VectorSource) {
+                if (layer.getSource()?.getFeatureById("request")) {
+                    layer.getSource()?.getFeatureById("request").getGeometry().setCoordinates([0, 0]);
+                    layer?.setVisible(false);
+                    layer?.setVisible(true);
+                }
+            }
+        }
+    };
+
+    const pictureRequestMode = (e: any) => {
+        e.preventDefault();
+        e.stopPropagation();
+        var rm = !document.getElementById(pictureRequestBtn)?.classList.toggle("requestModeDisabled");
+        if (rm == undefined) {
+            rm = false;
+        }
+        // change here if I want to let user drag map while request window open
+        // might want this...
+        // map?.getOverlays().getArray()[0].setPosition(undefined);
+        // clearRequest();
+        // The 2 lines above will clear selection and close the request window.
+        // uncomment to clear request if user toggles out of request mode
+        if (!rm) {
+            map?.getInteractions().forEach(function (interaction: { setActive: (arg0: boolean) => void; }) {
+                if (interaction instanceof DragPan) {
+                    interaction.setActive(true);
+                }
+            });
+        } else {
+            map?.getInteractions().forEach(function (interaction: { setActive: (arg0: boolean) => void; }) {
+                if (interaction instanceof DragPan) {
+                    interaction.setActive(false);
+                }
+            });
+        }
+    };
+
+    const featurePopover = async (feature: FeatureLike) => {
+        document.getElementById(featureInfoPopupId)?.classList.remove('hidden');
+        getClosestAddress({
+            lat: (feature.getGeometry() as Point)?.getCoordinates()[1],
+            lon: (feature.getGeometry() as Point)?.getCoordinates()[0]
+        }).then((address: any) => {
+            const addressContent =
+                <>
+                    <h2>Request Title: {feature.get('request_title')}</h2>
+                    {feature.get('request_description') ?
+                        <>
+                            <h2>Request Description:</h2>
+                            <p>{feature.get('request_description')}</p>
+                        </> : <></>}
+                    <h2>Request Date/Time: {new Date(feature.get('capture_timestamp')).toLocaleDateString(navigator.language) + " " + new Date(feature.get('capture_timestamp')).toLocaleTimeString(navigator.language)}</h2>
+                    <h2>Location:</h2><br />
+                    <p>{address.display_name}</p>
+                </>;
+            const displayLocationElement = document.getElementById(displayLocation);
+            if (displayLocationElement) {
+                const root = createRoot(displayLocationElement);
+                root.render(addressContent);
+            }
+            setTimeout(() => {
+                map?.getTargetElement().classList.add('fetchRequests');
+            }, 1000);
+        }).catch((error) => {
+            const displayLocationElement = document.getElementById(displayLocation);
+            if (displayLocationElement) {
+                const root = createRoot(displayLocationElement);
+                root.render(JSON.stringify(error));
+            }
+            setTimeout(() => {
+                map?.getTargetElement().classList.add('fetchRequests');
+            }, 1000);
+        });
+
+        const popoverContent = <>
+            <div id={displayLocation}>
+                <Spinner
+                    size="md"
+                    className="ml-20"
+                />
+            </div>
+        </>
+
+        return React.createElement(
+            'div',
+            { style: { padding: '.5em' } },
+            createElement(
+                Popover,
+                {
+                    onBlur: () => {
+                        document.getElementById(featureInfoPopupId)?.classList.add('hidden');
+                    },
+                    placement: 'left',
+                    children: [
+                        createElement(PopoverContent, null, createElement('p', {
+                            style: {
+                                padding: ".5em",
+                            },
+                            className: "lg:w-96 max-lg:w-52",
+                        }, popoverContent))
+                    ]
+                }
+            )
+        );
+    }
+
+    const openFeaturePopover = (e: any, featureOverlay: any, feature: FeatureLike) => {
+        e.preventDefault();
+        e.stopPropagation();
+        map?.getTargetElement().classList.remove('fetchRequests');
+        featureOverlay?.setPosition(e.coordinate);
+        centerMap({ coords: { latitude: (feature.getGeometry() as Point)?.getCoordinates()[1], longitude: (feature.getGeometry() as Point)?.getCoordinates()[0] + Constants.MapConstants.longitudeOffsetFeatureWindow } });
+        const featurePopup = document.getElementById(featureInfoPopupId);
+
+        if (featurePopup) {
+            const root = createRoot(featurePopup);
+            root.render(featurePopover(feature));
+        }
+    };
+
+    const getInitialCenter = () => {
+        if (initialMapLocationState.latitude != -1 && initialMapLocationState.longitude != -1) {
+            return [initialMapLocationState.longitude, initialMapLocationState.latitude];
+        } else {
+            return [deviceLocationState.longitude, deviceLocationState.latitude];
+        }
+    };
+
+    const centerMap = (arg: any) => {
+        const mapSize = map?.getSize();
+        if (mapSize) {
+            if (arg instanceof Event) {
+                if (window.curLocation != undefined) {
+                    map?.getView().centerOn([window.curLocation.longitude, window.curLocation.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+                }
+            } else {
+                map?.getView().centerOn([arg.coords.longitude, arg.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+            }
         }
     };
 
     const map = useMemo(() => {
         if (mounted) {
-            const container = document.getElementById('popup-container');
+            const container = document.getElementById(popupContainerId);
+            const featurePopup = document.getElementById(featureInfoPopupId);
+
             const overlay = container ? new Overlay({
+                id: "requestSubmit",
                 element: container,
                 autoPan: {
                     animation: {
@@ -117,32 +249,45 @@ export default function MapCard({
                     },
                 },
             }) : new Overlay({});
-            setOverlay(overlay);
+
+            const popup = featurePopup ? new Overlay({
+                id: "featureInfo",
+                element: featurePopup,
+                autoPan: {
+                    animation: {
+                        duration: 250,
+                    },
+                },
+            }) : new Overlay({});
+
             const vectorLayer = new VectorLayer({
                 source: new VectorSource({
-                    features: geojson.readFeatures({
-                        type: "FeatureCollection",
-                        features: []
-                    }),
+                    features: pictureRequestsState,
+                    loader: function (extent, resolution, projection) {
+                        if (map) {
+                            // map.getTargetElement().classList.add('spinner');
+                            // bbox coordinates are reversed here because google maps uses lat, lon and openlayers uses lon, lat
+                            const bbox: BoundingBox = {
+                                min_latitude: extent[0],
+                                min_longitude: extent[1],
+                                max_latitude: extent[2],
+                                max_longitude: extent[3],
+                            };
+                            // do not reference this anywhere related to openlayers, this is for google bigquery
+                            store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
+                        }
+                    },
                     strategy: bbox,
                     overlaps: false,
                     wrapX: false,
                 }),
-                style: new Style({
-                    fill: new Fill({
-                        color: "rgba(255,255,255,0.2)",
-                    }),
-                    stroke: new Stroke({
-                        color: "rgba(0,0,255,0.3)",
-                    }),
-                }),
                 maxZoom: 18,
                 minZoom: 16,
             });
-            setVectorLayer(vectorLayer);
+
             var map = new Map({
                 // the map will be created using the 'map-root' ref
-                target: "map-container",
+                target: mapTarget,
                 layers: [
                     // adding a background tiled layer
                     new TileLayer({
@@ -155,14 +300,21 @@ export default function MapCard({
                 ],
                 // the map view will initially show the whole world
                 view: new View({
-                    zoom: 17,
+                    center: getInitialCenter(),
+                    zoom: initialMapLocationState.zoom,
                     maxZoom: 18,
                     minZoom: 16,
                     constrainResolution: true,
                 }),
                 overlays: [
-                    overlay
+                    overlay,
+                    popup
                 ],
+                controls: defaultControls().extend([
+                    new GeolocationControl(),
+                    new RequestModeControl(pictureRequestMode, token, pictureRequestBtn),
+                    new LocationSearchControl(centerMap)
+                ]),
             });
             map.on('loadstart', function () {
                 map.getTargetElement().classList.add('spinner');
@@ -170,265 +322,132 @@ export default function MapCard({
             map.on('loadend', function () {
                 map.getTargetElement().classList.remove('spinner');
             });
-            map.on('moveend', debounce(() => {
+            map.on('pointermove', function (e) {
+                const pixel = map.getEventPixel(e.originalEvent);
+                const hit = map.hasFeatureAtPixel(pixel);
+                if (hit) {
+                    const feature = map.forEachFeatureAtPixel(e.pixel, function (feature) {
+                        return feature;
+                    });
+                    if (feature && feature.getId() != "device-location") {
+                        map.getTargetElement().style.cursor = 'pointer';
+                    }
+                } else {
+                    map.getTargetElement().style.cursor = '';
+                }
+            });
+            map.on('movestart', function () {
                 map.getTargetElement().classList.add('spinner');
+            });
+            map.on('moveend', function () {
                 const mapSize = map?.getSize();
                 const extent = map?.getView().calculateExtent(mapSize);
-                const bbox: BoundingBox = {
-                    min_latitude: extent[0],
-                    min_longitude: extent[1],
-                    max_latitude: extent[2],
-                    max_longitude: extent[3],
-                };
-                store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
-            }, 500));
-            map.on('click', (e) => {
-                mapClickHandler(e, overlay, vectorLayer);
+                var centerLat = (extent[1] + extent[3]) / 2;
+                var centerLon = (extent[0] + extent[2]) / 2;
+                store.dispatch(updateMapLocation({
+                    latitude: centerLat,
+                    longitude: centerLon,
+                    zoom: map?.getView().getZoom() as number
+                }));
+                map.getTargetElement().classList.remove('spinner');
             });
+            map.on('click', (e) => {
+                const feature = map.forEachFeatureAtPixel(e.pixel, function (feature) {
+                    return feature;
+                });
+                if (!feature) {
+                    mapClickHandler(e);
+                } else {
+                    if (feature.getId() != "device-location") {
+                        openFeaturePopover(e, popup, feature);
+                    }
+                }
+            });
+            var feat = new Feature(new Point([deviceLocationState.longitude, deviceLocationState.latitude]));
+            feat.setStyle(new Style({
+                image: new Icon({
+                    opacity: 1,
+                    src: "/assets/images/icons/map-pin_filled.svg",
+                    scale: 1.3
+                }),
+            }));
+            feat.setId("device-location");
+            (map.getLayers().item(1) as VectorLayer).getSource()?.addFeature(feat);
             return map;
         }
     }, [mounted]);
 
-    const searchHandler = (e: any) => {
-        if (searchDisabled) {
-            return;
-        }
-        setSearchLoading(true);
-        findAddress(query).then((results) => {
-            const searchResults = Array.isArray(results) ? results : [];
-            if (searchResults.length == 0) {
-                setItems([{ display_name: "No results found" }]);
-            } else {
-                setItems(searchResults);
-            }
-            setQuery("");
-            setOpen(true);
-            setSearchDisabled(true);
-            setSearchLoading(false);
-        });
-    }
-
     useEffect(() => {
-        if (pictureRequestStatus === "complete") {
-            const features = pictureRequestsState;
-            vectorLayer?.getSource()?.addFeatures(features);
-            map?.getTargetElement().classList.remove('spinner');
+        if (map) {
+            if ((map.getLayers().item(1) as VectorLayer).getSource()) {
+                pictureRequestsState.forEach((feature: any) => {
+                    (map.getLayers().item(1) as VectorLayer).getSource()?.addFeature(feature);
+                });
+                (map.getLayers().item(1) as VectorLayer).setVisible(false);
+                (map.getLayers().item(1) as VectorLayer).setVisible(true);
+            }
         }
     }, [pictureRequestsState]);
 
     useEffect(() => {
         if (map) {
-            const mapSize = map?.getSize();
-            if (mapSize) {
-                map?.getView().centerOn([initialPosition.coords.longitude, initialPosition.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
+            if ((map.getLayers().item(1) as VectorLayer).getSource()) {
+                (map.getLayers().item(1) as VectorLayer).getSource()?.getFeatureById("device-location").getGeometry().setCoordinates([deviceLocationState.longitude, deviceLocationState.latitude]);
+                (map.getLayers().item(1) as VectorLayer).setVisible(false);
+                (map.getLayers().item(1) as VectorLayer).setVisible(true);
+                window.curLocation = deviceLocationState;
             }
         }
-    }, [mounted]);
+    }, [deviceLocationState]);
+
+    useEffect(() => {
+        map?.getView().setCenter(getInitialCenter());
+    }, [useLocationLoadedContext?.locationLoaded]);
+
+    useEffect(() => {
+        window.addEventListener('message', centerMap);
+
+        return () => {
+            window.removeEventListener('message', centerMap);
+        }
+    }, [map]);
 
     useEffect(() => {
         useGeographic();
         setMounted(true);
     }, []);
 
-    const centerMap = (position: { coords: { latitude: number, longitude: number } }) => {
-        const mapSize = map?.getSize();
-        if (mapSize) {
-            map?.getView().centerOn([position.coords.longitude, position.coords.latitude], mapSize, [mapSize[0] / 2, mapSize[1] / 2]);
-        }
-    }
-
-    const pictureRequestMode = (e: any) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        var rm = !document.getElementById("pictureRequestBtn")?.classList.toggle("requestModeDisabled");
-        if (rm == undefined) {
-            rm = false;
-        }
-        setRequestMode(rm);
-        overlay?.setPosition(undefined);
-        clearRequest();
-        if (!rm) {
-            map?.getInteractions().forEach(function (interaction) {
-                if (interaction instanceof DragPan) {
-                    interaction.setActive(true);
-                }
-            });
-        } else {
-            map?.getInteractions().forEach(function (interaction) {
-                if (interaction instanceof DragPan) {
-                    interaction.setActive(false);
-                }
-            });
-        }
-    };
-
     return (
-        <Card className="py-4 mb-auto h-full w-full">
-            <CardHeader className="pb-0 pt-2 px-4 flex-col">
-                <div className="flex-row w-full flex justify-start">
-                    <h2 className="text-2xl font-bold pb-3">Activity Near You</h2>
-                </div>
-                <div className="flex-row w-full flex">
-                    <div className="w-1/8 shrink-0 justify-start flex">
-                        <Tooltip content="Click this icon to allow us to request access and show your device location on map">
-                            <Link href="#" onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                map?.getTargetElement().classList.add('spinner');
-                                navigator.geolocation.getCurrentPosition((position) => {
-                                    centerMap(position);
-                                }, (error) => {
-                                    console.error(error);
-                                },
-                                    {
-                                        enableHighAccuracy: false,
-                                        timeout: 2000,
-                                        maximumAge: 0,
-                                    });
-                            }}>
-                                <Image
-                                    src="/assets/images/icons/location.svg"
-                                    width={40}
-                                    height={40}
-                                    shadow="sm"
-                                    radius="sm"
-                                    className="p-1"
-                                    alt="Click to move map to current location"
-                                />
-                            </Link>
-                        </Tooltip>
-                    </div>
-                    <div className="lg:w-5/6 sm:w-2/3 flex">
-                        <Input
-                            isClearable
-                            value={query}
-                            type="text"
-                            placeholder="Enter a location"
-                            labelPlacement="outside"
-                            className="w-full px-2 z-20"
-                            onChange={(e) => {
-                                setQuery(e.target.value);
-                                if (query.length > 0) {
-                                    setSearchDisabled(false);
-                                } else {
-                                    setSearchDisabled(true);
-                                }
-                            }}
-                            id="search"
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    searchHandler(e);
-                                }
-                            }}
-                            endContent={searchLoading ? <Spinner size="md" /> : <></>}
-                            startContent={
-                                <Popover
-                                    placement="bottom-start"
-                                    isOpen={open}
-                                    onOpenChange={(e) => {
-                                        setOpen(e);
-                                    }}
-                                    classNames={{
-                                        content: [
-                                            "items-start",
-                                            "flex"
-                                        ]
-                                    }}>
-                                    <PopoverTrigger>
-                                        <div className="shrink-0">
-                                            <Tooltip content={searchDisabled ? "Enter a point of interest to find" : "Click this icon or press enter to search"}>
-                                                <Image
-                                                    src="/assets/images/icons/search.svg"
-                                                    width={35}
-                                                    height={35}
-                                                    shadow="sm"
-                                                    onClick={searchHandler}
-                                                    style={{
-                                                        cursor: searchDisabled ? "default" : "pointer",
-                                                        padding: "0.5rem",
-                                                    }}
-                                                    alt="Click to move map to current location"
-                                                />
-                                            </Tooltip>
-                                        </div>
-
-                                    </PopoverTrigger>
-                                    <PopoverContent>
-                                        {items.map((item) => (
-                                            <Link
-                                                href="#"
-                                                onMouseOver={(e) => {
-                                                    e.currentTarget.style.backgroundColor = '#0008ff'
-                                                    e.currentTarget.style.color = '#FFFFFF'
-                                                }}
-                                                onMouseOut={(e) => {
-                                                    e.currentTarget.style.backgroundColor = '#FFFFFF'
-                                                    e.currentTarget.style.color = '#0008ff'
-                                                }}
-                                                onClick={(e: any) => {
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    if (!item.lon || !item.lat) {
-                                                        setOpen(false);
-                                                        return;
-                                                    }
-                                                    setQuery("");
-                                                    setSearchDisabled(true);
-                                                    centerMap({ coords: { latitude: parseFloat(item.lat), longitude: parseFloat(item.lon) } });
-                                                    setItems([]);
-                                                    setOpen(false);
-                                                }}>
-                                                <h2 className="w-full">{item.display_name}</h2>
-                                            </Link>
-                                        ))}
-                                    </PopoverContent>
-                                </Popover>
+        <div className="bg-white p-dynamic w-full h-full">
+            <div id={mapTarget} className="h-full w-full spinner">
+                <div id={featureInfoPopupId}></div>
+            </div>
+            <div id={popupContainerId}>
+                <MapRequestPopup
+                    closePopup={(e: any) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (e.savedRequest) {
+                            const mapSize = map?.getSize();
+                            const extent = map?.getView().calculateExtent(mapSize);
+                            if (extent) {
+                                const bbox: BoundingBox = {
+                                    min_latitude: extent[0],
+                                    min_longitude: extent[1],
+                                    max_latitude: extent[2],
+                                    max_longitude: extent[3],
+                                };
+                                store.dispatch(loadPictureRequests(bbox, limitSelect, offsetSelect));
                             }
-                        />
-                    </div>
-                    <div className="lg:w-1/6 sm:w-1/3 justify-end flex">
-                        <Tooltip content={token.length == 0 ? "Please login to submit a request" : "Select a location on the map and complete the request submit dialog form"}>
-                            <div className="w-full justify-end flex">
-                                <Button id="pictureRequestBtn"
-                                    startContent={requestMode ? <div className="shrink-0">
-                                        <Image
-                                            src="/assets/images/icons/check.svg"
-                                            width={40}
-                                            height={40}
-                                            style={{
-                                                padding: "0.5rem",
-                                            }}
-                                        />
-                                    </div> : <></>}
-                                    onClick={pictureRequestMode}
-                                    isDisabled={token.length == 0}
-                                    className="requestModeDisabled"
-                                >
-                                    Request Mode
-                                </Button>
-                            </div>
-                        </Tooltip>
-                    </div>
-                </div>
-            </CardHeader>
-            <CardBody className="overflow-visible py-2">
-                <div className="bg-white p-dynamic h-full">
-                    <div id="map-container" className="h-full"></div>
-                    <div id="popup-container">
-                        <MapRequestPopup 
-                            closePopup={(e: any) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                overlay?.setPosition(undefined);
-                                clearRequest();
-                            }}
-                            vectorLayer={vectorLayer}
-                            token={token} 
-                        />
-                    </div>
-                </div>
-            </CardBody>
-        </Card>
+                        }
+                        map?.getOverlayById("requestSubmit")?.setPosition(undefined);
+                        clearRequest();
+                    }}
+                    vectorLayer={map?.getLayers().getArray()[1] as VectorLayer}
+                    token={token}
+                    mapTarget={mapTarget}
+                />
+            </div>
+        </div>
     )
 }

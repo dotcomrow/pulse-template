@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { Tooltip } from "@nextui-org/tooltip";
 import { Link } from "@nextui-org/link";
@@ -7,12 +9,14 @@ import { Image } from "@nextui-org/image";
 export default function MapRequestPopup({
     closePopup,
     vectorLayer,
-    token
+    token,
+    mapTarget
 }: {
     closePopup: any,
     vectorLayer: any,
-    token: string
-}) {
+    token: string,
+    mapTarget: string
+}) {    
     return (
         <Card>
             <CardHeader className="flex-row items-center w-full flex">
@@ -32,9 +36,12 @@ export default function MapRequestPopup({
             </CardHeader>
             <CardBody>
                 <div id="popup-content">
-                    <RequestSubmit geomString={
-                        JSON.stringify(vectorLayer?.getSource()?.getFeatureById("request")?.getGeometry()?.getCoordinates())
-                    } token={token} popupClose={closePopup} />
+                    <RequestSubmit 
+                        vectorLayer={vectorLayer}
+                        token={token} 
+                        popupClose={closePopup} 
+                        mapTarget={mapTarget}
+                    />
                 </div>
             </CardBody>
         </Card>

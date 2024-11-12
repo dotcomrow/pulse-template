@@ -64,7 +64,7 @@ export default {
         {
           severity: "ERROR",
           jsonPayload: {
-            message: "Exception occurred in fetch",
+            message: "Exception occurred in creating db tables",
             error: serializeError(e),
           },
         },

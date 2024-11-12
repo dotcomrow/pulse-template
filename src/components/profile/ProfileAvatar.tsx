@@ -75,20 +75,23 @@ const ProfileAvatar = () => {
     } else if (state.status == "complete") {
       setProfileAvatar(
         <>
-          <Dropdown placement="bottom-end" backdrop="blur" onFocus={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (!Constants.profileNavLinks.find((item) => item.link === window.location.pathname)) {
-              setSelectedKey("");
-            }
-          }}>
+          <Dropdown
+            placement="bottom-end"
+            backdrop="blur"
+            onFocus={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (!Constants.profileNavLinks.find((item) => item.link === window.location.pathname)) {
+                setSelectedKey("");
+              }
+            }}>
             <DropdownTrigger>
               <User
                 name={state.user.name}
                 description={state.user.email}
                 className="cursor-pointer"
                 classNames={{
-                  wrapper: "max-sm:hidden"
+                  wrapper: "max-lg:hidden"
                 }}
                 avatarProps={{
                   src: state.user.picture
@@ -96,11 +99,11 @@ const ProfileAvatar = () => {
               />
             </DropdownTrigger>
             <DropdownMenu aria-label="Profile Actions" variant="flat">
-              <DropdownItem key="profile" className="h-14 gap-2" isReadOnly textValue="Sign in details">
+              <DropdownItem key="profile" className="h-14 gap-2 max-lg:hidden" isReadOnly textValue="Sign in details">
                 <p className="font-semibold">Signed in as</p>
                 <p className="font-semibold">{state.user.email}</p>
               </DropdownItem>
-              <DropdownSection>
+              <DropdownSection className="max-lg:hidden">
                 {
                   Constants.profileNavLinks.map((item, index) => {
                     return (
@@ -108,7 +111,7 @@ const ProfileAvatar = () => {
                         <Link href={item.link}
                           onClick={(e) => { setSelectedKey(item.link) }}
                           className={selectedKey === item.link ? "text-primary" : "text"}
-                          >
+                        >
                           {item.title}
                         </Link>
                       </DropdownItem>
@@ -149,7 +152,7 @@ const ProfileAvatar = () => {
       );
     } else {
       setProfileAvatar(
-        <div className="w-2/5 flex justify-end gap-3">
+        <div className="lg:w-2/5 flex justify-end">
           <div>
             <Skeleton className="flex rounded-full w-10 h-10" />
           </div>

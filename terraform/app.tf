@@ -2,7 +2,6 @@ resource "cloudflare_pages_domain" "app" {
   account_id   = var.cloudflare_account_id
   project_name = var.project_name
   domain       = "${var.project_name}.${var.domain}"
-
   depends_on = [cloudflare_pages_project.app]
 }
 
@@ -34,7 +33,7 @@ resource "cloudflare_pages_project" "app" {
   }
 
   build_config {
-    build_command       = "export NODE_OPTIONS=--max_old_space_size=16384 && npm install && npx @cloudflare/next-on-pages@latest"
+    build_command       = "npm run deploy"
     destination_dir     = ".vercel/output/static"
     build_caching       = true
   }

@@ -1,0 +1,48 @@
+.capture-request {
+  top: 100px;
+  left: .5em;
+  position: absolute;
+}
+
+.ol-touch .capture-request {
+  top: 130px;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+}
+
+.capture-request-icon {
+  cursor: pointer;
+  opacity: 1;
+  width: 25px;
+  height: 25px;
+  background-color: white;
+  filter: invert(100%) sepia(7%) saturate(0%) hue-rotate(158deg)
+        brightness(108%) contrast(109%);
+}
+
+.capture-request-icon.requestModeDisabled {
+  background-color: white;
+  width: 25px;
+  height: 25px;
+  filter: invert(0%) sepia(7%) saturate(0%) hue-rotate(158deg)
+        brightness(108%) contrast(109%);
+}
+
+.ol-touch .capture-request-icon {
+  cursor: pointer;
+  opacity: 1;
+  width: 40px;
+  height: 40px;
+  background-color: white;
+  filter: invert(100%) sepia(7%) saturate(0%) hue-rotate(158deg)
+        brightness(108%) contrast(109%);
+}
+
+.ol-touch .capture-request-icon.requestModeDisabled {
+  background-color: white;
+  width: 40px;
+  height: 40px;
+  filter: invert(0%) sepia(7%) saturate(0%) hue-rotate(158deg)
+        brightness(108%) contrast(109%);
+}

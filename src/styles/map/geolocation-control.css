@@ -1,0 +1,28 @@
+.geolocate {
+    top: 65px;
+    left: .5em;
+    position: absolute;
+}
+
+.ol-touch .geolocate {
+    top: 80px;
+    width: 40px;
+    height: 40px;
+    position: absolute;
+}
+
+.geolocate-icon {
+    cursor: pointer;
+    opacity: 1;
+    background-color: white;
+    width: 25px;
+    height: 25px;
+}
+
+.ol-touch .geolocate-icon {
+    cursor: pointer;
+    opacity: 1;
+    background-color: white;
+    width: 40px;
+    height: 40px;
+}

@@ -6,7 +6,6 @@ import { BoundingBox } from "@lib/features/map/mapSlice";
 export default async function fetchPictureRequests(bbox: BoundingBox, limit: number, offset: number): Promise<any> {
     const env = getRequestContext().env as { GRAPHQL?: { fetch: (url: string, options: any) => Promise<any> } };
     try {
-        // using service binding when deployed
         const res = await env.GRAPHQL?.fetch("https://api/graphql", {
             method: "POST",
             headers: {

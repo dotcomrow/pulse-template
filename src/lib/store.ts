@@ -2,6 +2,10 @@ import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { combineSlices, configureStore } from "@reduxjs/toolkit";
 import { userSlice } from "@lib/features/user/userSlice";
 import { mapSlice } from "./features/map/mapSlice";
+import { errorSlice } from "./features/error/errorSlice";
+import { notificationSlice } from "./features/notification/notificationSlice";
+import { mapLocationSlice } from "./features/location/mapLocationSlice";
+import { deviceLocationSlice } from "./features/location/deviceLocationSlice";
 // import { counterSlice } from "./features/counter/counterSlice";
 // import { quotesApiSlice } from "./features/quotes/quotesApiSlice";
 
@@ -11,7 +15,11 @@ import { mapSlice } from "./features/map/mapSlice";
 
 const rootReducer = combineSlices(
   userSlice, 
-  mapSlice
+  mapSlice,
+  errorSlice,
+  notificationSlice,
+  mapLocationSlice,
+  deviceLocationSlice
 );
 
 // Infer the `RootState` type from the root reducer

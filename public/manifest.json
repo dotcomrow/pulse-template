@@ -1,0 +1,46 @@
+{
+    "name": "SnapSpot",
+    "short_name": "SnapSpot",
+    "theme_color": "#ffffff",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "orientation": "any",
+    "display_override": [
+        "standalone"
+    ],
+    "scope": "/",
+    "start_url": "/",
+    "screenshots": [
+        {
+            "src": "screenshot-wide.png",
+            "sizes": "2800x1600",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Homescreen of Awesome App"
+        },
+        {
+            "src": "screenshot-narrow.png",
+            "sizes": "1300x1600",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "List of Awesome Resources available in Awesome App"
+        }
+    ],
+    "icons": [
+        {
+            "src": "/pulse-logo-192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "/pulse-logo-256.png",
+            "type": "image/png",
+            "sizes": "256x256"
+        },
+        {
+            "src": "/pulse-logo-512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ]
+}

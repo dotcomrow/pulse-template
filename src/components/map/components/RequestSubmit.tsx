@@ -3,7 +3,7 @@
 import { Tabs, Tab } from "@nextui-org/tabs";
 import { Checkbox } from "@nextui-org/checkbox";
 import { useEffect, useState } from "react";
-import CompassWidget from "../widgets/CompassWidget";
+import CompassWidget from "@component/map/widgets/CompassWidget";
 import { DateInput } from "@nextui-org/date-input";
 import { parseAbsolute } from "@internationalized/date";
 import { Input } from "@nextui-org/input";
@@ -12,7 +12,7 @@ import { Button, ButtonGroup } from "@nextui-org/button";
 import savePictureRequests from "@services/map/SavePictureRequest";
 import { Spinner } from "@nextui-org/spinner";
 
-export default function RequestSubmit({ geomString, token, popupClose }: { geomString: string, token: string, popupClose: any }) {
+export default function RequestSubmit({ vectorLayer, token, popupClose, mapTarget }: { vectorLayer: any, token: string, popupClose: any, mapTarget: string }) {
 
     const [compassDirectionEnabled, setCompassDirectionEnabled] = useState(true);
     const [direction, setDirection] = useState(0);
@@ -34,7 +34,6 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
                 isSubmitEnabled = false;
             }
         }
-
         setIsSubmitEnabled(isSubmitEnabled);
     }, [requestTitle, requestDescription, compassDirectionEnabled, direction]);
 
@@ -94,11 +93,16 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
             description: requestDescription,
             date: parseDate.getTime(),
             bidType: bidType,
-            geom: geomString,
+            geom: JSON.stringify(vectorLayer?.getSource()?.getFeatureById("request")?.getGeometry()?.getCoordinates()),
             direction: direction
         };
 
         savePictureRequests(request, token).then((res) => {
+            e.savedRequest = true;
+            setRequestDescription("");
+            setRequestTitle("");
+            setDirection(0);
+            setCompassDirectionEnabled(true);
             popupClose(e);
             setShowLoading(false);
         });
@@ -119,6 +123,7 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
                     <Tabs aria-label="Options">
                         <Tab key="details" title="Details">
                             <Checkbox
+                                name="compassDirection"
                                 isSelected={compassDirectionEnabled}
                                 onValueChange={(e) => {
                                     setCompassDirectionEnabled(e);
@@ -129,7 +134,7 @@ export default function RequestSubmit({ geomString, token, popupClose }: { geomS
                                     }
                                 }}>Verify Compass Direction</Checkbox>
                             <div className="flex flex-col" id="compass">
-                                <CompassWidget enabled={compassDirectionEnabled} direction={direction} setDirection={setDirection} />
+                                <CompassWidget enabled={compassDirectionEnabled} direction={direction} setDirection={setDirection} mapTarget={mapTarget} />
                                 <DateInput
                                     label={"Picture date/time"}
                                     value={requestDate}
